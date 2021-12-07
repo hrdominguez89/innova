@@ -1,0 +1,407 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+class Auth extends MX_Controller
+{
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        //Cargo configuraciones personalizadas
+        $this->config->load('custom_config');
+        $this->data_captcha_google = $this->config->item('data_captcha_google');
+
+        //Cargo Helper de Recaptcha de Google y Correo
+        $this->load->helper(array('grecaptcha_helper', 'send_email_helper'));
+
+        //Cargo Libreria que repara bug de form_validation
+        $this->load->library(array('my_form_validation'));
+        $this->form_validation->run($this);
+
+        $this->load->model('Auth_model');
+    }
+
+    public function index()
+    {
+        redirect(base_url() . URI_WP);
+    }
+
+    public function login()
+    {
+        if ($this->session->userdata('user_data')) {
+            redirect(base_url() . 'home');
+        }
+        if ($this->input->post()) {
+            $this->loginrules();
+            if (!$this->form_validation->run() == FALSE) {
+                $email = $this->input->post('email');
+                $pw_post = $this->input->post('password');
+                $user_data = $this->Auth_model->getUserDataByEmail($email);
+                if ($user_data && password_verify($pw_post, @$user_data->password)) {
+                    if ($user_data->reiniciar_password_fecha != NULL) {
+                        $user_update['reiniciar_password_fecha'] = NULL;
+                        $this->Auth_model->updateUser($user_update, $email);
+                    }
+                    switch ($user_data->estado_id) {
+                        case USR_PENDING:
+                            $_SESSION['mensaje_back'] = 'Su E-mail, se encuentra pendiente de validación. Por favor revise su correo inclusive la casilla de spam/correo no deseado. Si necesita que se reenvie el e-mail de verificación, haga <a href="' . base_url() . URI_WP . '/validar-e-mail">click aquí</a>.';
+                            break;
+                        case USR_VERIFIED:
+                            // $data['error_message'] = 'Su cuenta se encuentra a la espera de aprobación de nuestros administradores.';
+                            // break;
+                        case USR_ENABLED:
+                            $this->session->set_userdata('user_data', $user_data);
+                            redirect(base_url() . 'home');
+                            break;
+                        case USR_DISABLED:
+                            $_SESSION['mensaje_back'] = 'Su cuenta se encuentra Deshabilitada.';
+                            break;
+                    }
+                    redirect(base_url() . URI_WP . '/mensajes');
+                } else {
+                    $_SESSION['error_login'] = '<div class="alert text-white" style="background-color:#9D71CC;">Usuario y/o Password incorrecto.</div>';
+                }
+            } else {
+                $_SESSION['error_login'] = validation_errors();
+            }
+            redirect(base_url() . URI_WP . '/login-ria');
+        }
+        // redirect(base_url() . URI_WP . '/login-ria');
+        $data['files_js'] = array('grecaptcha.js');
+        $data['recaptcha'] = true;
+        $data['sections_view'] = "login_form_view";
+        $this->load->view('layout_front_view', $data);
+    }
+
+    public function logout()
+    {
+        $this->session->sess_destroy();
+        redirect(base_url() . URI_WP . '/login-ria');
+    }
+
+    public function reset_password()
+    {
+        if ($this->input->post()) {
+            $this->form_validation->set_error_delimiters('<div class="alert text-white" style="background-color:#9D71CC;">', '</div>');
+            $this->form_validation->set_rules(
+                'email',
+                'E-Mail',
+                'trim|required|valid_email',
+                array(
+                    'required' => 'El campo {field} es obligatorio.'
+                )
+            );
+            $this->form_validation->set_rules(
+                'g-recaptcha',
+                'Google ReCaptcha V3',
+                'required|callback_valid_captcha',
+                array(
+                    'valid_captcha' => 'El campo {field} no pudo ser validado correctamente, recargue la página e intente nuevamente.',
+                )
+            );
+            if (!$this->form_validation->run() ==  FALSE) {
+                $email = $this->input->post('email');
+                $user_data = $this->Auth_model->getUserDataByEmail($email);
+                if ($user_data) {
+                    $date = date('Y-m-d H:i:s', time());
+                    $set_data_reset['reiniciar_password_fecha'] = $date;
+                    $this->Auth_model->updateUser($set_data_reset, $email);
+
+                    $this->load->model('mensajes/Mensajes_model');
+
+                    $configuracion_mensaje_correo_plataforma = $this->Mensajes_model->getMensaje('mensaje_olvide_contraseña');
+
+                    $enlace = base_url() . URI_WP . '/cambiar-contrasena?email=' . $email . '&code=' . base64_encode($date);
+
+                    $enlace_reinicio_password = '<a href="' . $enlace . '">' . $enlace . '</a>';
+
+                    $email_mensaje = $configuracion_mensaje_correo_plataforma->texto_mensaje;
+                    $email_asunto = $configuracion_mensaje_correo_plataforma->asunto_mensaje;
+                    $email_de = $configuracion_mensaje_correo_plataforma->notificador_correo;
+                    $nombre_de = $configuracion_mensaje_correo_plataforma->notificador_nombre;
+                    $email_para = $email;
+                    $buscar_y_reemplazar = array(
+                        array('buscar' => '{{NOMBRE_USUARIO}}', 'reemplazar' => $user_data->nombre),
+                        array('buscar' => '{{APELLIDO_USUARIO}}', 'reemplazar' => $user_data->apellido),
+                        array('buscar' => '{{ENLACE_REINICIO_PASSWORD}}', 'reemplazar' => $enlace_reinicio_password)
+                    );
+
+                    for ($i = 0; $i < count($buscar_y_reemplazar); $i++) {
+                        $email_mensaje = str_replace($buscar_y_reemplazar[$i]['buscar'], $buscar_y_reemplazar[$i]['reemplazar'], $email_mensaje);
+                        $email_asunto = str_replace($buscar_y_reemplazar[$i]['buscar'], $buscar_y_reemplazar[$i]['reemplazar'], $email_asunto);
+                    }
+
+                    $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+
+
+                    exec('php index.php cli enviarcorreosencolados ' . $email_id);
+
+                    $_SESSION['mensaje_back'] = 'Se envió un correo a la cuenta ' . $email . ', con un enlace temporal, dispone de 48 horas para poder cambiar la contraseña.';
+                    redirect(base_url() . URI_WP . '/mensajes');
+                } else {
+                    $_SESSION['error_message'] = '<div class="alert text-white" style="background-color:#9D71CC;">No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.</div>';
+                }
+            } else {
+                $_SESSION['error_message'] = validation_errors();
+            }
+        }
+        redirect(base_url() . URI_WP . '/recuperar-contrasena');
+        // $data['recaptcha'] = true;
+        // $data['files_js'] = array('grecaptcha.js');
+        // $data['sections_view'] = "reset_password_view";
+        // $this->load->view('layout_front_view', $data);
+    }
+
+    public function resend_verify_email()
+    {
+        if ($this->input->post()) {
+            $this->form_validation->set_rules(
+                'email',
+                'E-Mail',
+                'trim|required|valid_email',
+                array(
+                    'required' => 'El campo {field} es obligatorio.'
+                )
+            );
+            $this->form_validation->set_rules(
+                'g-recaptcha',
+                'Google ReCaptcha V3',
+                'required|callback_valid_captcha',
+                array(
+                    'valid_captcha' => 'El campo {field} no pudo ser validado correctamente, recargue la página e intente nuevamente.',
+                )
+            );
+            if (!$this->form_validation->run() ==  FALSE) {
+                $email = $this->input->post('email');
+                $user_data = $this->Auth_model->getUserDataByEmail($email);
+                if ($user_data) {
+                    if ($user_data->estado_id == USR_PENDING) {
+                        $this->load->model('registro/Registro_model');
+
+                        $empresa_data = $this->Auth_model->getDataEmpresa($user_data->rol_id, $user_data->id);
+
+                        $configuracion_mensaje_correo_plataforma = $this->Registro_model->getMensajeRegistro($user_data->rol_id);
+
+                        $enlace_email = base_url() . 'auth/verify_email?email=' . $user_data->email . '&code=' . $user_data->codigo_de_verificacion;
+
+                        $enlace_validacion_correo = '<a href="' . $enlace_email . '">' . $enlace_email . '</a>';
+                        $email_mensaje = $configuracion_mensaje_correo_plataforma->texto_mensaje;
+                        $email_asunto = $configuracion_mensaje_correo_plataforma->asunto_mensaje;
+                        $email_de = $configuracion_mensaje_correo_plataforma->notificador_correo;
+                        $nombre_de = $configuracion_mensaje_correo_plataforma->notificador_nombre;
+                        $email_para = $user_data->email;
+
+                        $buscar_y_reemplazar = array(
+                            array('buscar' => '{{NOMBRE_RAZON_SOCIAL}}', 'reemplazar' => $empresa_data->razon_social),
+                            array('buscar' => '{{NOMBRE_USUARIO}}', 'reemplazar' => $user_data->nombre),
+                            array('buscar' => '{{APELLIDO_USUARIO}}', 'reemplazar' => $user_data->apellido),
+                            array('buscar' => '{{ENLACE_VALIDACION_CORREO}}', 'reemplazar' => $enlace_validacion_correo)
+                        );
+
+                        for ($i = 0; $i < count($buscar_y_reemplazar); $i++) {
+                            $email_mensaje = str_replace($buscar_y_reemplazar[$i]['buscar'], $buscar_y_reemplazar[$i]['reemplazar'], $email_mensaje);
+                            $email_asunto = str_replace($buscar_y_reemplazar[$i]['buscar'], $buscar_y_reemplazar[$i]['reemplazar'], $email_asunto);
+                        }
+
+                        $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+
+                        exec('php index.php cli enviarcorreosencolados ' . $email_id);
+
+                        $mensaje_registro_gral = $this->Registro_model->getMensajeRegistroGral();
+
+                        $_SESSION['mensaje_back'] = $mensaje_registro_gral->texto_mensaje;
+                        redirect(base_url() . URI_WP . '/mensajes');
+                    } else {
+                        switch ($user_data->estado_id) {
+                            case USR_VERIFIED:
+                                // $this->session->set_flashdata('message', '<div class="alert alert-warning">Estimado usuario, su cuenta ya se encuentra verificada, debe aguardar a que nuestros administradores habiliten su cuenta</div>');
+                                // break;
+                            case USR_ENABLED:
+                                $_SESSION['mensaje_back'] = 'Estimado usuario, su cuenta ya se encuentra activada, intente iniciar sesion <a href="' . base_url() . URI_WP . '/login-ria">Login</a>.';
+                                break;
+
+                            case USR_DISABLED:
+                                $_SESSION['mensaje_back'] = 'Estimado usuario, su cuentra se encuentra deshabilitada';
+                                break;
+                        }
+                        redirect(base_url() . URI_WP . '/mensajes');
+                    }
+                } else {
+                    $_SESSION['error_message'] = 'No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.';
+                }
+            } else {
+                $_SESSION['error_message'] = validation_errors();
+            }
+        }
+        redirect(base_url() . URI_WP . '/validar-e-mail');
+        // $data['recaptcha'] = true;
+        // $data['files_js'] = array('grecaptcha.js');
+        // $data['sections_view'] = "resend_verify_email_view";
+        // $this->load->view('layout_front_view', $data);
+    }
+
+    public function change_password_by_link()
+    {
+        if (!($this->input->post('code') && $this->input->post('email'))) {
+            redirect(base_url() . URI_WP . '/login-ria');
+        }
+        $code_decoded = base64_decode($this->input->post('code'));
+        $user = $this->Auth_model->getUserDataByEmail($this->input->post('email'));
+        if ($user) {
+            if ($user->reiniciar_password_fecha == $code_decoded) {
+                $dateDB = new DateTime($user->reiniciar_password_fecha);
+                $dateNow = new DateTime(date('Y-m-d H:i:s', time()));
+                $diff = $dateNow->diff($dateDB);
+                $days =  (int)$diff->format('%a');
+                if ($days <= 2) {
+                    $this->form_validation->set_rules(
+                        'password',
+                        'Contraseña nueva',
+                        'trim|required|max_length[72]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,72}$/]',
+                        array(
+                            'required' => 'El campo {field} es obligatorio.',
+                            'max_length' => 'El campo {field}, debe tener un máximo de {param} caracteres',
+                            'regex_match' => 'La contraseña debe ser alfanumérica, mayor a 6 caracteres y debe contener al menos 1 caracter en mayúscula y al menos 1 caracter en minúscula.'
+                        )
+                    );
+
+                    $this->form_validation->set_rules(
+                        're_password',
+                        'Confirmar contraseña',
+                        'trim|required|matches[password]',
+                        array(
+                            'required' => 'El campo {field} es obligatorio.',
+                            'matches'  => 'Las contraseñas no coinciden.'
+                        )
+                    );
+                    if (!$this->form_validation->run() ==  FALSE) {
+                        $user_data['password'] = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
+                        $user_data['reiniciar_password_fecha'] = NULL;
+                        if ($user->estado_id == USR_PENDING) {
+                            $user_data['estado_id'] = USR_VERIFIED;
+                        }
+                        $this->Auth_model->updateUser($user_data, $this->input->post('email'));
+                        $this->load->model('mensajes/Mensajes_model');
+
+                        $mensaje_de_la_plataforma = $this->Mensajes_model->getMensaje('mensaje_cambio_contraseña');
+
+                        $email_mensaje = $mensaje_de_la_plataforma->texto_mensaje;
+                        $email_asunto = $mensaje_de_la_plataforma->texto_mensaje;
+                        $email_de = $mensaje_de_la_plataforma->notificador_correo;
+                        $nombre_de = $mensaje_de_la_plataforma->notificador_nombre;
+                        $email_para = $user->email;
+
+                        $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+
+                        exec('php index.php cli enviarcorreosencolados ' . $email_id);
+
+                        $_SESSION['mensaje_back'] = $mensaje_de_la_plataforma->texto_mensaje;
+                        redirect(base_url() . URI_WP . '/mensajes');
+                    } else {
+                        $_SESSION['error_message'] = validation_errors();
+                        redirect(base_url() . URI_WP . '/cambiar-contrasena?email=' . $this->input->post('email') . '&code=' . $this->input->post('code'));
+                    }
+                } else {
+                    $_SESSION['mensaje_back'] = 'El enlace expiró, intente solicitar un reinicio de contaseña nuevamente haciendo <a href="' . base_url() . URI_WP . '/recuperar-contrasena">click aquí</a>.';
+                    redirect(base_url() . URI_WP . '/mensajes');
+                }
+            }
+        }
+        redirect(base_url() . URI_WP . '/login-ria');
+        // $data['recaptcha'] = true;
+        // $data['files_js'] = array('grecaptcha.js');
+        // $data['sections_view'] = "change_password_by_link_view";
+        // $this->load->view('layout_front_view', $data);
+    }
+
+    public function verify_email()
+    {
+        if ($this->input->get('email') && $this->input->get('code')) {
+            $email = $this->input->get('email');
+            $user = $this->Auth_model->getUserDataByEmail($email);
+            if ($user && $user->codigo_de_verificacion == $this->input->get('code')) {
+                switch ($user->estado_id) {
+                    case USR_PENDING:
+                        $data_user['estado_id'] = USR_ENABLED;
+                        $this->load->model('mensajes/Mensajes_model');
+                        $this->Auth_model->updateUser($data_user, $email);
+
+                        $configuracion_mensaje_correo_plataforma = $this->Mensajes_model->getMensaje('mensaje_cuenta_verificada');
+
+                        $email_mensaje = $configuracion_mensaje_correo_plataforma->texto_mensaje;
+                        $email_asunto = $configuracion_mensaje_correo_plataforma->asunto_mensaje;
+                        $email_de = $configuracion_mensaje_correo_plataforma->notificador_correo;
+                        $nombre_de = $configuracion_mensaje_correo_plataforma->notificador_nombre;
+                        $email_para = $email;
+
+                        $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+
+                        exec('php index.php cli enviarcorreosencolados ' . $email_id);
+
+
+                        $_SESSION['mensaje_back'] = $email_mensaje;
+
+                        redirect(base_url() . URI_WP . '/mensajes');
+
+                        break;
+                        // case USR_VERIFIED:
+                        //     $this->session->set_flashdata('message','<div class="alert alert-danger">Estimado usuario, su cuenta ya se encuentra verificada, por favor aguarde a que nuestros administradores habiliten su cuenta. en caso de que hayan pasado mas de 48 horas contactese con los administradores a <a href="mailto:'.$this->email_admin_address.'">'.$this->email_admin_address.'</a>.</div>');
+                        //     break;
+                        // case USR_ENABLED:
+                        //     $this->session->set_flashdata('message','<div class="alert alert-success">Estimado usuario, su cuenta ya se encuentra habilitada, intente iniciar sesión con sus credenciales.</div>');
+                        //     break;
+                        // case USR_DISABLED:
+                        //     $this->session->set_flashdata('message','<div class="alert alert-danger">Estimado usuario, su cuenta se encuentra deshabilitada, para mas información contactese con los administradores a <a href="mailto:'.$this->email_admin_address.'">'.$this->email_admin_address.'</a>.</div>');
+                        //     break;
+                }
+                redirect(base_url() . URI_WP . '/login-ria');
+            }
+        }
+        redirect(base_url() . URI_WP . '#registrate');
+    }
+
+    // public function message()
+    // {
+    //     if (!$this->session->flashdata('message')) {
+    //         redirect(base_url() . 'auth/login');
+    //     }
+    //     $data['sections_view'] = "message_view";
+    //     $this->load->view('layout_front_view', $data);
+    // }
+
+    private function loginrules()
+    {
+        $this->form_validation->set_error_delimiters('<div class="alert text-white" style="background-color:#9D71CC;">', '</div>');
+        $this->form_validation->set_rules(
+            'email',
+            'E-Mail',
+            'trim|required|valid_email',
+            array(
+                'required' => 'El campo {field} es obligatorio.'
+            )
+        );
+
+        $this->form_validation->set_rules(
+            'password',
+            'Contraseña',
+            'trim|required|max_length[72]',
+            array(
+                'required' => 'El campo {field} es obligatorio.',
+            )
+        );
+        $this->form_validation->set_rules(
+            'g-recaptcha',
+            'Google ReCaptcha V3',
+            'required|callback_valid_captcha',
+            array(
+                'valid_captcha' => 'El campo {field} no pudo ser validado correctamente, recargue la página e intente nuevamente.',
+            )
+        );
+    }
+
+    public function valid_captcha($captcha)
+    {
+        return valid_captcha_helper($captcha);
+    }
+}

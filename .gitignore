@@ -1,0 +1,7 @@
+/application/config/config.php
+/application/config/database.php
+/application/config/custom_config.php
+/application/config/constants.php
+/index/*
+index.php
+ria.zip

@@ -1,0 +1,27 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class A_model extends CI_Model {
+    public function __construct()
+	{
+        parent::__construct();
+        $this->load->database();
+    }
+
+    public function getUltimasCincoNotificaciones($usuario_id){
+        $this->db->select('*');
+        $this->db->where('para_usuario_id',$usuario_id);
+        $this->db->order_by('fecha_alta', 'ASC');
+        return $this->db->get('notificaciones')->result();
+
+        //$this->db->get('notificaciones')->result();
+        //var_dump($this->db->last_query());die();
+    }
+
+    public function getNotificacionesMaximas(){
+        $this->db->select('notificaciones_maximas');
+        return $this->db->get('configuraciones')->row();
+    }
+}
+
+?>
