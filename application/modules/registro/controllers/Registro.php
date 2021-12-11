@@ -34,7 +34,7 @@ class Registro extends MX_Controller
                 $user_data['telefono'] = $this->input->post('phone');
                 $user_data['password'] = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
 
-                //SI es partner agrego tipo de partner que es.
+                //SI tipo de empresa es mayor o igual a rol_partner (ROL_PARTNER  = 5 los valores superiores a 5 tmb son partner, por ahora....) seteo rol_id partner.
                 if ($this->input->post('kind_of_enterprise') >= ROL_PARTNER) {
                     $user_data['rol_id'] = ROL_PARTNER;
                     $enterprise_data['tipo_de_partner_id'] = $this->input->post('kind_of_enterprise');
@@ -90,20 +90,36 @@ class Registro extends MX_Controller
 
                 $mensaje_registro_gral = $this->Registro_model->getMensajeRegistroGral();
 
-                $_SESSION['mensaje_back'] = $mensaje_registro_gral->texto_mensaje;
-                redirect(base_url() . URI_WP . '/mensajes');
+                switch (ENVIRONMENT){
+                    case 'development':
+                        $this->session->set_flashdata('message','<div class="alert alert-success">'.$mensaje_registro_gral->texto_mensaje.'</div>');
+                        redirect(base_url().'auth/message');
+                        break;
+                    case 'testing':
+                    case 'production':
+                        $_SESSION['mensaje_back'] = $mensaje_registro_gral->texto_mensaje;
+                        redirect(base_url() . URI_WP . '/mensajes');
+                        break;
+                }
+                
             } else {
-                $_SESSION['error_registro'] = validation_errors();
-                redirect(base_url() . URI_WP . '#registrate');
+                if(ENVIRONMENT !=='development'){
+                    $_SESSION['error_registro'] = validation_errors();
+                }
             }
         }
-        redirect(base_url() . URI_WP . '#registrate');
-
-        // $data['files_js'] = array('grecaptcha.js');
-        // $data['recaptcha'] = true;
-
-        // $data['sections_view'] = 'registro_view';
-        // $this->load->view('layout_front_view', $data);
+        switch (ENVIRONMENT){ //EN MODO DESARROLLO USO MI PROPIA PLANTILLA DE REGISTRO
+            case 'development':
+                $data['files_js'] = array('grecaptcha.js');
+                $data['recaptcha'] = true;
+                $data['sections_view'] = 'registro_view';
+                $this->load->view('layout_front_view', $data);
+                break;
+            case 'testing'://TANTO EN TESTING COMO EN PRODUCCION REDIRECCIONO AL FORMULARIO DE REGISTRO.
+            case 'production':
+                redirect(base_url() . URI_WP . '#registrate');
+                break;
+        }
     }
 
     protected function rulesRegistro()
