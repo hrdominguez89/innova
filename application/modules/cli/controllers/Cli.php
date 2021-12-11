@@ -67,7 +67,7 @@ class Cli extends MX_Controller
             $email_enviado['errores_de_envio'] = $resultado;
         } else {
             $email_enviado['email_estado_id'] = EMAIL_ENVIADO;
-            $email_enviado['errores_de_envio'] = NULL;
+            //$email_enviado['errores_de_envio'] = NULL;
         }
         $this->Cli_model->updateEmail($email_enviado, $email_id);
     }
