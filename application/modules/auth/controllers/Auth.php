@@ -149,6 +149,15 @@ class Auth extends MX_Controller
                 $email = $this->input->post('email');
                 $user_data = $this->Auth_model->getUserDataByEmail($email);
                 if ($user_data) {
+                    if($user_data->estado_id == USR_DISABLED){
+                        if (ENVIRONMENT != 'development') {
+                            $_SESSION['mensaje_back'] = 'No es posible solicitar un reinicio de contraseña debido a que su cuenta se encuentra deshabilitada, para mas información contactese con los administradores.';
+                            redirect(base_url() . URI_WP . '/mensajes');
+                        } else {
+                            $this->session->set_flashdata('message', '<div class="alert alert-danger">No es posible solicitar un reinicio de contraseña debido a que su cuenta se encuentra deshabilitada, para mas información contactese con los administradores.</div>');
+                            redirect(base_url() . 'auth/message');
+                        }
+                    }
                     $date = date('Y-m-d H:i:s', time());
                     $set_data_reset['reiniciar_password_fecha'] = $date;
                     $this->Auth_model->updateUser($set_data_reset, $email);
@@ -354,6 +363,15 @@ class Auth extends MX_Controller
         $code_decoded = base64_decode($this->input->get('code'));
         $user = $this->Auth_model->getUserDataByEmail($this->input->get('email'));
         if ($user) {
+            if($user->estado_id == USR_DISABLED){
+                if (ENVIRONMENT != 'development') {
+                    $_SESSION['mensaje_back'] = 'No es posible realizar un cambio de contraseña debido a que su cuenta se encuentra deshabilitada, para mas información contactese con los administradores.';
+                    redirect(base_url() . URI_WP . '/mensajes');
+                } else {
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger">No es posible realizar un cambio de contraseña debido a que su cuenta se encuentra deshabilitada, para mas información contactese con los administradores.</div>');
+                    redirect(base_url() . 'auth/message');
+                }
+            }
             if ($user->reiniciar_password_fecha == $code_decoded) {
 
                 $dateDB = new DateTime($user->reiniciar_password_fecha);
@@ -407,8 +425,8 @@ class Auth extends MX_Controller
 
                             switch (ENVIRONMENT) {
                                 case 'development':
-                                    $this->session->set_flashdata('message', '<div class="alert alert-success">'.$mensaje_de_la_plataforma->texto_mensaje.'</a>');
-                                    redirect(base_url(). 'auth/message');
+                                    $this->session->set_flashdata('message', '<div class="alert alert-success">' . $mensaje_de_la_plataforma->texto_mensaje . '</a>');
+                                    redirect(base_url() . 'auth/message');
                                     break;
                                 case 'testing':
                                 case 'production':
@@ -472,7 +490,7 @@ class Auth extends MX_Controller
         if ($this->input->get('email') && $this->input->get('code')) {
             $email = $this->input->get('email');
             $user = $this->Auth_model->getUserDataByEmail($email);
-            if ($user && $user->codigo_de_verificacion == $this->input->get('code')) {
+            if ($user && @$user->codigo_de_verificacion == $this->input->get('code')) {
                 switch ($user->estado_id) {
                     case USR_PENDING:
                         $data_user['estado_id'] = USR_ENABLED;
@@ -492,25 +510,56 @@ class Auth extends MX_Controller
                         exec('php index.php cli enviarcorreosencolados ' . $email_id);
 
 
-                        $_SESSION['mensaje_back'] = $email_mensaje;
-
-                        redirect(base_url() . URI_WP . '/mensajes');
+                        $mensaje_verificacion = $email_mensaje;
+                        $color_verificacion = 'success';
 
                         break;
-                        // case USR_VERIFIED:
-                        //     $this->session->set_flashdata('message','<div class="alert alert-danger">Estimado usuario, su cuenta ya se encuentra verificada, por favor aguarde a que nuestros administradores habiliten su cuenta. en caso de que hayan pasado mas de 48 horas contactese con los administradores a <a href="mailto:'.$this->email_admin_address.'">'.$this->email_admin_address.'</a>.</div>');
-                        //     break;
-                        // case USR_ENABLED:
-                        //     $this->session->set_flashdata('message','<div class="alert alert-success">Estimado usuario, su cuenta ya se encuentra habilitada, intente iniciar sesión con sus credenciales.</div>');
-                        //     break;
-                        // case USR_DISABLED:
-                        //     $this->session->set_flashdata('message','<div class="alert alert-danger">Estimado usuario, su cuenta se encuentra deshabilitada, para mas información contactese con los administradores a <a href="mailto:'.$this->email_admin_address.'">'.$this->email_admin_address.'</a>.</div>');
-                        //     break;
+                    case USR_VERIFIED:
+                    case USR_ENABLED:
+                        $mensaje_verificacion = 'Estimado usuario, su cuenta ya se encuentra habilitada, intente iniciar sesión con sus credenciales.';
+                        $color_verificacion = 'success';
+                        break;
+                    case USR_DISABLED:
+                        $mensaje_verificacion = 'Estimado usuario, su cuenta se encuentra deshabilitada, para mas información contactese con los administradores.';
+                        $color_verificacion = 'danger';
+                        break;
                 }
-                redirect(base_url() . URI_WP . '/login-ria');
+                switch (ENVIRONMENT) {
+                    case 'development':
+                        $this->session->set_flashdata('message', '<div class="alert alert-' . $color_verificacion . '">' . $mensaje_verificacion . '</div>');
+                        redirect(base_url() . 'auth/message');
+                        break;
+                    case 'testing':
+                    case 'production':
+                        $_SESSION['mensaje_back'] = $mensaje_verificacion;
+                        redirect(base_url() . URI_WP . '/mensajes');
+                        break;
+                }
+            } else {
+                $mensaje_verificacion = 'La cuenta de correo no es valida, o el código de verificación es incorrecto, verifique que el enlace este correctamente. Si el problema persiste contactese con nosotros.';
+                $color_verificacion = 'danger';
+                switch (ENVIRONMENT) {
+                    case 'development':
+                        $this->session->set_flashdata('message', '<div class="alert alert-' . $color_verificacion . '">' . $mensaje_verificacion . '</div>');
+                        redirect(base_url() . 'auth/message');
+                        break;
+                    case 'testing':
+                    case 'production':
+                        $_SESSION['mensaje_back'] = $mensaje_verificacion;
+                        redirect(base_url() . URI_WP . '/mensajes');
+                        break;
+                }
             }
         }
-        redirect(base_url() . URI_WP . '#registrate');
+        switch (ENVIRONMENT) {
+            case 'development':
+                redirect(base_url() . 'registro');
+                break;
+            case 'testing':
+            case 'production':
+                redirect(base_url() . URI_WP . '#registrate');
+                break;
+        }
     }
 
     public function message()
