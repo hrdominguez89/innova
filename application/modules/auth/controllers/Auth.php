@@ -24,7 +24,15 @@ class Auth extends MX_Controller
 
     public function index()
     {
-        redirect(base_url() . URI_WP);
+        switch (ENVIRONMENT) {
+            case 'development':
+                redirect(base_url('auth/login'));
+                break;
+            case 'testing':
+            case 'production':
+                redirect(base_url() . URI_WP);
+                break;
+        }
     }
 
     public function login()
@@ -34,50 +42,87 @@ class Auth extends MX_Controller
         }
         if ($this->input->post()) {
             $this->loginrules();
-            if (!$this->form_validation->run() == FALSE) {
+
+            if ($this->form_validation->run() != FALSE) {
                 $email = $this->input->post('email');
                 $pw_post = $this->input->post('password');
                 $user_data = $this->Auth_model->getUserDataByEmail($email);
                 if ($user_data && password_verify($pw_post, @$user_data->password)) {
-                    if ($user_data->reiniciar_password_fecha != NULL) {
+                    if ($user_data->reiniciar_password_fecha != NULL) { //si habia un pedido de reinicio de contraseña pero el usuario se acordo la password seteo a null el pedido de reinicio de password
                         $user_update['reiniciar_password_fecha'] = NULL;
                         $this->Auth_model->updateUser($user_update, $email);
                     }
+
+                    if(ENVIRONMENT == 'development'){
+                        $enlace_para_validar_email = base_url() .'auth/resend_verify_email';
+                    }else{
+                        $enlace_para_validar_email = base_url() . URI_WP.'/validar-e-mail';
+                    }
+
                     switch ($user_data->estado_id) {
                         case USR_PENDING:
-                            $_SESSION['mensaje_back'] = 'Su E-mail, se encuentra pendiente de validación. Por favor revise su correo inclusive la casilla de spam/correo no deseado. Si necesita que se reenvie el e-mail de verificación, haga <a href="' . base_url() . URI_WP . '/validar-e-mail">click aquí</a>.';
+                            $mensaje_status_login = 'Su E-mail, se encuentra pendiente de validación. Por favor revise su correo inclusive la casilla de spam/correo no deseado. Si necesita que se reenvie el e-mail de verificación, haga <a href="' . $enlace_para_validar_email . '">click aquí</a>.';
                             break;
                         case USR_VERIFIED:
-                            // $data['error_message'] = 'Su cuenta se encuentra a la espera de aprobación de nuestros administradores.';
-                            // break;
                         case USR_ENABLED:
                             $this->session->set_userdata('user_data', $user_data);
                             redirect(base_url() . 'home');
                             break;
                         case USR_DISABLED:
-                            $_SESSION['mensaje_back'] = 'Su cuenta se encuentra Deshabilitada.';
+                            $mensaje_status_login = 'Su cuenta se encuentra Deshabilitada.';
                             break;
                     }
-                    redirect(base_url() . URI_WP . '/mensajes');
+
+                    switch (ENVIRONMENT) {
+                        case 'development':
+                            $this->session->set_flashdata('message', '<div class="alert alert-warning">'.$mensaje_status_login.'</div>');
+                            redirect(base_url('auth/message'));
+                            break;
+                        case 'testing':
+                        case 'production':
+                            $_SESSION['mensaje_back'] = $mensaje_status_login;
+                            redirect(base_url() . URI_WP . '/mensajes');
+                            break;
+                    }
                 } else {
-                    $_SESSION['error_login'] = '<div class="alert text-white" style="background-color:#9D71CC;">Usuario y/o Password incorrecto.</div>';
+                    if (ENVIRONMENT != 'development') {
+                        $_SESSION['error_login'] = '<div class="alert text-white" style="background-color:#9D71CC;">Usuario y/o Password incorrecto.</div>';
+                    } else {
+                        $data['error_message'] = 'Usuario y/o Password incorrecto.';
+                    }
                 }
             } else {
-                $_SESSION['error_login'] = validation_errors();
+                if (ENVIRONMENT != 'development') {
+                    $_SESSION['error_login'] = validation_errors();
+                }
             }
-            redirect(base_url() . URI_WP . '/login-ria');
         }
-        // redirect(base_url() . URI_WP . '/login-ria');
-        $data['files_js'] = array('grecaptcha.js');
-        $data['recaptcha'] = true;
-        $data['sections_view'] = "login_form_view";
-        $this->load->view('layout_front_view', $data);
+        switch (ENVIRONMENT) {
+            case 'development':
+                $data['files_js'] = array('grecaptcha.js');
+                $data['recaptcha'] = true;
+                $data['sections_view'] = "login_form_view";
+                $this->load->view('layout_front_view', $data);
+                break;
+            case 'testing':
+            case 'production':
+                redirect(base_url() . URI_WP . '/login-ria');
+                break;
+        }
     }
 
     public function logout()
     {
         $this->session->sess_destroy();
-        redirect(base_url() . URI_WP . '/login-ria');
+        switch (ENVIRONMENT) {
+            case 'development':
+                redirect(base_url('auth/login'));
+                break;
+            case 'testing':
+            case 'production':
+                redirect(base_url() . URI_WP . '/login-ria');
+                break;
+        }
     }
 
     public function reset_password()
@@ -361,14 +406,17 @@ class Auth extends MX_Controller
         redirect(base_url() . URI_WP . '#registrate');
     }
 
-    // public function message()
-    // {
-    //     if (!$this->session->flashdata('message')) {
-    //         redirect(base_url() . 'auth/login');
-    //     }
-    //     $data['sections_view'] = "message_view";
-    //     $this->load->view('layout_front_view', $data);
-    // }
+    public function message()
+    {
+        if (ENVIRONMENT != 'development') {
+            redirect(base_url() . URI_WP);
+        }
+        if (!$this->session->flashdata('message')) {
+            redirect(base_url() . 'auth/login');
+        }
+        $data['sections_view'] = "message_view";
+        $this->load->view('layout_front_view', $data);
+    }
 
     private function loginrules()
     {
