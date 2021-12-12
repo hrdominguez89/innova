@@ -21,10 +21,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="container-xl text-center align-self-center">
                 <div class="text-left mx-auto my-5">
                     
-                    <form form method="POST" action="<?php echo base_url().'auth/change_password_by_link?email='.$this->input->get('email').'&code='.$this->input->get('code');?>">
-                        <input type="hidden" value="<?php echo $this->input->get('email')!= NULL? $this->input->get('email'):set_value('email');?>" name="email">
-                        <input type="hidden" value="<?php echo $this->input->get('code')!= NULL? $this->input->get('code'):set_value('code');?>" name="code">
-
+                    <form form method="POST" action="<?php echo base_url().'auth/change_password_by_link?email='.@$this->input->get('email').'&code='.@$this->input->get('code');?>">
                         <div class="card card-login">
 
                             <div class="card-header card-header-primary text-center">

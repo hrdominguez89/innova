@@ -156,7 +156,7 @@ class Auth extends MX_Controller
                     $this->load->model('mensajes/Mensajes_model');
 
                     $configuracion_mensaje_correo_plataforma = $this->Mensajes_model->getMensaje('mensaje_olvide_contraseña');
-                    if (ENVIRONMENT != '') {
+                    if (ENVIRONMENT != 'development') {
                         $enlace = base_url() . URI_WP . '/cambiar-contrasena?email=' . $email . '&code=' . base64_encode($date);
                     } else {
                         $enlace = base_url() . 'auth/change_password_by_link?email=' . $email . '&code=' . base64_encode($date);
@@ -307,7 +307,7 @@ class Auth extends MX_Controller
                             $_SESSION['mensaje_back'] = $mensaje_estado;
                             redirect(base_url() . URI_WP . '/mensajes');
                         } else {
-                            $this->session->set_flashdata('message', '<div class="alert alert-' . $alert_color . '">'.$mensaje_estado.'</div>');
+                            $this->session->set_flashdata('message', '<div class="alert alert-' . $alert_color . '">' . $mensaje_estado . '</div>');
                             redirect(base_url() . 'auth/message');
                         }
                     }
@@ -340,76 +340,131 @@ class Auth extends MX_Controller
 
     public function change_password_by_link()
     {
-        if (!($this->input->post('code') && $this->input->post('email'))) {
-            redirect(base_url() . URI_WP . '/login-ria');
+        if (!($this->input->get('code') && $this->input->get('email'))) {
+            switch (ENVIRONMENT) {
+                case 'development':
+                    redirect(base_url() . 'auth/login');
+                    break;
+                case 'testing':
+                case 'production':
+                    redirect(base_url() . URI_WP . '/login-ria');
+                    break;
+            }
         }
-        $code_decoded = base64_decode($this->input->post('code'));
-        $user = $this->Auth_model->getUserDataByEmail($this->input->post('email'));
+        $code_decoded = base64_decode($this->input->get('code'));
+        $user = $this->Auth_model->getUserDataByEmail($this->input->get('email'));
         if ($user) {
             if ($user->reiniciar_password_fecha == $code_decoded) {
+
                 $dateDB = new DateTime($user->reiniciar_password_fecha);
                 $dateNow = new DateTime(date('Y-m-d H:i:s', time()));
                 $diff = $dateNow->diff($dateDB);
                 $days =  (int)$diff->format('%a');
                 if ($days <= 2) {
-                    $this->form_validation->set_rules(
-                        'password',
-                        'Contraseña nueva',
-                        'trim|required|max_length[72]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,72}$/]',
-                        array(
-                            'required' => 'El campo {field} es obligatorio.',
-                            'max_length' => 'El campo {field}, debe tener un máximo de {param} caracteres',
-                            'regex_match' => 'La contraseña debe ser alfanumérica, mayor a 6 caracteres y debe contener al menos 1 caracter en mayúscula y al menos 1 caracter en minúscula.'
-                        )
-                    );
+                    if ($this->input->post()) {
+                        $this->form_validation->set_error_delimiters('<div class="alert text-white" style="background-color:#9D71CC;">', '</div>');
 
-                    $this->form_validation->set_rules(
-                        're_password',
-                        'Confirmar contraseña',
-                        'trim|required|matches[password]',
-                        array(
-                            'required' => 'El campo {field} es obligatorio.',
-                            'matches'  => 'Las contraseñas no coinciden.'
-                        )
-                    );
-                    if (!$this->form_validation->run() ==  FALSE) {
-                        $user_data['password'] = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
-                        $user_data['reiniciar_password_fecha'] = NULL;
-                        if ($user->estado_id == USR_PENDING) {
-                            $user_data['estado_id'] = USR_VERIFIED;
+                        $this->form_validation->set_rules(
+                            'password',
+                            'Contraseña nueva',
+                            'trim|required|max_length[72]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,72}$/]',
+                            array(
+                                'required' => 'El campo {field} es obligatorio.',
+                                'max_length' => 'El campo {field}, debe tener un máximo de {param} caracteres',
+                                'regex_match' => 'La contraseña debe ser alfanumérica, mayor a 6 caracteres y debe contener al menos 1 caracter en mayúscula y al menos 1 caracter en minúscula.'
+                            )
+                        );
+
+                        $this->form_validation->set_rules(
+                            're_password',
+                            'Confirmar contraseña',
+                            'trim|required|matches[password]',
+                            array(
+                                'required' => 'El campo {field} es obligatorio.',
+                                'matches'  => 'Las contraseñas no coinciden.'
+                            )
+                        );
+                        if ($this->form_validation->run() !=  FALSE) {
+                            $user_data['password'] = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
+                            $user_data['reiniciar_password_fecha'] = NULL;
+                            if ($user->estado_id == USR_PENDING || $user->estado_id == USR_VERIFIED) {
+                                $user_data['estado_id'] = USR_ENABLED;
+                            }
+                            $this->Auth_model->updateUser($user_data, $this->input->post('email'));
+                            $this->load->model('mensajes/Mensajes_model');
+
+                            $mensaje_de_la_plataforma = $this->Mensajes_model->getMensaje('mensaje_cambio_contraseña');
+
+                            $email_mensaje = $mensaje_de_la_plataforma->texto_mensaje;
+                            $email_asunto = $mensaje_de_la_plataforma->texto_mensaje;
+                            $email_de = $mensaje_de_la_plataforma->notificador_correo;
+                            $nombre_de = $mensaje_de_la_plataforma->notificador_nombre;
+                            $email_para = $user->email;
+
+                            $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+
+                            exec('php index.php cli enviarcorreosencolados ' . $email_id);
+
+                            switch (ENVIRONMENT) {
+                                case 'development':
+                                    $this->session->set_flashdata('message', '<div class="alert alert-success">'.$mensaje_de_la_plataforma->texto_mensaje.'</a>');
+                                    redirect(base_url(). 'auth/message');
+                                    break;
+                                case 'testing':
+                                case 'production':
+                                    $_SESSION['mensaje_back'] = $mensaje_de_la_plataforma->texto_mensaje;
+                                    redirect(base_url() . URI_WP . '/mensajes');
+                                    break;
+                            }
+                        } else {
+                            if (ENVIRONMENT != 'development') {
+                                $_SESSION['error_message'] = validation_errors();
+                                redirect(base_url() . URI_WP . '/cambiar-contrasena?email=' . $this->input->get('email') . '&code=' . $this->input->get('code'));
+                            }
                         }
-                        $this->Auth_model->updateUser($user_data, $this->input->post('email'));
-                        $this->load->model('mensajes/Mensajes_model');
-
-                        $mensaje_de_la_plataforma = $this->Mensajes_model->getMensaje('mensaje_cambio_contraseña');
-
-                        $email_mensaje = $mensaje_de_la_plataforma->texto_mensaje;
-                        $email_asunto = $mensaje_de_la_plataforma->texto_mensaje;
-                        $email_de = $mensaje_de_la_plataforma->notificador_correo;
-                        $nombre_de = $mensaje_de_la_plataforma->notificador_nombre;
-                        $email_para = $user->email;
-
-                        $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
-
-                        exec('php index.php cli enviarcorreosencolados ' . $email_id);
-
-                        $_SESSION['mensaje_back'] = $mensaje_de_la_plataforma->texto_mensaje;
-                        redirect(base_url() . URI_WP . '/mensajes');
-                    } else {
-                        $_SESSION['error_message'] = validation_errors();
-                        redirect(base_url() . URI_WP . '/cambiar-contrasena?email=' . $this->input->post('email') . '&code=' . $this->input->post('code'));
                     }
                 } else {
                     $_SESSION['mensaje_back'] = 'El enlace expiró, intente solicitar un reinicio de contaseña nuevamente haciendo <a href="' . base_url() . URI_WP . '/recuperar-contrasena">click aquí</a>.';
                     redirect(base_url() . URI_WP . '/mensajes');
                 }
+            } else {
+                switch (ENVIRONMENT) {
+                    case 'development':
+                        $this->session->set_flashdata('message', '<div class="alert alert-danger">Código de validación incorrecto.</a>');
+                        redirect(base_url() . 'auth/message');
+                        break;
+                    case 'testing':
+                    case 'production':
+                        $_SESSION['mensaje_back'] = 'Código de validación incorrecto.';
+                        redirect(base_url() . URI_WP . '/mensajes');
+                        break;
+                }
+            }
+        } else {
+            switch (ENVIRONMENT) {
+                case 'development':
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger">El usuario indicado no existe.</a>');
+                    redirect(base_url() . 'auth/message');
+                    break;
+                case 'testing':
+                case 'production':
+                    $_SESSION['mensaje_back'] = 'El usuario indicado no existe.';
+                    redirect(base_url() . URI_WP . '/mensajes');
+                    break;
             }
         }
-        redirect(base_url() . URI_WP . '/login-ria');
-        // $data['recaptcha'] = true;
-        // $data['files_js'] = array('grecaptcha.js');
-        // $data['sections_view'] = "change_password_by_link_view";
-        // $this->load->view('layout_front_view', $data);
+        switch (ENVIRONMENT) {
+            case 'development':
+                $data['recaptcha'] = true;
+                $data['files_js'] = array('grecaptcha.js');
+                $data['sections_view'] = "change_password_by_link_view";
+                $this->load->view('layout_front_view', $data);
+                break;
+            case 'testing':
+            case 'production':
+                redirect(base_url() . URI_WP . '/cambiar-contrasena?email=' . $this->input->get('email') . '&code=' . $this->input->get('code'));
+                break;
+        }
     }
 
     public function verify_email()
