@@ -156,10 +156,10 @@ class Auth extends MX_Controller
                     $this->load->model('mensajes/Mensajes_model');
 
                     $configuracion_mensaje_correo_plataforma = $this->Mensajes_model->getMensaje('mensaje_olvide_contraseña');
-                    if(ENVIRONMENT != ''){
+                    if (ENVIRONMENT != '') {
                         $enlace = base_url() . URI_WP . '/cambiar-contrasena?email=' . $email . '&code=' . base64_encode($date);
-                    }else{
-                        $enlace = base_url().'auth/change_password_by_link?email=' . $email . '&code=' . base64_encode($date);
+                    } else {
+                        $enlace = base_url() . 'auth/change_password_by_link?email=' . $email . '&code=' . base64_encode($date);
                     }
 
 
@@ -186,22 +186,22 @@ class Auth extends MX_Controller
 
                     exec('php index.php cli enviarcorreosencolados ' . $email_id);
 
-                    if(ENVIRONMENT !='development'){
+                    if (ENVIRONMENT != 'development') {
                         $_SESSION['mensaje_back'] = 'Se envió un correo a la cuenta ' . $email . ', con un enlace temporal, dispone de 48 horas para poder cambiar la contraseña.';
                         redirect(base_url() . URI_WP . '/mensajes');
-                    }else{
+                    } else {
                         $this->session->set_flashdata('message', '<div class="alert alert-warning">Se envió un correo a la cuenta ' . $email . ', con un enlace temporal, dispone de 48 horas para poder cambiar la contraseña.</div>');
-                        redirect(base_url().'auth/message');
+                        redirect(base_url() . 'auth/message');
                     }
                 } else {
-                    if(ENVIRONMENT != 'development'){
+                    if (ENVIRONMENT != 'development') {
                         $_SESSION['error_message'] = '<div class="alert text-white" style="background-color:#9D71CC;">No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.</div>';
-                    }else{
+                    } else {
                         $data['error_message'] = '<div class="alert text-white" style="background-color:#9D71CC;">No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.</div>';
                     }
                 }
             } else {
-                if(ENVIRONMENT != 'development'){
+                if (ENVIRONMENT != 'development') {
                     $_SESSION['error_message'] = validation_errors();
                 }
             }
@@ -223,6 +223,7 @@ class Auth extends MX_Controller
     public function resend_verify_email()
     {
         if ($this->input->post()) {
+            $this->form_validation->set_error_delimiters('<div class="alert text-white" style="background-color:#9D71CC;">', '</div>');
             $this->form_validation->set_rules(
                 'email',
                 'E-Mail',
@@ -277,35 +278,64 @@ class Auth extends MX_Controller
 
                         $mensaje_registro_gral = $this->Registro_model->getMensajeRegistroGral();
 
-                        $_SESSION['mensaje_back'] = $mensaje_registro_gral->texto_mensaje;
-                        redirect(base_url() . URI_WP . '/mensajes');
+                        if (ENVIRONMENT != 'development') {
+                            $_SESSION['mensaje_back'] = $mensaje_registro_gral->texto_mensaje;
+                            redirect(base_url() . URI_WP . '/mensajes');
+                        } else {
+                            $this->session->set_flashdata('message', '<div class="alert alert-success">' . $mensaje_registro_gral->texto_mensaje . '</div>');
+                            redirect(base_url() . 'auth/message');
+                        }
                     } else {
+                        if (ENVIRONMENT != 'development') {
+                            $enlace_login = base_url('') . URI_WP . '/login-ria';
+                        } else {
+                            $enlace_login = base_url() . 'auth/login';
+                        }
                         switch ($user_data->estado_id) {
                             case USR_VERIFIED:
-                                // $this->session->set_flashdata('message', '<div class="alert alert-warning">Estimado usuario, su cuenta ya se encuentra verificada, debe aguardar a que nuestros administradores habiliten su cuenta</div>');
-                                // break;
                             case USR_ENABLED:
-                                $_SESSION['mensaje_back'] = 'Estimado usuario, su cuenta ya se encuentra activada, intente iniciar sesion <a href="' . base_url() . URI_WP . '/login-ria">Login</a>.';
+                                $mensaje_estado = 'Estimado usuario, su cuenta ya se encuentra activada, intente iniciar sesion <a href="' . $enlace_login . '">Login</a>.';
+                                $alert_color = 'success';
                                 break;
 
                             case USR_DISABLED:
-                                $_SESSION['mensaje_back'] = 'Estimado usuario, su cuentra se encuentra deshabilitada';
+                                $mensaje_estado = 'Estimado usuario, su cuentra se encuentra deshabilitada';
+                                $alert_color = 'danger';
                                 break;
                         }
-                        redirect(base_url() . URI_WP . '/mensajes');
+                        if (ENVIRONMENT != 'development') {
+                            $_SESSION['mensaje_back'] = $mensaje_estado;
+                            redirect(base_url() . URI_WP . '/mensajes');
+                        } else {
+                            $this->session->set_flashdata('message', '<div class="alert alert-' . $alert_color . '">'.$mensaje_estado.'</div>');
+                            redirect(base_url() . 'auth/message');
+                        }
                     }
                 } else {
-                    $_SESSION['error_message'] = 'No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.';
+                    if (ENVIRONMENT != 'development') {
+                        $_SESSION['error_message'] = 'No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.';
+                    } else {
+                        $data['error_message'] = 'No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.';
+                    }
                 }
             } else {
-                $_SESSION['error_message'] = validation_errors();
+                if (ENVIRONMENT != 'development') {
+                    $_SESSION['error_message'] = validation_errors();
+                }
             }
         }
-        redirect(base_url() . URI_WP . '/validar-e-mail');
-        // $data['recaptcha'] = true;
-        // $data['files_js'] = array('grecaptcha.js');
-        // $data['sections_view'] = "resend_verify_email_view";
-        // $this->load->view('layout_front_view', $data);
+        switch (ENVIRONMENT) {
+            case 'development':
+                $data['recaptcha'] = true;
+                $data['files_js'] = array('grecaptcha.js');
+                $data['sections_view'] = "resend_verify_email_view";
+                $this->load->view('layout_front_view', $data);
+                break;
+            case 'testing':
+            case 'production':
+                redirect(base_url() . URI_WP . '/validar-e-mail');
+                break;
+        }
     }
 
     public function change_password_by_link()
