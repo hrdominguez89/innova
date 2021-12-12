@@ -53,10 +53,10 @@ class Auth extends MX_Controller
                         $this->Auth_model->updateUser($user_update, $email);
                     }
 
-                    if(ENVIRONMENT == 'development'){
-                        $enlace_para_validar_email = base_url() .'auth/resend_verify_email';
-                    }else{
-                        $enlace_para_validar_email = base_url() . URI_WP.'/validar-e-mail';
+                    if (ENVIRONMENT == 'development') {
+                        $enlace_para_validar_email = base_url() . 'auth/resend_verify_email';
+                    } else {
+                        $enlace_para_validar_email = base_url() . URI_WP . '/validar-e-mail';
                     }
 
                     switch ($user_data->estado_id) {
@@ -75,7 +75,7 @@ class Auth extends MX_Controller
 
                     switch (ENVIRONMENT) {
                         case 'development':
-                            $this->session->set_flashdata('message', '<div class="alert alert-warning">'.$mensaje_status_login.'</div>');
+                            $this->session->set_flashdata('message', '<div class="alert alert-warning">' . $mensaje_status_login . '</div>');
                             redirect(base_url('auth/message'));
                             break;
                         case 'testing':
@@ -156,8 +156,12 @@ class Auth extends MX_Controller
                     $this->load->model('mensajes/Mensajes_model');
 
                     $configuracion_mensaje_correo_plataforma = $this->Mensajes_model->getMensaje('mensaje_olvide_contraseña');
+                    if(ENVIRONMENT != ''){
+                        $enlace = base_url() . URI_WP . '/cambiar-contrasena?email=' . $email . '&code=' . base64_encode($date);
+                    }else{
+                        $enlace = base_url().'auth/change_password_by_link?email=' . $email . '&code=' . base64_encode($date);
+                    }
 
-                    $enlace = base_url() . URI_WP . '/cambiar-contrasena?email=' . $email . '&code=' . base64_encode($date);
 
                     $enlace_reinicio_password = '<a href="' . $enlace . '">' . $enlace . '</a>';
 
@@ -182,20 +186,38 @@ class Auth extends MX_Controller
 
                     exec('php index.php cli enviarcorreosencolados ' . $email_id);
 
-                    $_SESSION['mensaje_back'] = 'Se envió un correo a la cuenta ' . $email . ', con un enlace temporal, dispone de 48 horas para poder cambiar la contraseña.';
-                    redirect(base_url() . URI_WP . '/mensajes');
+                    if(ENVIRONMENT !='development'){
+                        $_SESSION['mensaje_back'] = 'Se envió un correo a la cuenta ' . $email . ', con un enlace temporal, dispone de 48 horas para poder cambiar la contraseña.';
+                        redirect(base_url() . URI_WP . '/mensajes');
+                    }else{
+                        $this->session->set_flashdata('message', '<div class="alert alert-warning">Se envió un correo a la cuenta ' . $email . ', con un enlace temporal, dispone de 48 horas para poder cambiar la contraseña.</div>');
+                        redirect(base_url().'auth/message');
+                    }
                 } else {
-                    $_SESSION['error_message'] = '<div class="alert text-white" style="background-color:#9D71CC;">No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.</div>';
+                    if(ENVIRONMENT != 'development'){
+                        $_SESSION['error_message'] = '<div class="alert text-white" style="background-color:#9D71CC;">No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.</div>';
+                    }else{
+                        $data['error_message'] = '<div class="alert text-white" style="background-color:#9D71CC;">No se encuentra registrada ninguna cuenta con este email. Verifique que este bien escrito.</div>';
+                    }
                 }
             } else {
-                $_SESSION['error_message'] = validation_errors();
+                if(ENVIRONMENT != 'development'){
+                    $_SESSION['error_message'] = validation_errors();
+                }
             }
         }
-        redirect(base_url() . URI_WP . '/recuperar-contrasena');
-        // $data['recaptcha'] = true;
-        // $data['files_js'] = array('grecaptcha.js');
-        // $data['sections_view'] = "reset_password_view";
-        // $this->load->view('layout_front_view', $data);
+        switch (ENVIRONMENT) {
+            case 'development':
+                $data['recaptcha'] = true;
+                $data['files_js'] = array('grecaptcha.js');
+                $data['sections_view'] = "reset_password_view";
+                $this->load->view('layout_front_view', $data);
+                break;
+            case 'testing':
+            case 'production':
+                redirect(base_url() . URI_WP . '/recuperar-contrasena');
+                break;
+        }
     }
 
     public function resend_verify_email()
