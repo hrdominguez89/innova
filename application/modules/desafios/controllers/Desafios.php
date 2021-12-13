@@ -119,21 +119,21 @@ class Desafios extends MX_Controller
                 //creo notificacion para administradores
                 $this->crearNotificacion($mensaje_de_plataforma_a_administradores, FALSE, $this->session->userdata('user_data'), $buscar_y_reemplazar);
 
-                
+
                 $mensaje_de_plataforma_a_empresa = $this->Mensajes_model->getMensaje('mensaje_nuevo_postulado_a_empresas');
 
                 switch ($mensaje_de_plataforma_a_empresa->tipo_de_envio_id) {
                     case ENVIO_NOTIFICACION:
                         $mensaje_de_notificacion = $this->Mensajes_model->getMensaje('mensaje_nueva_notificacion');
-                        $this->crearNotificacion($mensaje_de_plataforma_a_empresa, $desafio_data, $this->session->userdata('user_data'),$buscar_y_reemplazar);
-                        $this->crearEmail($mensaje_de_notificacion, $desafio_data,$buscar_y_reemplazar);
+                        $this->crearNotificacion($mensaje_de_plataforma_a_empresa, $desafio_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
+                        $this->crearEmail($mensaje_de_notificacion, $desafio_data, $buscar_y_reemplazar);
                         break;
                     case ENVIO_EMAIL:
-                        $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data,$buscar_y_reemplazar);
+                        $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data, $buscar_y_reemplazar);
                         break;
                     case ENVIO_NOTIF_EMAIL:
-                        $this->crearNotificacion($mensaje_de_plataforma_a_empresa, $desafio_data, $this->session->userdata('user_data'),$buscar_y_reemplazar);
-                        $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data,$buscar_y_reemplazar);
+                        $this->crearNotificacion($mensaje_de_plataforma_a_empresa, $desafio_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
+                        $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data, $buscar_y_reemplazar);
                         break;
                 }
 
@@ -169,14 +169,14 @@ class Desafios extends MX_Controller
                 $desafio['nombre_del_desafio'] = $this->input->post('nombre_del_desafio');
                 $desafio['descripcion_del_desafio'] = $this->input->post('descripcion_del_desafio');
                 $desafio['requisitos_del_desafio'] = $this->input->post('requisitos_del_desafio');
-                $desafio['estado_id'] = DESAF_FINALIZADO;
+                $desafio['estado_id'] = DESAF_VIGENTE;
 
                 //SI SOY ADMIN PLATAFORMA PUEDO CREAR DESAFIOS PARA LAS EMPRESAS.{{NO DESARROLLADO}}
-                if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
-                    $desafio['usuario_empresa_id'] = $this->input->post('usuario_empresa_id');
-                } else {
-                    $desafio['usuario_empresa_id'] = $this->session->userdata('user_data')->id;
-                }
+                // if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
+                //     $desafio['usuario_empresa_id'] = $this->input->post('usuario_empresa_id');
+                // } else {
+                //     $desafio['usuario_empresa_id'] = $this->session->userdata('user_data')->id;
+                // }
 
                 $desafio['usuario_id_alta'] = $this->session->userdata('user_data')->id;
                 $desafio['fecha_alta'] = date('Y-m-d H:i:s', time());
@@ -193,8 +193,8 @@ class Desafios extends MX_Controller
                         array('buscar' => '{{APELLIDO_CONTACTO}}', 'reemplazar' => $this->session->userdata('user_data')->apellido),
                         array('buscar' => '{{NOMBRE_RAZON_SOCIAL}}', 'reemplazar' => $data_empresa->razon_social),
                         array('buscar' => '{{NOMBRE_DESAFIO}}', 'reemplazar' => $desafio['nombre_del_desafio']),
-                        array('buscar' => '{{FECHA_INICIO_POSTULACION}}', 'reemplazar' => date('d-m-Y',strtotime($desafio['fecha_inicio_de_postulacion']))),
-                        array('buscar' => '{{FECHA_DE_FINALIZACION}}', 'reemplazar' => date('d-m-Y',strtotime($desafio['fecha_fin_de_postulacion'])))
+                        array('buscar' => '{{FECHA_INICIO_POSTULACION}}', 'reemplazar' => date('d-m-Y', strtotime($desafio['fecha_inicio_de_postulacion']))),
+                        array('buscar' => '{{FECHA_DE_FINALIZACION}}', 'reemplazar' => date('d-m-Y', strtotime($desafio['fecha_fin_de_postulacion'])))
                     );
                     $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_nuevo_desafio');
 
@@ -215,23 +215,23 @@ class Desafios extends MX_Controller
         $this->form_validation->set_rules(
             'inicio_del_desafio',
             'Inicio del desafío',
-            'required',
+            'required|callback_verificar_fecha_inicio',
             array(
-                'required' => 'El campo {field} es obligatorio.'
+                'required' => 'El campo {field} es obligatorio.',
             )
         );
         $this->form_validation->set_rules(
             'fin_del_desafio',
             'Fin del desafío',
-            'required',
+            'required|callback_verificar_fecha_fin_postulacion[' . $this->input->post('inicio_del_desafio') . ']',
             array(
-                'required' => 'El campo {field} es obligatorio.'
+                'required' => 'El campo {field} es obligatorio.',
             )
         );
         $this->form_validation->set_rules(
             'nombre_del_desafio',
             'Nombre del desafio',
-            'trim|required|max_length[200]',
+            'trim|required|max_length[1000]',
             array(
                 'required' => 'El campo {field} es obligatorio.'
             )
@@ -239,7 +239,7 @@ class Desafios extends MX_Controller
         $this->form_validation->set_rules(
             'descripcion_del_desafio',
             'Descripcion',
-            'trim|required|max_length[2500]',
+            'trim|required|max_length[5000]',
             array(
                 'required' => 'El campo {field} es obligatorio.'
             )
@@ -247,7 +247,7 @@ class Desafios extends MX_Controller
         $this->form_validation->set_rules(
             'requisitos_del_desafio',
             'Requisitos del desafío',
-            'trim|max_length[2500]',
+            'trim|max_length[5000]',
         );
         $this->form_validation->set_rules(
             'categorias[]',
@@ -264,8 +264,7 @@ class Desafios extends MX_Controller
         if ($this->validarAcceso()) {
             $user_id = $this->session->userdata('user_data')->id;
             $estado_desafio = $this->input->post('estadoDesafio');
-            $fecha_actual =  strval(date('Y-m-d', time()));
-            echo json_encode($this->Desafios_model->getDesafiosByUserId($user_id, $estado_desafio, $fecha_actual));
+            echo json_encode($this->Desafios_model->getDesafiosByUserId($user_id, $estado_desafio));
         }
     }
 
@@ -306,29 +305,40 @@ class Desafios extends MX_Controller
     {
         if ($this->validarAcceso()) {
             $desafio_id = $this->input->post('editar_desafio_id');
-
-            $desafio['fecha_inicio_de_postulacion'] = $this->input->post('inicio_del_desafio');
-            $desafio['fecha_fin_de_postulacion'] = $this->input->post('fin_del_desafio');
-            $desafio['nombre_del_desafio'] = $this->input->post('nombre_del_desafio');
-            $desafio['descripcion_del_desafio'] = $this->input->post('descripcion_del_desafio');
-            $desafio['requisitos_del_desafio'] = $this->input->post('requisitos_del_desafio');
-
+            $desafio_data = $this->Desafios_model->getDesafioById($desafio_id);
             //SI SOY ADMIN PLATAFORMA PUEDO CREAR DESAFIOS PARA LAS EMPRESAS. {{NO DESARROLLADO}}
             if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
-                $desafio['usuario_empresa_id'] = $this->input->post('usuario_empresa_id');
+                $this->rulesEditarDesafio($desafio_data, true);
             } else {
-                $desafio['usuario_empresa_id'] = $this->session->userdata('user_data')->id;
+                $this->rulesEditarDesafio($desafio_data);
             }
-
-            $desafio['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
-            $desafio['fecha_modifico'] = date('Y-m-d H:i:s', time());
-
-            $categorias = $this->input->post('categorias');
-            $this->Desafios_model->eliminarCategoriaByDesafioId($desafio_id);
-            if ($this->Desafios_model->editarDesafio($desafio, $desafio_id, $categorias)) {
+            if ($this->form_validation->run() == FALSE) {
                 echo json_encode(array(
-                    'status_code' => 200,
+                    'status_code' => 422,
+                    'msg' => validation_errors(),
                 ));
+            } else {
+                $desafio['fecha_inicio_de_postulacion'] = $this->input->post('inicio_del_desafio');
+                $desafio['fecha_fin_de_postulacion'] = $this->input->post('fin_del_desafio');
+                $desafio['nombre_del_desafio'] = $this->input->post('nombre_del_desafio');
+                $desafio['descripcion_del_desafio'] = $this->input->post('descripcion_del_desafio');
+                $desafio['requisitos_del_desafio'] = $this->input->post('requisitos_del_desafio');
+
+                $date = date('Y-m-d', time());
+                if ($desafio['fecha_fin_de_postulacion'] >= $date) {
+                    $desafio['estado_id'] = DESAF_VIGENTE;
+                }
+
+                $desafio['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
+                $desafio['fecha_modifico'] = date('Y-m-d H:i:s', time());
+
+                $categorias = $this->input->post('categorias');
+                $this->Desafios_model->eliminarCategoriaByDesafioId($desafio_id);
+                if ($this->Desafios_model->editarDesafio($desafio, $desafio_id, $categorias)) {
+                    echo json_encode(array(
+                        'status_code' => 200,
+                    ));
+                }
             }
         }
     }
@@ -357,7 +367,7 @@ class Desafios extends MX_Controller
         if (!$data_usuario_para) {
             $data_usuario_para_id = 0;
             $data_usuario_rol_id = ROL_ADMIN_ORGANIZACION;
-        }else{
+        } else {
             $data_usuario_para_id = $data_usuario_para->id_empresa;
             $data_usuario_rol_id = ROL_EMPRESA;
         }
@@ -388,5 +398,128 @@ class Desafios extends MX_Controller
         $email_asunto =  $asunto;
 
         encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+    }
+
+    public function verificar_fecha_fin_postulacion($fecha_fin, $fechas_parametros) //fecha de fin de postulación debe ser mayor a fecha de inicio
+    {
+        $fecha_inicio = explode(',',$fechas_parametros)[0];
+
+        $fecha_fin_bd = explode(',',$fechas_parametros)[1]? explode(',',$fechas_parametros)[1]: false;
+        
+        if ($fecha_inicio >= $fecha_fin) {
+            $this->form_validation->set_message('verificar_fecha_fin_postulacion', 'El campo {field} debe ser mayor a la fecha de Inicio del desafío');
+            return false;
+        } else {
+            if ($fecha_fin_bd) { //si existe fecha bd comparo que es mas lejano la fecha existente en bd o el dia actual.
+                $date = date('Y-m-d', time());
+                $fecha_de_bd = false;
+                if ($fecha_fin_bd < $date) {
+                    $date = $fecha_fin_bd;
+                    $fecha_de_bd = true;
+                }
+                if ($fecha_fin < $date) { //si fecha nueva es menor a FECHA DE BD O DIA ACTUAL devuelvo falso
+                    if ($fecha_de_bd) {
+                        $this->form_validation->set_message('verificar_fecha_fin_postulacion', 'El campo {field} debe ser mayor o igual a la fecha de Fin de postulación que ya se encontraba registrada.');
+                    } else {
+                        $this->form_validation->set_message('verificar_fecha_fin_postulacion', 'El campo {field} debe ser mayor a la fecha de hoy.');
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    public function verificar_fecha_inicio($fecha_inicio, $fecha_inicio_bd = false)
+    { //fecha de inicio de postulación debe ser mayor o igual a la fecha actual
+        $date = date('Y-m-d', time());
+        $fecha_de_bd = false;
+        if ($fecha_inicio_bd) { //si es editar, existe fecha_inicio_bd, comparo cual es mas antigua, si fecha_inicio_bd es mas vieja reemplazo date
+            if ($fecha_inicio_bd < $date) {
+                $date = $fecha_inicio_bd;
+                $fecha_de_bd = true;
+            }
+        }
+        if ($fecha_inicio < $date) {
+            if ($fecha_de_bd) {
+                $this->form_validation->set_message('verificar_fecha_inicio', 'El campo {field} debe ser mayor o igual a la fecha de Inicio de postulación que ya se encontraba registrada.');
+            } else {
+                $this->form_validation->set_message('verificar_fecha_inicio', 'El campo {field} debe ser mayor a la fecha de hoy.');
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function rulesEditarDesafio($desafio_data, $is_admin = false)
+    {
+        $this->form_validation->set_error_delimiters('<div class="alert alert-danger">', '</div>');
+
+        if ($is_admin) { //SI SOY ADMIN VALIDO ESTO.
+            $this->form_validation->set_rules( //no verifico fecha de inicio
+                'inicio_del_desafio',
+                'Inicio del desafío',
+                'required',
+                array(
+                    'required' => 'El campo {field} es obligatorio.',
+                )
+            );
+            $this->form_validation->set_rules( //solo verifico que fecha de fin de postulacion sea mayor a fecha de inicio
+                'fin_del_desafio',
+                'Fin del desafío',
+                'required|callback_verificar_fecha_fin_postulacion[' . $this->input->post('inicio_del_desafio') . ']',
+                array(
+                    'required' => 'El campo {field} es obligatorio.',
+                )
+            ); //FIN $IS_ADMIN
+        } else { //si no soy admin hago estas validaciones
+            $this->form_validation->set_rules(
+                'inicio_del_desafio',
+                'Inicio del desafío',
+                'required|callback_verificar_fecha_inicio[' . $desafio_data->fecha_inicio_de_postulacion . ']',
+                array(
+                    'required' => 'El campo {field} es obligatorio.',
+                )
+            );
+            $this->form_validation->set_rules(
+                'fin_del_desafio',
+                'Fin del desafío',
+                'required|callback_verificar_fecha_fin_postulacion[' . $this->input->post('inicio_del_desafio') . ',' . $desafio_data->fecha_fin_de_postulacion . ']',
+                array(
+                    'required' => 'El campo {field} es obligatorio.',
+                )
+            );
+        }
+
+        $this->form_validation->set_rules(
+            'nombre_del_desafio',
+            'Nombre del desafio',
+            'trim|required|max_length[1000]',
+            array(
+                'required' => 'El campo {field} es obligatorio.'
+            )
+        );
+        $this->form_validation->set_rules(
+            'descripcion_del_desafio',
+            'Descripcion',
+            'trim|required|max_length[5000]',
+            array(
+                'required' => 'El campo {field} es obligatorio.'
+            )
+        );
+        $this->form_validation->set_rules(
+            'requisitos_del_desafio',
+            'Requisitos del desafío',
+            'trim|max_length[5000]',
+        );
+        $this->form_validation->set_rules(
+            'categorias[]',
+            'categorías',
+            'integer|required',
+            array(
+                'required' => 'Debe elegir al menos una categoría'
+            )
+        );
     }
 }

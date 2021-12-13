@@ -284,7 +284,13 @@ const cargarDatosEnInputsEditarDesafio = (data) => {
     }
   }
   $("#editar_inicio_del_desafio").val(data.fecha_inicio_de_postulacion);
+  if(moment().isAfter(data.fecha_inicio_de_postulacion)){
+    $("#editar_inicio_del_desafio").attr('min',data.fecha_inicio_de_postulacion);
+  }else{
+    $("#editar_inicio_del_desafio").attr('min',moment().format('YYYY-MM-DD'));
+  }
   $("#editar_fin_del_desafio").val(data.fecha_fin_de_postulacion);
+  $("#editar_fin_del_desafio").attr('min',data.fecha_inicio_de_postulacion);
   $("#editar_nombre_del_desafio").val(data.nombre_del_desafio);
   $("#editar_descripcion_del_desafio").val(data.descripcion_del_desafio);
   $("#editar_requisitos_del_desafio").val(data.requisitos_del_desafio);

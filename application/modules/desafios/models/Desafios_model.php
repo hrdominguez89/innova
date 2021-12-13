@@ -17,14 +17,14 @@ class Desafios_model extends CI_Model
         return $this->db->get('categorias')->result();
     }
 
-    public function getDesafiosByUserId($user_id, $estado_desafio, $fecha_actual)
+    public function getDesafiosByUserId($user_id, $estado_desafio)
     {
         $this->db->select('*');
         $this->db->where('usuario_empresa_id', $user_id);
         if ($estado_desafio == 'vigentes') {
-            $this->db->where('fecha_fin_de_postulacion >', $fecha_actual);
+            $this->db->where('estado_id', DESAF_VIGENTE);
         } else if ($estado_desafio == 'finalizados') {
-            $this->db->where('fecha_fin_de_postulacion <=', $fecha_actual);
+            $this->db->where('estado_id', DESAF_FINALIZADO);
         }
         return $this->db->get('desafios')->result();
     }
