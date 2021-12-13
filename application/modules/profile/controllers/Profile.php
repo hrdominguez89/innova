@@ -299,16 +299,16 @@ class Profile extends MX_Controller
                 'required'  => 'El campo {field} es obligatorio',
             )
         );
-        if (!$data_perfil->logo) {
-            $this->form_validation->set_rules(
-                'profile_img',
-                'Logo de la empresa',
-                'required',
-                array(
-                    'required'  => 'El campo {field} es obligatorio',
-                )
-            );
-        }
+        // if (!$data_perfil->logo) {
+        //     $this->form_validation->set_rules(
+        //         'profile_img',
+        //         'Logo de la empresa',
+        //         'required',
+        //         array(
+        //             'required'  => 'El campo {field} es obligatorio',
+        //         )
+        //     );
+        // }
         $this->form_validation->set_rules(
             'cuit',
             'CUIT',
@@ -407,9 +407,6 @@ class Profile extends MX_Controller
             'rubro',
             'Rubro',
             'trim',
-            // array(
-            //     'required'  => 'El campo {field} es obligatorio',
-            // )
         );
         $this->form_validation->set_rules(
             'descripcion',
@@ -487,16 +484,16 @@ class Profile extends MX_Controller
     function rulesPerfilAdmin($data_perfil)
     {
         $this->form_validation->set_error_delimiters('<div class="text-danger">', '</div>');
-        if (!$data_perfil->logo) {
-            $this->form_validation->set_rules(
-                'profile_img',
-                'Logo de la empresa',
-                'required',
-                array(
-                    'required'  => 'El campo {field} es obligatorio',
-                )
-            );
-        }
+        // if (!$data_perfil->logo) {
+        //     $this->form_validation->set_rules(
+        //         'profile_img',
+        //         'Logo de la empresa',
+        //         'required',
+        //         array(
+        //             'required'  => 'El campo {field} es obligatorio',
+        //         )
+        //     );
+        // }
         $this->form_validation->set_rules(
             'nombre',
             'Nombre',
