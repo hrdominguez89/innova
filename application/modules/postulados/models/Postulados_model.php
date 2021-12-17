@@ -119,6 +119,24 @@ class Postulados_model extends CI_Model {
         $this->db->where('desafio_id',$desafio_id);
         $this->db->update('postulaciones',$postulacion_data);
     }
+
+    public function getPostulacionesByDesafioId($desafio_id,$startup_id){
+        return $this->db->select('p.id')
+        ->from('postulaciones p')
+        ->where('p.desafio_id', $desafio_id)
+        ->where('p.startup_id', $startup_id)
+        ->get()
+        ->result();
+    }
+    public function getPostulacionesByStartupId($startup_id){
+        $query = $this->db->select('p.*')
+        ->from('postulaciones p')
+        ->where('startup_id',$startup_id)
+        ->order_by('desafio_id')
+        ->get()
+        ->result();
+        return $query;
+    }
 }
 
 ?>

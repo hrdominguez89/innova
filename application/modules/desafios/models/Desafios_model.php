@@ -126,10 +126,9 @@ class Desafios_model extends CI_Model
         $query = $this->db->select('vd.*')
             ->from('vi_desafios vd')
             ->join('categorias_desafios as cd', 'cd.desafio_id = vd.desafio_id')
-            ->join('postulaciones as p', 'p.desafio_id = vd.desafio_id', 'left')
-            ->where('fecha_fin_de_postulacion >=', date('Y-m-d', time()))
+            ->where('vd.fecha_fin_de_postulacion >=', date('Y-m-d', time()))
             ->where_in('cd.categoria_id', $array_categorias)
-            ->where('p.startup_id IS NULL')
+            ->order_by('vd.desafio_id')
             ->group_by('vd.desafio_id')
             ->get()->result();
         return $query;
@@ -169,6 +168,23 @@ class Desafios_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    public function getCantidadDePostulacionesByEmpresa($usuario_id,$empresa_id){
+        return $this->db->select('p.id')
+        ->from('postulaciones p')
+        ->join('desafios d','d.id = p.desafio_id','left')
+        ->group_start()
+        ->where('p.estado_postulacion', POST_PENDIENTE)
+        ->or_where('p.estado_postulacion', POST_VALIDADO)
+        ->group_end()
+        ->where('p.startup_id', $usuario_id)
+        ->where('d.usuario_empresa_id',$empresa_id)
+        ->group_start()
+        ->where('d.estado_id',DESAF_VIGENTE)
+        ->or_where('d.estado_id',DESAF_FINALIZADO)
+        ->group_end()
+        ->get()->result();
+    }
+    
     public function getCantidadDePostulaciones($usuario_id)
     {
         return $this->db->select('id')

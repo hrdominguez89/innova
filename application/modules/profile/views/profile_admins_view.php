@@ -34,8 +34,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <form method="POST" action="<?php echo base_url() . 'profile'; ?>" enctype="multipart/form-data">
                             <input type="hidden" name="profile_img" value="" id="input-hidden-profile-img">
                             <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label text-left pl-3" for="logo_imagen">Logo de la empresa<small class="text-danger"> <?php echo $this->session->userdata('user_data')->logo ? '' : '*'; ?></small></label>
-                                <input class="form-control pl-3" type="file" id="logo_imagen" name="logo_imagen" accept="image/png, image/jpeg" <?php echo $this->session->userdata('user_data')->logo ? '' : 'required'; ?>>
+                                <label class="col-sm-3 col-form-label text-left pl-3" for="logo_imagen">Logo de la empresa</label>
+                                <input class="form-control pl-3" type="file" id="logo_imagen" name="logo_imagen" accept="image/png, image/jpeg">
                                 <?php echo form_error('profile_img'); ?>
                             </div>
 

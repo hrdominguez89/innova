@@ -24,9 +24,9 @@ class Cli extends MX_Controller
     public function __construct()
     {
         parent::__construct();
-        // if(!is_cli()){
-        //     redirect(base_url().'home');
-        // }
+        if(!is_cli()){
+            redirect(base_url().'home');
+        }
         $this->load->helper(array('send_email_helper'));
         $this->load->model('Cli_model');
     }

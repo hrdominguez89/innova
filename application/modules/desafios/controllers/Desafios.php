@@ -70,6 +70,11 @@ class Desafios extends MX_Controller
                     $array_categorias[] = $categoria->categoria_id;
                 }
                 $data['desafios'] = $this->Desafios_model->getDesafiosVigentesPorCategorias($array_categorias, $this->start, $this->limit);
+                $this->load->model('postulados/Postulados_model');
+                $postulaciones = $this->Postulados_model->getPostulacionesByStartupId($this->session->userdata('user_data')->id);
+                foreach ($postulaciones as $postulacion){
+                    $data['postulaciones'][$postulacion->desafio_id] = $postulacion;
+                }
                 $data['sections_view'] = 'desafios_cartelera_view';
                 break;
             case ROL_EMPRESA:
@@ -91,63 +96,77 @@ class Desafios extends MX_Controller
     public function postularse()
     {
         if ($this->validarAcceso()) {
+            $this->load->model('postulados/Postulados_model');
             $desafio_id = $this->input->post('desafio_id');
-            $cantidad_de_desafios = count($this->Desafios_model->getCantidadDePostulaciones($this->session->userdata('user_data')->id));
-            $configuracion = $this->Desafios_model->getCantidadMaximaDePostulaciones();
-            if ($cantidad_de_desafios < $configuracion->postulaciones_maximas) {
-                $postulacion['desafio_id'] = $desafio_id;
-                $postulacion['startup_id'] = $this->session->userdata('user_data')->id;
-                $postulacion['fecha_postulacion'] = date('Y-m-d H:i:s', time());
-                $postulacion['estado_postulacion'] = POST_PENDIENTE;
-
-                $this->Desafios_model->insertPostulacion($postulacion);
-
-                $this->load->helper(array('send_email_helper'));
-                $this->load->model('mensajes/Mensajes_model');
-
-                $data_startup = $this->Desafios_model->getDataStartup($this->session->userdata('user_data')->id);
-
-                $desafio_data = $this->Desafios_model->getDesafioById($desafio_id);
-
-                $buscar_y_reemplazar = array(
-                    array('buscar' => '{{NOMBRE_RAZON_SOCIAL_STARTUP}}', 'reemplazar' => $data_startup->razon_social),
-                    array('buscar' => '{{DESAFIO_NOMBRE}}', 'reemplazar' => $desafio_data->nombre_del_desafio),
-                    array('buscar' => '{{NOMBRE_RAZON_SOCIAL_EMPRESA}}', 'reemplazar' => $desafio_data->nombre_empresa),
-                );
-                $mensaje_de_plataforma_a_administradores = $this->Mensajes_model->getMensaje('mensaje_nuevo_postulado_a_administradores');
-
-                //creo notificacion para administradores
-                $this->crearNotificacion($mensaje_de_plataforma_a_administradores, FALSE, $this->session->userdata('user_data'), $buscar_y_reemplazar);
-
-
-                $mensaje_de_plataforma_a_empresa = $this->Mensajes_model->getMensaje('mensaje_nuevo_postulado_a_empresas');
-
-                switch ($mensaje_de_plataforma_a_empresa->tipo_de_envio_id) {
-                    case ENVIO_NOTIFICACION:
-                        $mensaje_de_notificacion = $this->Mensajes_model->getMensaje('mensaje_nueva_notificacion');
-                        $this->crearNotificacion($mensaje_de_plataforma_a_empresa, $desafio_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
-                        $this->crearEmail($mensaje_de_notificacion, $desafio_data, $buscar_y_reemplazar);
-                        break;
-                    case ENVIO_EMAIL:
-                        $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data, $buscar_y_reemplazar);
-                        break;
-                    case ENVIO_NOTIF_EMAIL:
-                        $this->crearNotificacion($mensaje_de_plataforma_a_empresa, $desafio_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
-                        $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data, $buscar_y_reemplazar);
-                        break;
-                }
-
-                echo json_encode(array(
-                    "status_code" => 200,
-                    "postulado" => true,
-                    "mensaje" => 'Se postuló al desafío correctamente'
-                ));
-            } else {
+            $desafios_ya_postulados = $this->Postulados_model->getPostulacionesByDesafioId($desafio_id,$this->session->userdata('user_data')->id);
+            if($desafios_ya_postulados){
                 echo json_encode(array(
                     "status_code" => 200,
                     "postulado" => false,
-                    "mensaje" => 'Alcanzo el limite maximo de postulaciones (Max. ' . $configuracion->config_valor . ').'
+                    "title" => 'Postulación vigente',
+                    "mensaje" => 'Ya se encuentra postulado a este desafío.'
                 ));
+            }else{
+                $desafio_data = $this->Desafios_model->getDesafioById($desafio_id);
+    
+                //TRAIGO CANTIDAD DE DESAFIOS POSTULADOS POR EMPRESA Y SI EL DESAFIO ESTA VIGENTE O FINALIZADO.
+                $cantidad_de_desafios = count($this->Desafios_model->getCantidadDePostulacionesByEmpresa($this->session->userdata('user_data')->id,$desafio_data->id_empresa));
+                $configuracion = $this->Desafios_model->getCantidadMaximaDePostulaciones();
+                if ($cantidad_de_desafios < $configuracion->postulaciones_maximas) {
+                    $postulacion['desafio_id'] = $desafio_id;
+                    $postulacion['startup_id'] = $this->session->userdata('user_data')->id;
+                    $postulacion['fecha_postulacion'] = date('Y-m-d H:i:s', time());
+                    $postulacion['estado_postulacion'] = POST_PENDIENTE;
+    
+                    $this->Desafios_model->insertPostulacion($postulacion);
+    
+                    $this->load->helper(array('send_email_helper'));
+                    $this->load->model('mensajes/Mensajes_model');
+    
+                    $data_startup = $this->Desafios_model->getDataStartup($this->session->userdata('user_data')->id);
+    
+    
+                    $buscar_y_reemplazar = array(
+                        array('buscar' => '{{NOMBRE_RAZON_SOCIAL_STARTUP}}', 'reemplazar' => $data_startup->razon_social),
+                        array('buscar' => '{{DESAFIO_NOMBRE}}', 'reemplazar' => $desafio_data->nombre_del_desafio),
+                        array('buscar' => '{{NOMBRE_RAZON_SOCIAL_EMPRESA}}', 'reemplazar' => $desafio_data->nombre_empresa),
+                    );
+                    $mensaje_de_plataforma_a_administradores = $this->Mensajes_model->getMensaje('mensaje_nuevo_postulado_a_administradores');
+    
+                    //creo notificacion para administradores
+                    $this->crearNotificacion($mensaje_de_plataforma_a_administradores, FALSE, $this->session->userdata('user_data'), $buscar_y_reemplazar);
+    
+    
+                    $mensaje_de_plataforma_a_empresa = $this->Mensajes_model->getMensaje('mensaje_nuevo_postulado_a_empresas');
+    
+                    switch ($mensaje_de_plataforma_a_empresa->tipo_de_envio_id) {
+                        case ENVIO_NOTIFICACION:
+                            $mensaje_de_notificacion = $this->Mensajes_model->getMensaje('mensaje_nueva_notificacion');
+                            $this->crearNotificacion($mensaje_de_plataforma_a_empresa, $desafio_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
+                            $this->crearEmail($mensaje_de_notificacion, $desafio_data, $buscar_y_reemplazar);
+                            break;
+                        case ENVIO_EMAIL:
+                            $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data, $buscar_y_reemplazar);
+                            break;
+                        case ENVIO_NOTIF_EMAIL:
+                            $this->crearNotificacion($mensaje_de_plataforma_a_empresa, $desafio_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
+                            $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data, $buscar_y_reemplazar);
+                            break;
+                    }
+    
+                    echo json_encode(array(
+                        "status_code" => 200,
+                        "postulado" => true,
+                        "mensaje" => 'Se postuló al desafío correctamente'
+                    ));
+                } else {
+                    echo json_encode(array(
+                        "status_code" => 200,
+                        "postulado" => false,
+                        "title" => 'Limite alcanzado.',
+                        "mensaje" => 'Alcanzo el limite maximo de postulaciones (Max. ' . $configuracion->postulaciones_maximas . ').'
+                    ));
+                }
             }
         }
     }
