@@ -10,5 +10,9 @@ const cargarTabla = ()=>{
         language: {
           url: "./assets/js/datatables/es_es.json",
         },
+        dom: 'Bfrtip',
+        buttons: [
+            'excel', 'pdf', 'print',
+        ]
       });
 }

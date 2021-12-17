@@ -68,7 +68,7 @@ class Categories extends MX_Controller
 
         $data['files_js'] = array('categories.js');
         $data['categories'] = $this->Categories_model->getCategories($this->start, $this->limit);
-        $data['sections_view'] = 'categories_view.php';
+        $data['sections_view'] = 'categories_view';
         $data['title'] = 'Categorías';
         $data['subtitle'] = 'Listado de categorías';
         $this->load->view('layout_back_view', $data);
@@ -104,7 +104,7 @@ class Categories extends MX_Controller
                 redirect(base_url() . 'categories');
             }
         }
-        $data['sections_view'] = 'categories_form_view.php';
+        $data['sections_view'] = 'categories_form_view';
         $data['title'] = 'Categorías';
         $data['subtitle'] = 'Nueva categoría';
         $this->load->view('layout_back_view', $data);
@@ -165,7 +165,7 @@ class Categories extends MX_Controller
                 redirect(base_url() . 'categories');
             }
         }
-        $data['sections_view'] = 'categories_form_view.php';
+        $data['sections_view'] = 'categories_form_view';
         $data['title'] = 'Categorías';
         $data['subtitle'] = 'Editar categoría';
         $this->load->view('layout_back_view', $data);

@@ -23,13 +23,14 @@
             <div class="card-icon">
               <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo $startup->usuario_id; ?>.png">
             </div>
+            
             <h3 class="card-title font-weight-bold"><?php echo $startup->razon_social; ?></h3>
             <?php switch ($startup->estado_postulacion) {
               case POST_PENDIENTE:
                 $color_badge = 'warning';
                 break;
               case POST_VALIDADO:
-                $color_badge = 'info';
+                $color_badge = 'success';
                 break;
               case POST_ACEPTADO:
                 $color_badge = 'success';
@@ -41,7 +42,15 @@
                 $color_badge = 'danger';
                 break;
             }; ?>
-            <span class="badge badge-<?php echo $color_badge; ?>">verificación:</b> <?php echo $startup->nombre_estado_postulacion; ?></span>
+            
+            <?php if($startup->estado_postulacion == POST_VALIDADO):;?>
+            <span class="badge badge-<?php echo $color_badge; ?> mb-2">Startup validada por la organización </b></span><i class="fas fa-medal medalla-gold-color"></i>
+            <?php elseif($startup->estado_postulacion == POST_ACEPTADO):;?>
+            <span class="badge badge-<?php echo $color_badge; ?> mb-2">Startup validada por la organización </b></span><i class="fas fa-medal medalla-gold-color"></i>
+            <span class="badge badge-<?php echo $color_badge; ?> mt-2">Startup contactada </b></span> <i class="material-icons contacto-color">connect_without_contact</i>
+            <?php else:;?>
+            <span class="badge badge-<?php echo $color_badge; ?>">Validación:</b> <?php echo $startup->nombre_estado_postulacion; ?></span>
+            <?php endif;?>
           </div>
           <div class="card-body">
             <div class="row">

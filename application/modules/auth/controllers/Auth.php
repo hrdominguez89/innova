@@ -65,6 +65,8 @@ class Auth extends MX_Controller
                             break;
                         case USR_VERIFIED:
                         case USR_ENABLED:
+                            $fecha_login['ultimo_login'] = date('Y-m-d H:i:s', time());
+                            $this->Auth_model->updateUser($fecha_login, $email);
                             $this->session->set_userdata('user_data', $user_data);
                             redirect(base_url() . 'home');
                             break;
@@ -149,7 +151,7 @@ class Auth extends MX_Controller
                 $email = $this->input->post('email');
                 $user_data = $this->Auth_model->getUserDataByEmail($email);
                 if ($user_data) {
-                    if($user_data->estado_id == USR_DISABLED){
+                    if ($user_data->estado_id == USR_DISABLED) {
                         if (ENVIRONMENT != 'development') {
                             $_SESSION['mensaje_back'] = 'No es posible solicitar un reinicio de contraseña debido a que su cuenta se encuentra deshabilitada, para mas información contactese con los administradores.';
                             redirect(base_url() . URI_WP . '/mensajes');
@@ -363,7 +365,7 @@ class Auth extends MX_Controller
         $code_decoded = base64_decode($this->input->get('code'));
         $user = $this->Auth_model->getUserDataByEmail($this->input->get('email'));
         if ($user) {
-            if($user->estado_id == USR_DISABLED){
+            if ($user->estado_id == USR_DISABLED) {
                 if (ENVIRONMENT != 'development') {
                     $_SESSION['mensaje_back'] = 'No es posible realizar un cambio de contraseña debido a que su cuenta se encuentra deshabilitada, para mas información contactese con los administradores.';
                     redirect(base_url() . URI_WP . '/mensajes');

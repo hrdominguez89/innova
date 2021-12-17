@@ -51,28 +51,34 @@
                                     </tr>
                                 </tfoot>
                                 <tbody>
-                                    <?php if(!$desafios):;?>
+                                    <?php if (!$desafios) :; ?>
                                         <tr>
                                             <td colspan="9" class="text-center">No hay desafíos registrados</td>
                                         </tr>
-                                    <?php else:;?>
-                                    <?php foreach ($desafios as $desafio) :; ?>
-                                        <tr>
-                                            <td><?php echo $desafio->nombre_empresa; ?></td>
-                                            <td><?php echo $desafio->nombre_del_desafio; ?></td>
-                                            <td><?php echo $desafio->descripcion_del_desafio; ?></td>
-                                            <td class="text-center"><?php echo date('d-m-Y', strtotime($desafio->fecha_inicio_de_postulacion)); ?></td>
-                                            <td class="text-center"><?php echo date('d-m-Y', strtotime($desafio->fecha_fin_de_postulacion)); ?></td>
-                                            <td class="text-center"><?php echo $desafio->desafio_estado_descripcion; ?></td>
-                                            <td class="text-center"><?php echo $desafio->cantidad_de_startups_postuladas; ?></td>
-                                            <td><?php echo $desafio->nombre_de_categorias; ?></td>
-                                            <td class="text-center"><a title="ver desafío <?php echo $desafio->nombre_del_desafio;?>" href="<?php echo base_url(); ?>desafios/verDesafio/<?php echo $desafio->desafio_id;?>"><i class="far fa-eye"></i></a></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    <?php endif;?>    
+                                    <?php else :; ?>
+                                        <?php foreach ($desafios as $desafio) :; ?>
+                                            <tr>
+                                                <td><?php echo $desafio->nombre_empresa; ?></td>
+                                                <td><?php echo $desafio->nombre_del_desafio; ?></td>
+                                                <td><?php echo $desafio->descripcion_del_desafio; ?></td>
+                                                <td class="text-center"><?php echo date('d-m-Y', strtotime($desafio->fecha_inicio_de_postulacion)); ?></td>
+                                                <td class="text-center"><?php echo date('d-m-Y', strtotime($desafio->fecha_fin_de_postulacion)); ?></td>
+                                                <td class="text-center"><?php echo $desafio->desafio_estado_descripcion; ?></td>
+                                                <td class="text-center"><?php echo $desafio->cantidad_de_startups_postuladas; ?></td>
+                                                <td><?php echo $desafio->nombre_de_categorias; ?></td>
+                                                <td class="text-center">
+                                                    <a class="my-2 text-warning"  onclick="editarDesafio(<?php echo $desafio->desafio_id;?>)" title="Editar desafío <?php echo $desafio->nombre_del_desafio; ?>" href="javascript:void(0);"><i class="far fa-edit"></i></a>
+
+                                                    <a class="my-2 text-primary" title="Ver desafío <?php echo $desafio->nombre_del_desafio; ?>" href="<?php echo base_url(); ?>desafios/verDesafio/<?php echo $desafio->desafio_id; ?>"><i class="far fa-eye"></i></a>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
+                        <?php echo $this->load->view('modals/desafios/editar_desafio_modal_view'); ?>
+                        <?php echo $this->load->view('modals/desafios/eliminar_desafio_modal_view'); ?>
                     </div>
                     <!-- end content-->
                 </div>

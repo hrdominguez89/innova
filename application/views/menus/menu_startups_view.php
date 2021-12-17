@@ -41,7 +41,7 @@
           </p>
         </a>
       </li>
-      <!-- menu postulaciones -->
+      <!-- menu solicitudes de contacto -->
       <li class="nav-item <?php echo $this->uri->segment(URI_SEGMENT) == 'contacto' ? 'active' : ''; ?>">
         <a class="nav-link" href="<?php echo base_url(); ?>contacto">
           <i class="material-icons">connect_without_contact</i>

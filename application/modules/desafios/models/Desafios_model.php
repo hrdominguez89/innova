@@ -55,9 +55,9 @@ class Desafios_model extends CI_Model
         } //If Rollback
     }
 
-    public function getDesafioByDesafioId($usuario_id, $desafio_id)
+    public function getDesafioByDesafioId($desafio_id,$usuario_id = false)
     {
-        return $this->db->select('
+        $this->db->select('
             *,
             (
                 SELECT
@@ -66,12 +66,13 @@ class Desafios_model extends CI_Model
                     INNER JOIN categorias as c ON c.id = cd.categoria_id
                     WHERE d.id = cd.desafio_id
             ) as id_de_categorias
-            ')
-            ->from('desafios as d')
-            ->where('d.id', $desafio_id)
-            ->where('d.usuario_empresa_id', $usuario_id)
-            ->get()
-            ->row();
+            ');
+            $this->db->from('desafios as d');
+            $this->db->where('d.id', $desafio_id);
+            if($usuario_id){
+                $this->db->where('d.usuario_empresa_id', $usuario_id);
+            }
+            return  $this->db->get()->row();
     }
 
     public function eliminarCategoriaByDesafioId($desafio_id)

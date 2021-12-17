@@ -79,14 +79,15 @@ class Desafios extends MX_Controller
                 break;
             case ROL_EMPRESA:
                 $data['categorias'] = $this->Desafios_model->getCategorias();
-                $data['sections_view'] = 'desafios_abm_view.php';
+                $data['sections_view'] = 'desafios_abm_view';
                 $data['files_js'] = array('desafios/carga_desafios.js');
                 break;
             case ROL_ADMIN_ORGANIZACION:
             case ROL_ADMIN_PLATAFORMA:
+                $data['categorias'] = $this->Desafios_model->getCategorias();
                 $data['desafios'] = $this->Desafios_model->getTodosLosDesafios();
-                $data['sections_view'] = 'desafios_admin_list_view.php';
-                $data['files_js'] = array('activar_tabla_comun.js');
+                $data['sections_view'] = 'desafios_admin_list_view';
+                $data['files_js'] = array('desafios/desafios_abm_admin_plataforma.js','activar_tabla_comun.js');
                 break;
         }
         $data['title'] = 'Desafíos';
@@ -290,9 +291,13 @@ class Desafios extends MX_Controller
     public function getDesafioByDesafioId()
     {
         if ($this->validarAcceso()) {
-            $user_id = $this->session->userdata('user_data')->id;
+            if($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA){
+                $user_id = FALSE;
+            }else{
+                $user_id = $this->session->userdata('user_data')->id;
+            }
             $desafio_id = $this->input->post('desafio_id');
-            $desafio = $this->Desafios_model->getDesafioByDesafioId($user_id, $desafio_id);
+            $desafio = $this->Desafios_model->getDesafioByDesafioId($desafio_id,$user_id);
             echo json_encode(
                 array(
                     'status_code'   => 200,
