@@ -192,12 +192,12 @@ class Desafios extends MX_Controller
                 $desafio['estado_id'] = DESAF_VIGENTE;
 
                 //SI SOY ADMIN PLATAFORMA PUEDO CREAR DESAFIOS PARA LAS EMPRESAS.{{NO DESARROLLADO}}
-                // if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
-                //     $desafio['usuario_empresa_id'] = $this->input->post('usuario_empresa_id');
-                // } else {
-                //     $desafio['usuario_empresa_id'] = $this->session->userdata('user_data')->id;
-                // }
-
+                if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
+                    $desafio['usuario_empresa_id'] = $this->input->post('usuario_empresa_id');
+                } else {
+                    $desafio['usuario_empresa_id'] = $this->session->userdata('user_data')->id;
+                }
+                
                 $desafio['usuario_id_alta'] = $this->session->userdata('user_data')->id;
                 $desafio['fecha_alta'] = date('Y-m-d H:i:s', time());
 

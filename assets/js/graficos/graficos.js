@@ -85,6 +85,7 @@ window.addEventListener('load', () => {
         };
 
         var defaultOptions = {
+            low: 0,
             // Options for X-Axis
             axisX: {
                 // The offset of the chart drawing area to the border of the container
@@ -114,16 +115,16 @@ window.addEventListener('load', () => {
                 // This value specifies the minimum height in pixel of the scale steps
                 scaleMinSpace: 20,
                 // Use only integer values (whole numbers) for the scale steps
-                onlyInteger: false
+                onlyInteger: true
             },
             // Unless low/high are explicitly set, bar chart will be centered at zero by default. Set referenceValue to null to auto scale.
             referenceValue: 5,
             // Padding of the chart drawing area to the container element and labels as a number or padding object {top: 5, right: 5, bottom: 5, left: 5}
             chartPadding: {
-                top: 30,
+                top: 0,
                 right: 0,
-                bottom: 15,
-                left: 20
+                bottom: 0,
+                left: 0
             },
             // Specify the distance in pixel of bars in a group
             // seriesBarDistance: 15,
