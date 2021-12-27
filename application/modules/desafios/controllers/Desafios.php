@@ -546,4 +546,33 @@ class Desafios extends MX_Controller
             )
         );
     }
+
+    public function eliminar()
+    {
+        if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+        }
+        if ($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA) {
+            $data = array(
+                'status'    => false,
+                'msg'       => 'No tiene permisos para realizar esta modificación'
+            );
+        } else {
+            $desafio_id = $this->input->post('desafio_id');
+            $data_desafio['estado_id'] = DESAF_ELIMINADO;
+            $data_desafio['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
+            $data_desafio['fecha_modifico'] = date('Y-m-d H:i:s', time());
+            if($this->Desafios_model->actualizarDesafio($data_desafio,$desafio_id)){
+                $data = array(
+                    'status'    => true,
+                );
+            }else{
+                $data = array(
+                    'status'    => false,
+                    'msg'       => 'No fue posible modificar el desafío.'
+                );
+            }
+        }
+        echo json_encode($data);
+    }
 }

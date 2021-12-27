@@ -13,6 +13,7 @@ class Auth_model extends CI_Model {
     public function getUserDataByEmail($email){
         $this->db->select('*');
         $this->db->where('email',$email);
+        $this->db->where('estado_id!=',USR_DELETED);
         return $this->db->get('usuarios')->row();
     }
 
@@ -35,6 +36,7 @@ class Auth_model extends CI_Model {
         $this->db->trans_begin();
         
         $this->db->where('email',$email);
+        $this->db->where('estado_id!=',USR_DELETED);
         $this->db->update('usuarios',$data_user);
 
         // Condicional del Rollback 

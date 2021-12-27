@@ -55,7 +55,7 @@ class Desafios_model extends CI_Model
         } //If Rollback
     }
 
-    public function getDesafioByDesafioId($desafio_id,$usuario_id = false)
+    public function getDesafioByDesafioId($desafio_id, $usuario_id = false)
     {
         $this->db->select('
             *,
@@ -67,12 +67,12 @@ class Desafios_model extends CI_Model
                     WHERE d.id = cd.desafio_id
             ) as id_de_categorias
             ');
-            $this->db->from('desafios as d');
-            $this->db->where('d.id', $desafio_id);
-            if($usuario_id){
-                $this->db->where('d.usuario_empresa_id', $usuario_id);
-            }
-            return  $this->db->get()->row();
+        $this->db->from('desafios as d');
+        $this->db->where('d.id', $desafio_id);
+        if ($usuario_id) {
+            $this->db->where('d.usuario_empresa_id', $usuario_id);
+        }
+        return  $this->db->get()->row();
     }
 
     public function eliminarCategoriaByDesafioId($desafio_id)
@@ -127,8 +127,12 @@ class Desafios_model extends CI_Model
         $query = $this->db->select('vd.*')
             ->from('vi_desafios vd')
             ->join('categorias_desafios as cd', 'cd.desafio_id = vd.desafio_id')
-            ->where('vd.fecha_fin_de_postulacion >=', date('Y-m-d', time()))
+            ->where('vd.desafio_estado_id', DESAF_VIGENTE)
             ->where_in('cd.categoria_id', $array_categorias)
+            ->group_start()
+            ->where('vd.estado_usuario_id', USR_ENABLED)
+            ->or_where('vd.estado_usuario_id', USR_VERIFIED)
+            ->group_end()
             ->order_by('vd.desafio_id')
             ->group_by('vd.desafio_id')
             ->get()->result();
@@ -144,6 +148,10 @@ class Desafios_model extends CI_Model
             ->from('vi_desafios vd')
             ->join('categorias_desafios as cd', 'cd.desafio_id = vd.desafio_id')
             ->where_in('cd.categoria_id', $array_categorias)
+            ->group_start()
+            ->where('vd.estado_usuario_id', USR_ENABLED)
+            ->or_where('vd.estado_usuario_id', USR_VERIFIED)
+            ->group_end()
             ->group_by('vd.desafio_id')
             ->get()->result();
         return $query;
@@ -169,23 +177,25 @@ class Desafios_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    public function getCantidadDePostulacionesByEmpresa($usuario_id,$empresa_id){
+    public function getCantidadDePostulacionesByEmpresa($usuario_id, $empresa_id)
+    {
         return $this->db->select('p.id')
-        ->from('postulaciones p')
-        ->join('desafios d','d.id = p.desafio_id','left')
-        ->group_start()
-        ->where('p.estado_postulacion', POST_PENDIENTE)
-        ->or_where('p.estado_postulacion', POST_VALIDADO)
-        ->group_end()
-        ->where('p.startup_id', $usuario_id)
-        ->where('d.usuario_empresa_id',$empresa_id)
-        ->group_start()
-        ->where('d.estado_id',DESAF_VIGENTE)
-        ->or_where('d.estado_id',DESAF_FINALIZADO)
-        ->group_end()
-        ->get()->result();
+            ->from('postulaciones p')
+            ->join('desafios d', 'd.id = p.desafio_id', 'left')
+            ->group_start()
+            ->where('p.estado_postulacion', POST_PENDIENTE)
+            ->or_where('p.estado_postulacion', POST_VALIDADO)
+            ->group_end()
+            ->where('p.startup_id', $usuario_id)
+            ->where('d.usuario_empresa_id', $empresa_id)
+            ->where('d.estado_id!=', DESAF_ELIMINADO)
+            ->group_start()
+            ->where('d.estado_id', DESAF_VIGENTE)
+            ->or_where('d.estado_id', DESAF_FINALIZADO)
+            ->group_end()
+            ->get()->result();
     }
-    
+
     public function getCantidadDePostulaciones($usuario_id)
     {
         return $this->db->select('id')
@@ -245,6 +255,11 @@ class Desafios_model extends CI_Model
         $this->db->from('vi_desafios as vd');
         $this->db->join('postulaciones as p', 'p.desafio_id = vd.desafio_id', 'left');
         $this->db->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion', 'left');
+        $this->db->where('vd.desafio_estado_id!=', DESAF_ELIMINADO);
+        $this->db->group_start();
+        $this->db->where('vd.estado_usuario_id', USR_ENABLED);
+        $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
+        $this->db->group_end();
         $this->db->group_by('vd.desafio_id');
         return $this->db->get()->result();
     }
@@ -253,8 +268,12 @@ class Desafios_model extends CI_Model
     {
         $this->db->select('vd.*,u.email as email_contacto');
         $this->db->where('vd.desafio_id', $desafio_id);
+        $this->db->group_start();
+        $this->db->where('vd.estado_usuario_id', USR_ENABLED);
+        $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
+        $this->db->group_end();
         $this->db->from('vi_desafios as vd');
-        $this->db->join('usuarios as u','u.id = vd.id_empresa');
+        $this->db->join('usuarios as u', 'u.id = vd.id_empresa');
         return $this->db->get()->row();
     }
 
@@ -263,9 +282,34 @@ class Desafios_model extends CI_Model
         $this->db->select('*,ep.estado as estado_postulacion_descripcion');
         $this->db->from('postulaciones as p');
         $this->db->where('p.desafio_id', $desafio_id);
+        $this->db->group_start();
+        $this->db->where('vd.estado_usuario_id', USR_ENABLED);
+        $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
+        $this->db->group_end();
         $this->db->join('vi_startups_info as vsi', 'vsi.usuario_id = p.startup_id', 'left');
         $this->db->join('vi_desafios as vd', 'vd.desafio_id = p.desafio_id', 'left');
         $this->db->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion');
         return $this->db->get()->result();
+    }
+
+    public function actualizarDesafio($data, $desafio_id)
+    {
+        $this->db->trans_begin();
+
+        $this->db->where('id', $desafio_id);
+
+        $this->db->update('desafios', $data);
+
+        // Condicional del Rollback 
+        if ($this->db->trans_status() === FALSE) {
+            //Hubo errores en la consulta, entonces se cancela la transacción.   
+            $this->db->trans_rollback();
+            return FALSE;
+        } else {
+            //Todas las consultas se hicieron correctamente.  
+            $this->db->trans_commit();
+            return TRUE;
+        } //If Rollback
+
     }
 }

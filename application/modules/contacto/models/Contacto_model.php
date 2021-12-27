@@ -1,14 +1,16 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Contacto_model extends CI_Model {
+class Contacto_model extends CI_Model
+{
     public function __construct()
-	{
+    {
         parent::__construct();
         $this->load->database();
     }
 
-    public function getContactosData($usuario_id,$tipo_de_empresa){
+    public function getContactosData($usuario_id, $tipo_de_empresa)
+    {
         $this->db->select('
             em.razon_social as nombre_empresa,
             st.razon_social as nombre_startup,
@@ -23,16 +25,21 @@ class Contacto_model extends CI_Model {
             vd.nombre_del_desafio
             ');
         $this->db->from('contacto_startups as cs');
-        if($tipo_de_empresa == ROL_STARTUP){
-            $this->db->where('cs.startup_id',$usuario_id);
-        }else if($tipo_de_empresa == ROL_EMPRESA){
-            $this->db->where('cs.empresa_id',$usuario_id);
+        $this->db->where('vd.desafio_estado_id!=', DESAF_ELIMINADO);
+        if ($tipo_de_empresa == ROL_STARTUP) {
+            $this->db->where('cs.startup_id', $usuario_id);
+        } else if ($tipo_de_empresa == ROL_EMPRESA) {
+            $this->db->where('cs.empresa_id', $usuario_id);
         }
-        $this->db->join('empresas as em','cs.empresa_id = em.usuario_id');
-        $this->db->join('startups as st','cs.startup_id = st.usuario_id');
-        $this->db->join('usuarios as uem','uem.id = cs.empresa_id');
-        $this->db->join('usuarios as ust','ust.id = cs.startup_id');
-        $this->db->join('vi_desafios as vd','cs.desafio_id = vd.desafio_id');
+        $this->db->group_start();
+        $this->db->where('vd.estado_usuario_id', USR_ENABLED);
+        $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
+        $this->db->group_end();
+        $this->db->join('empresas as em', 'cs.empresa_id = em.usuario_id');
+        $this->db->join('startups as st', 'cs.startup_id = st.usuario_id');
+        $this->db->join('usuarios as uem', 'uem.id = cs.empresa_id');
+        $this->db->join('usuarios as ust', 'ust.id = cs.startup_id');
+        $this->db->join('vi_desafios as vd', 'cs.desafio_id = vd.desafio_id');
         $this->db->order_by('cs.fecha_de_contacto', 'DESC');
         return $this->db->get()->result();
 
@@ -40,7 +47,8 @@ class Contacto_model extends CI_Model {
         // var_dump($this->db->last_query());die();
     }
 
-    public function getContactoData($usuario_id,$tipo_de_empresa,$usuario_a_buscar,$desafio_id){
+    public function getContactoData($usuario_id, $tipo_de_empresa, $usuario_a_buscar, $desafio_id)
+    {
         $this->db->select('
             em.razon_social as nombre_empresa,
             em.titular as titular_empresa,
@@ -98,22 +106,24 @@ class Contacto_model extends CI_Model {
             vd.requisitos_del_desafio
             ');
         $this->db->from('contacto_startups as cs');
-        if($tipo_de_empresa == ROL_STARTUP){
-            $this->db->where('cs.startup_id',$usuario_id);
-            $this->db->where('cs.empresa_id',$usuario_a_buscar);
-        }else if($tipo_de_empresa == ROL_EMPRESA){
-            $this->db->where('cs.empresa_id',$usuario_id);
-            $this->db->where('cs.startup_id',$usuario_a_buscar);
+        if ($tipo_de_empresa == ROL_STARTUP) {
+            $this->db->where('cs.startup_id', $usuario_id);
+            $this->db->where('cs.empresa_id', $usuario_a_buscar);
+        } else if ($tipo_de_empresa == ROL_EMPRESA) {
+            $this->db->where('cs.empresa_id', $usuario_id);
+            $this->db->where('cs.startup_id', $usuario_a_buscar);
         }
-        $this->db->where('cs.desafio_id',$desafio_id);
-        $this->db->join('empresas as em','cs.empresa_id = em.usuario_id');
-        $this->db->join('startups as st','cs.startup_id = st.usuario_id');
-        $this->db->join('usuarios as uem','uem.id = cs.empresa_id');
-        $this->db->join('usuarios as ust','ust.id = cs.startup_id');
-        $this->db->join('vi_desafios as vd','cs.desafio_id = vd.desafio_id');
+        $this->db->where('cs.desafio_id', $desafio_id);
+        $this->db->group_start();
+        $this->db->where('vd.estado_usuario_id', USR_ENABLED);
+        $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
+        $this->db->group_end();
+        $this->db->join('empresas as em', 'cs.empresa_id = em.usuario_id');
+        $this->db->join('startups as st', 'cs.startup_id = st.usuario_id');
+        $this->db->join('usuarios as uem', 'uem.id = cs.empresa_id');
+        $this->db->join('usuarios as ust', 'ust.id = cs.startup_id');
+        $this->db->join('vi_desafios as vd', 'cs.desafio_id = vd.desafio_id');
         $this->db->order_by('cs.fecha_de_contacto', 'DESC');
         return $this->db->get()->row();
     }
 }
-
-?>
