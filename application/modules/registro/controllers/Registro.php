@@ -86,7 +86,7 @@ class Registro extends MX_Controller
 
                 $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
 
-                exec('php index.php cli enviarcorreosencolados ' . $email_id);
+                modules::run('cli/enviarcorreosencolados', $email_id);
 
                 $mensaje_registro_gral = $this->Registro_model->getMensajeRegistroGral();
 

@@ -25,7 +25,8 @@ class Home extends MX_Controller
                 $data['sections_view'] = 'home_empresas_view';
                 break;
             case ROL_PARTNER:
-                $data['sections_views'] = 'home_partener_view';
+                $data['sections_view'] = 'home_partner_view';
+                break;
             case ROL_ADMIN_ORGANIZACION:
                 $data['sections_view'] = 'home_admin_gcba_view';
                 $data['files_js'] = array('graficos/graficos.js');

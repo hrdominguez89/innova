@@ -65,7 +65,8 @@ class Usuarios extends MX_Controller
 
             $email_id = $this->crearEmail($mensaje_de_plataforma, $usuario['email'], $buscar_y_reemplazar);
 
-            exec('php index.php cli enviarcorreosencolados ' . $email_id);
+            modules::run('cli/enviarcorreosencolados', $email_id);
+
 
 
             echo json_encode(array(
@@ -194,7 +195,7 @@ class Usuarios extends MX_Controller
 
                 $email_id = $this->crearEmail($mensaje_de_plataforma, $usuario['email'], $buscar_y_reemplazar);
 
-                exec('php index.php cli enviarcorreosencolados ' . $email_id);
+                modules::run('cli/enviarcorreosencolados', $email_id);
             }
 
             echo json_encode(array(

@@ -31,6 +31,9 @@ class Profile extends MX_Controller
             case ROL_EMPRESA:
                 $data['sections_view'] = 'profile_empresa_view';
                 break;
+            case ROL_PARTNER:
+                $data['sections_view'] = 'profile_partner_view';
+                break;
             case ROL_ADMIN_ORGANIZACION:
             case ROL_ADMIN_PLATAFORMA:
                 $data['sections_view'] = 'profile_admins_view';
@@ -46,7 +49,7 @@ class Profile extends MX_Controller
         //SEGUN EL ROL, HAGO VALIDACIONES DEL POST.
 
         if ($this->input->post()) {
-            if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_ORGANIZACION || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
+            if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_ORGANIZACION || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_PARTNER) {
                 $this->rulesPerfilAdmin($data['data_perfil']);
             } else {
                 $this->rulesPerfil($data['data_perfil']);
@@ -166,6 +169,7 @@ class Profile extends MX_Controller
                             redirect(base_url() . 'home');
                         }
                         break;
+                    case ROL_PARTNER:
                     case ROL_ADMIN_ORGANIZACION:
                     case ROL_ADMIN_PLATAFORMA:
                         //Guardo datos del usuario

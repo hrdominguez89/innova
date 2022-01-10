@@ -195,7 +195,8 @@ class Auth extends MX_Controller
                     $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
 
 
-                    exec('php index.php cli enviarcorreosencolados ' . $email_id);
+                    modules::run('cli/enviarcorreosencolados', $email_id);
+
 
                     if (ENVIRONMENT != 'development') {
                         $_SESSION['mensaje_back'] = 'Se envió un correo a la cuenta ' . $email . ', con un enlace temporal, dispone de 48 horas para poder cambiar la contraseña.';
@@ -285,7 +286,8 @@ class Auth extends MX_Controller
 
                         $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
 
-                        exec('php index.php cli enviarcorreosencolados ' . $email_id);
+                        modules::run('cli/enviarcorreosencolados', $email_id);
+
 
                         $mensaje_registro_gral = $this->Registro_model->getMensajeRegistroGral();
 
@@ -365,7 +367,7 @@ class Auth extends MX_Controller
         $code_decoded = base64_decode($this->input->get('code'));
         $user = $this->Auth_model->getUserDataByEmail($this->input->get('email'));
         if ($user) {
-            if ($user->estado_id == USR_DISABLED) {
+            if ($user->estado_id == USR_DISABLED || $user->estado_id == USR_DELETED) {
                 if (ENVIRONMENT != 'development') {
                     $_SESSION['mensaje_back'] = 'No es posible realizar un cambio de contraseña debido a que su cuenta se encuentra deshabilitada, para mas información contactese con los administradores.';
                     redirect(base_url() . URI_WP . '/mensajes');
@@ -410,7 +412,8 @@ class Auth extends MX_Controller
                             if ($user->estado_id == USR_PENDING || $user->estado_id == USR_VERIFIED) {
                                 $user_data['estado_id'] = USR_ENABLED;
                             }
-                            $this->Auth_model->updateUser($user_data, $this->input->post('email'));
+                            $this->Auth_model->updateUser($user_data, $user->email);
+                            
                             $this->load->model('mensajes/Mensajes_model');
 
                             $mensaje_de_la_plataforma = $this->Mensajes_model->getMensaje('mensaje_cambio_contraseña');
@@ -423,7 +426,7 @@ class Auth extends MX_Controller
 
                             $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
 
-                            exec('php index.php cli enviarcorreosencolados ' . $email_id);
+                            modules::run('cli/enviarcorreosencolados', $email_id);
 
                             switch (ENVIRONMENT) {
                                 case 'development':
@@ -509,7 +512,8 @@ class Auth extends MX_Controller
 
                         $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
 
-                        exec('php index.php cli enviarcorreosencolados ' . $email_id);
+                        modules::run('cli/enviarcorreosencolados', $email_id);
+
 
 
                         $mensaje_verificacion = $email_mensaje;

@@ -7,7 +7,7 @@
   <meta name="description" content="Innova 4.0">
   <meta name="author" content="Innova 4.0">
   <link rel="icon" href="<?php echo base_url(); ?>assets/img/favicon.png">
-  
+
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
   <!-- Si $data['recaptcha'] = true muestro script de recaptcha-->
@@ -26,11 +26,11 @@
   <!-- CSS Files -->
   <link href="<?php echo base_url(); ?>assets/material/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
   <link href="<?php echo base_url(); ?>assets/material/css/chartist.min.css?v=2.1.2" rel="stylesheet" />
-  
+
   <!-- CROPPER File -->
   <link rel="stylesheet" href="<?php echo base_url() . 'assets/cropperjs/cropper.min.css'; ?>" integrity="sha512-NCJ1O5tCMq4DK670CblvRiob3bb5PAxJ7MALAz2cV40T9RgNMrJSAwJKy0oz20Wu7TDn9Z2WnveirOeHmpaIlA==" crossorigin="anonymous" />
   <link href="<?php echo base_url() . 'assets/css/perfect-scrollbar.css'; ?>" rel="stylesheet">
-  
+
   <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/styles.css">
   <?php
   if (isset($files_css)) {
@@ -52,6 +52,9 @@
         break;
       case ROL_EMPRESA:
         $this->load->view('menus/menu_empresas_view');
+        break;
+      case ROL_PARTNER:
+        $this->load->view('menus/menu_partners_view');
         break;
       case ROL_ADMIN_ORGANIZACION:
         $this->load->view('menus/menu_admin_gcba_view');
