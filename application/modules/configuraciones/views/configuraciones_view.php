@@ -11,7 +11,7 @@
         })
     </script>
 <?php endif; ?>
-<div class="content">
+<div class="content" id="top">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 d-lg-none">
@@ -216,11 +216,33 @@
                             <!-- Configuraciones de mensajes -->
 
                             <div class="tab-pane <?php echo $this->input->post('config_mensajes') ? 'active show' : ''; ?>" id="link2">
+
+                                <div class="row text-center">
+                                    <div class="col-12">
+                                        <label>Escriba y seleccione un mensaje.
+                                            <input list="dataListTitulosMensajes" id="dataListTitulosMensajesInput" class="form-control">
+                                        </label>
+                                        <datalist id="dataListTitulosMensajes">
+                                            <?php
+                                            foreach ($mensajes_de_la_plataforma as $mensaje_de_la_plataforma) : ?>
+                                                <option value="<?php echo $mensaje_de_la_plataforma->id . '-' . $mensaje_de_la_plataforma->titulo_mensaje; ?>"><?php echo $mensaje_de_la_plataforma->id . '-' . $mensaje_de_la_plataforma->titulo_mensaje; ?></option>
+                                            <?php endforeach; ?>
+                                        </datalist>
+                                        <button class="btn btn-sm btn-primary m-2" id="dataListTitulosMensajesBotonIrAlMensaje">Ir al mensaje</button>
+
+                                        <button class="btn btn-sm btn-primary m-2" id="dataListTitulosMensajesBotonLimpiar">Limpiar</button>
+                                    </div>
+                                    <div class="col-12" id="dataListTitulosMensajesError" style="display:none;">
+                                        <small class="badge badge-danger">Debe elegir un mensaje del listado.</small>
+                                    </div>
+
+                                </div>
+
                                 <form method="post">
                                     <div class="card-body">
                                         <?php $i = 0;
                                         foreach ($mensajes_de_la_plataforma as $mensaje_de_la_plataforma) : ?>
-                                            <div style="<?php echo $i % 2 != 0 ? 'background-color:#d6d6d610' : ''; ?>" class="border my-5 p-5">
+                                            <div style="<?php echo $i % 2 != 0 ? 'background-color:#d6d6d610' : ''; ?>" id="card-mensaje-id-<?php echo $mensaje_de_la_plataforma->id; ?>" class="border my-5 p-5">
                                                 <input type="hidden" value="<?php echo $mensaje_de_la_plataforma->id; ?>" name="mensaje_id[]">
                                                 <?php echo form_error('mensaje_id[]'); ?>
                                                 <h5 class="font-weight-bold text-primary"><?php echo $mensaje_de_la_plataforma->titulo_mensaje; ?></h5>
@@ -301,7 +323,7 @@
                                                             <?php echo form_error('notificador_id[]'); ?>
                                                         </div>
                                                     </div>
-                                                <?php elseif($mensaje_de_la_plataforma->tipo_de_mensaje_id == MSJ_PLATAFORMA):?>
+                                                <?php elseif ($mensaje_de_la_plataforma->tipo_de_mensaje_id == MSJ_PLATAFORMA) : ?>
                                                     <input type="hidden" name="tipo_de_envio_id[]" value="NULL">
                                                     <input type="hidden" name="notificador_id[]" value="NULL">
                                                 <?php endif; ?>
@@ -317,7 +339,12 @@
                                         <?php $i++;
                                         endforeach; ?>
                                         <div style="position: fixed;right:30px;bottom:80px;">
-                                            <button type="submit" name="config_mensajes" value="config_mensajes" class="btn btn-primary">Guardar</button>
+                                            <div class="col-12">
+                                                <button type="submit" name="config_mensajes" value="config_mensajes" class="btn btn-primary">Guardar</button>
+                                            </div>
+                                            <div class="col-12 mt-5 text-center">
+                                                <a title="Ir arriba" href="#top" style="font-size: 40px;"><i class="fas fa-arrow-alt-circle-up"></i></a>
+                                            </div>
                                         </div>
                                 </form>
                             </div>

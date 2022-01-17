@@ -66,13 +66,13 @@ class Desafios extends MX_Controller
                 $this->config_pagination['total_rows'] = count($this->Desafios_model->getDesafiosVigentesPorCategorias($array_categorias));
                 $this->pagination->initialize($this->config_pagination);
 
-                foreach ($categorias as $categoria) {
-                    $array_categorias[] = $categoria->categoria_id;
-                }
+                // foreach ($categorias as $categoria) {
+                //     $array_categorias[] = $categoria->categoria_id;
+                // }
                 $data['desafios'] = $this->Desafios_model->getDesafiosVigentesPorCategorias($array_categorias, $this->start, $this->limit);
                 $this->load->model('postulados/Postulados_model');
                 $postulaciones = $this->Postulados_model->getPostulacionesByStartupId($this->session->userdata('user_data')->id);
-                foreach ($postulaciones as $postulacion){
+                foreach ($postulaciones as $postulacion) {
                     $data['postulaciones'][$postulacion->desafio_id] = $postulacion;
                 }
                 $data['sections_view'] = 'desafios_cartelera_view';
@@ -82,12 +82,27 @@ class Desafios extends MX_Controller
                 $data['sections_view'] = 'desafios_abm_view';
                 $data['files_js'] = array('desafios/carga_desafios.js');
                 break;
+            case ROL_PARTNER:
+                $this->config_pagination['base_url'] = base_url() . 'desafios';
+                $this->config_pagination['total_rows'] = count($this->Desafios_model->getDesafiosVigentes());
+                $this->pagination->initialize($this->config_pagination);
+
+                $data['desafios'] = $this->Desafios_model->getDesafiosVigentes($this->start, $this->limit);
+                $this->load->model('postulados/Postulados_model');
+                $postulaciones = $this->Postulados_model->getPostulacionesByStartupId($this->session->userdata('user_data')->id);
+                foreach ($postulaciones as $postulacion) {
+                    $data['postulaciones'][$postulacion->desafio_id] = $postulacion;
+                }
+                $data['files_js'] =  array('partners/desafios_partner.js');
+                $data['sections_view'] = 'desafios_cartelera_partner_view';
+                break;
+
             case ROL_ADMIN_ORGANIZACION:
             case ROL_ADMIN_PLATAFORMA:
                 $data['categorias'] = $this->Desafios_model->getCategorias();
                 $data['desafios'] = $this->Desafios_model->getTodosLosDesafios();
                 $data['sections_view'] = 'desafios_admin_list_view';
-                $data['files_js'] = array('desafios/desafios_abm_admin_plataforma.js','activar_tabla_comun.js');
+                $data['files_js'] = array('desafios/desafios_abm_admin_plataforma.js', 'activar_tabla_comun.js');
                 break;
         }
         $data['title'] = 'Desafíos';
@@ -99,47 +114,47 @@ class Desafios extends MX_Controller
         if ($this->validarAcceso()) {
             $this->load->model('postulados/Postulados_model');
             $desafio_id = $this->input->post('desafio_id');
-            $desafios_ya_postulados = $this->Postulados_model->getPostulacionesByDesafioId($desafio_id,$this->session->userdata('user_data')->id);
-            if($desafios_ya_postulados){
+            $desafios_ya_postulados = $this->Postulados_model->getPostulacionesByDesafioId($desafio_id, $this->session->userdata('user_data')->id);
+            if ($desafios_ya_postulados) {
                 echo json_encode(array(
                     "status_code" => 200,
                     "postulado" => false,
                     "title" => 'Postulación vigente',
                     "mensaje" => 'Ya se encuentra postulado a este desafío.'
                 ));
-            }else{
+            } else {
                 $desafio_data = $this->Desafios_model->getDesafioById($desafio_id);
-    
+
                 //TRAIGO CANTIDAD DE DESAFIOS POSTULADOS POR EMPRESA Y SI EL DESAFIO ESTA VIGENTE O FINALIZADO.
-                $cantidad_de_desafios = count($this->Desafios_model->getCantidadDePostulacionesByEmpresa($this->session->userdata('user_data')->id,$desafio_data->id_empresa));
+                $cantidad_de_desafios = count($this->Desafios_model->getCantidadDePostulacionesByEmpresa($this->session->userdata('user_data')->id, $desafio_data->id_empresa));
                 $configuracion = $this->Desafios_model->getCantidadMaximaDePostulaciones();
                 if ($cantidad_de_desafios < $configuracion->postulaciones_maximas) {
                     $postulacion['desafio_id'] = $desafio_id;
                     $postulacion['startup_id'] = $this->session->userdata('user_data')->id;
                     $postulacion['fecha_postulacion'] = date('Y-m-d H:i:s', time());
                     $postulacion['estado_postulacion'] = POST_PENDIENTE;
-    
+
                     $this->Desafios_model->insertPostulacion($postulacion);
-    
+
                     $this->load->helper(array('send_email_helper'));
                     $this->load->model('mensajes/Mensajes_model');
-    
+
                     $data_startup = $this->Desafios_model->getDataStartup($this->session->userdata('user_data')->id);
-    
-    
+
+
                     $buscar_y_reemplazar = array(
                         array('buscar' => '{{NOMBRE_RAZON_SOCIAL_STARTUP}}', 'reemplazar' => $data_startup->razon_social),
                         array('buscar' => '{{DESAFIO_NOMBRE}}', 'reemplazar' => $desafio_data->nombre_del_desafio),
                         array('buscar' => '{{NOMBRE_RAZON_SOCIAL_EMPRESA}}', 'reemplazar' => $desafio_data->nombre_empresa),
                     );
                     $mensaje_de_plataforma_a_administradores = $this->Mensajes_model->getMensaje('mensaje_nuevo_postulado_a_administradores');
-    
+
                     //creo notificacion para administradores
                     $this->crearNotificacion($mensaje_de_plataforma_a_administradores, FALSE, $this->session->userdata('user_data'), $buscar_y_reemplazar);
-    
-    
+
+
                     $mensaje_de_plataforma_a_empresa = $this->Mensajes_model->getMensaje('mensaje_nuevo_postulado_a_empresas');
-    
+
                     switch ($mensaje_de_plataforma_a_empresa->tipo_de_envio_id) {
                         case ENVIO_NOTIFICACION:
                             $mensaje_de_notificacion = $this->Mensajes_model->getMensaje('mensaje_nueva_notificacion');
@@ -154,7 +169,7 @@ class Desafios extends MX_Controller
                             $this->crearEmail($mensaje_de_plataforma_a_empresa, $desafio_data, $buscar_y_reemplazar);
                             break;
                     }
-    
+
                     echo json_encode(array(
                         "status_code" => 200,
                         "postulado" => true,
@@ -197,7 +212,7 @@ class Desafios extends MX_Controller
                 } else {
                     $desafio['usuario_empresa_id'] = $this->session->userdata('user_data')->id;
                 }
-                
+
                 $desafio['usuario_id_alta'] = $this->session->userdata('user_data')->id;
                 $desafio['fecha_alta'] = date('Y-m-d H:i:s', time());
 
@@ -291,13 +306,13 @@ class Desafios extends MX_Controller
     public function getDesafioByDesafioId()
     {
         if ($this->validarAcceso()) {
-            if($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA){
+            if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
                 $user_id = FALSE;
-            }else{
+            } else {
                 $user_id = $this->session->userdata('user_data')->id;
             }
             $desafio_id = $this->input->post('desafio_id');
-            $desafio = $this->Desafios_model->getDesafioByDesafioId($desafio_id,$user_id);
+            $desafio = $this->Desafios_model->getDesafioByDesafioId($desafio_id, $user_id);
             echo json_encode(
                 array(
                     'status_code'   => 200,
@@ -426,10 +441,10 @@ class Desafios extends MX_Controller
 
     public function verificar_fecha_fin_postulacion($fecha_fin, $fechas_parametros) //fecha de fin de postulación debe ser mayor a fecha de inicio
     {
-        $fecha_inicio = explode(',',$fechas_parametros)[0];
+        $fecha_inicio = explode(',', $fechas_parametros)[0];
 
-        $fecha_fin_bd = explode(',',$fechas_parametros)[1]? explode(',',$fechas_parametros)[1]: false;
-        
+        $fecha_fin_bd = explode(',', $fechas_parametros)[1] ? explode(',', $fechas_parametros)[1] : false;
+
         if ($fecha_inicio >= $fecha_fin) {
             $this->form_validation->set_message('verificar_fecha_fin_postulacion', 'El campo {field} debe ser mayor a la fecha de Inicio del desafío');
             return false;
@@ -562,16 +577,42 @@ class Desafios extends MX_Controller
             $data_desafio['estado_id'] = DESAF_ELIMINADO;
             $data_desafio['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
             $data_desafio['fecha_modifico'] = date('Y-m-d H:i:s', time());
-            if($this->Desafios_model->actualizarDesafio($data_desafio,$desafio_id)){
+            if ($this->Desafios_model->actualizarDesafio($data_desafio, $desafio_id)) {
                 $data = array(
                     'status'    => true,
                 );
-            }else{
+            } else {
                 $data = array(
                     'status'    => false,
                     'msg'       => 'No fue posible modificar el desafío.'
                 );
             }
+        }
+        echo json_encode($data);
+    }
+
+    public function compartirDesafio(){
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
+        }
+
+        if (!$this->input->is_ajax_request() && $this->session->userdata('user_data')->rol_id != ROL_PARTNER) {
+            redirect(base_url() . 'home');
+        }
+
+        $data_compartir['desafio_id'] = $this->input->post('desafio_id');
+        $data_compartir['empresa_id'] = $this->input->post('empresa_id');
+        $data_compartir['startup_id'] = $this->input->post('startup_id');
+        $data_compartir['partner_id'] = $this->session->userdata('user_data')->id;
+        $data_compartir['fecha'] = date('Y-m-d H:i:s', time());
+        if($this->Desafios_model->compartirDesafio($data_compartir)){
+            $data = array(
+                'status' => true,
+            );
+        }else{
+            $data = array(
+                'status' => false,
+            );
         }
         echo json_encode($data);
     }

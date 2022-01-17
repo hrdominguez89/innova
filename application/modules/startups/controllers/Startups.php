@@ -106,11 +106,11 @@ class Startups extends MX_Controller
             $data_usuario['estado_id'] = USR_DELETED;
             $data_usuario['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
             $data_usuario['fecha_modifico'] = date('Y-m-d H:i:s', time());
-            if($this->Startups_model->actualizarStartup($data_usuario,$usuario_id)){
+            if ($this->Startups_model->actualizarStartup($data_usuario, $usuario_id)) {
                 $data = array(
                     'status'    => true,
                 );
-            }else{
+            } else {
                 $data = array(
                     'status'    => false,
                     'msg'       => 'No fue posible modificar el estado del usuario.'
@@ -118,5 +118,54 @@ class Startups extends MX_Controller
             }
         }
         echo json_encode($data);
+    }
+
+    public function getStartupsCompatiblesPorDesafioId()
+    {
+
+
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
+        }
+
+        if (!$this->input->is_ajax_request() && $this->session->userdata('user_data')->rol_id != ROL_PARTNER) {
+            redirect(base_url() . 'home');
+        }
+
+        $desafio_id = $this->input->post('desafio_id');
+        $partner_id = $this->session->userdata('user_data')->id;
+        $this->load->model('desafios/Desafios_model');
+        $categorias_desafio = $this->Desafios_model->getCategoriasDelDesafio($desafio_id);
+        $array_categorias_desafio = [];
+        foreach ($categorias_desafio as $categoria) {
+            $array_categorias_desafio[] = $categoria->categoria_id;
+        }
+        $startupsCompatibles = $this->Startups_model->getStartupsCompatiblesPorDesafioId($array_categorias_desafio, $partner_id);
+        $data = array(
+            'status' => true,
+            'data' => $startupsCompatibles
+        );
+        echo json_encode($data);
+    }
+
+    public function getStartupById(){
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
+        }
+
+        if (!$this->input->is_ajax_request() && $this->session->userdata('user_data')->rol_id != ROL_PARTNER) {
+            redirect(base_url() . 'home');
+        }
+
+        $desafio_id = $this->input->post('desafio_id');
+        $startup_id = $this->input->post('startup_id');
+        $partner_id = $this->session->userdata('user_data')->id;
+        $startup_data = $this->Startups_model->getStartupByIdForPartner($startup_id);
+        $data = array(
+            'status' => true,
+            'data' => $startup_data
+        );
+        echo json_encode($data);
+
     }
 }

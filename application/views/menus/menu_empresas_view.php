@@ -27,7 +27,7 @@
         <a class="nav-link" href="<?php echo base_url();?>desafios">
           <i class="material-icons">ballot</i>
           <p>
-            Desafios
+            Desafíos
           </p>
         </a>
       </li>

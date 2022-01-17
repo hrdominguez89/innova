@@ -16,14 +16,19 @@ class Startups_model extends CI_Model
         $this->db->join('startups as st', 'st.usuario_id = u.id');
         $this->db->join('postulaciones as p', 'p.startup_id = u.id', 'left');
         $this->db->join('contacto_startups as cs', 'cs.startup_id = u.id', 'left');
-        $this->db->where('u.estado_id !=',USR_DELETED);
-        if($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA){
-            $this->db->or_where('u.estado_id',USR_ENABLED);
-            $this->db->or_where('u.estado_id',USR_VERIFIED);
+        $this->db->where('u.rol_id', ROL_STARTUP);
+        $this->db->group_start();
+        $this->db->where('u.estado_id !=', USR_DELETED);
+        if ($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA) {
+            $this->db->or_where('u.estado_id', USR_ENABLED);
+            $this->db->or_where('u.estado_id', USR_VERIFIED);
         }
+        $this->db->group_end();
         $this->db->group_by('u.id');
         return $this->db->get()->result();
-        // var_dump($this->db->last_query(''));die();
+        // $this->db->get()->result();
+        // var_dump($this->db->last_query());
+        // die();
     }
 
 
@@ -32,6 +37,14 @@ class Startups_model extends CI_Model
         $this->db->select('*');
         $this->db->where('usuario_id', $startup_id);
         $this->db->from('vi_startups_info');
+        return $this->db->get()->row();
+    }
+
+    public function getStartupByIdForPartner($startup_id)
+    {
+        $this->db->select('vs.razon_social,vs.descripcion,vs.antecedentes,vs.exporta,vs.objetivo_y_motivacion,vs.nombre_de_categorias,vs.rubro,vs.logo');
+        $this->db->from('vi_startups_info vs');
+        $this->db->where('usuario_id', $startup_id);
         return $this->db->get()->row();
     }
 
@@ -65,5 +78,20 @@ class Startups_model extends CI_Model
             return TRUE;
         } //If Rollback
 
+    }
+    public function getStartupsCompatiblesPorDesafioId($array_categorias, $partner_id)
+    {
+        $query = $this->db->select('vs.razon_social, vs.usuario_id as startup_id')
+            ->from('vi_startups_info vs')
+            ->join('categorias_startups as cs', 'cs.startup_id = vs.usuario_id')
+            ->where_in('cs.categoria_id', $array_categorias)
+            ->group_start()
+            ->where('vs.estado_usuario_id', USR_ENABLED)
+            ->or_where('vs.estado_usuario_id', USR_VERIFIED)
+            ->group_end()
+            ->order_by('vs.usuario_id')
+            ->group_by('vs.usuario_id')
+            ->get()->result();
+        return $query;
     }
 }

@@ -76,6 +76,7 @@ class Configuraciones extends MX_Controller
                 }
             }
         }
+        $data['files_js'] = array('configuraciones/configuraciones.js');
         $data['tipos_de_envio'] = $this->Configuraciones_model->getTiposDeEnvio();
         $data['notificadores'] = $this->Configuraciones_model->getNotificadores();
         $data['mensajes_de_la_plataforma'] = $this->Configuraciones_model->getMensajesDeLaPlataforma();

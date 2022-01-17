@@ -1,0 +1,44 @@
+<div class="modal fade" id="startupCompatible" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-labelledby="startupCompatibleLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="startupCompatibleLabel">STARTUP NOMBRE</h5>
+        <button type="button" class="close" onclick="cerrarModal(this)" data-modal-id="startupCompatible" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="startupCompatibleLoading" class="text-center" style="display:block;">
+          <img class="p-3" src="<?php echo base_url(); ?>assets/img/loading.gif" alt="loading gif">
+          <p>Cargando...</p>
+        </div>
+        <div id="startupCompatibleDiv" style="display:none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default m-2" onclick="cerrarModal(this)" data-modal-id="startupCompatible">Cerrar</button>
+        <button type="button" class="btn btn-primary m-2" data-toggle="modal" data-target="#compartirDesafio">Compartir desafío</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="compartirDesafio" tabindex="-1" aria-labelledby="compartirDesafioLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="compartirDesafioLabel">Compartir desafío</h5>
+        <button type="button" class="close" data-dismiss="modal" data-modal-id="compartirDesafio" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ¿Está seguro que deséa compartir este desafío?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default m-2" data-dismiss="modal" data-modal-id="compartirDesafio">Cancelar</button>
+        <button type="button" class="btn btn-primary m-2" id="compartirDesafioBoton">Si, compartir</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -119,6 +119,22 @@ class Desafios_model extends CI_Model
         } //If Rollback
     }
 
+    public function getDesafiosVigentes($start = false, $limit = false){
+        if ($limit !== false && $start !== false) {
+            $this->db->limit($limit, $start);
+        }
+        $query = $this->db->select('vd.*')
+            ->from('vi_desafios vd')
+            ->where('vd.desafio_estado_id', DESAF_VIGENTE)
+            ->group_start()
+            ->where('vd.estado_usuario_id', USR_ENABLED)
+            ->or_where('vd.estado_usuario_id', USR_VERIFIED)
+            ->group_end()
+            ->order_by('vd.desafio_id')
+            ->get()->result();
+        return $query;
+    }
+
     public function getDesafiosVigentesPorCategorias($array_categorias, $start = false, $limit = false)
     {
         if ($limit !== false && $start !== false) {
@@ -311,5 +327,31 @@ class Desafios_model extends CI_Model
             return TRUE;
         } //If Rollback
 
+    }
+
+    public function getCategoriasDelDesafio($desafio_id){
+        $query = $this->db->select('*')
+        ->from('categorias_desafios')
+        ->where('desafio_id',$desafio_id)
+        ->get()
+        ->result();
+        return $query;
+    }
+
+    public function compartirDesafio($data_compartir){
+        $this->db->trans_begin();
+
+        $this->db->insert('recomendaciones', $data_compartir);
+
+        // Condicional del Rollback 
+        if ($this->db->trans_status() === FALSE) {
+            //Hubo errores en la consulta, entonces se cancela la transacción.   
+            $this->db->trans_rollback();
+            return FALSE;
+        } else {
+            //Todas las consultas se hicieron correctamente.  
+            $this->db->trans_commit();
+            return TRUE;
+        } //If Rollback
     }
 }
