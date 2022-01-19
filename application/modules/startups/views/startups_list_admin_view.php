@@ -56,7 +56,7 @@
                                 <tbody>
                                     <?php if (!@$startups) :; ?>
                                         <tr>
-                                            <td colspan="9" class="text-center">No hay startups registradas</td>
+                                            <td colspan="10" class="text-center">No hay startups registradas</td>
                                         </tr>
                                     <?php else : ?>
                                         <?php foreach ($startups as $startup) :; ?>

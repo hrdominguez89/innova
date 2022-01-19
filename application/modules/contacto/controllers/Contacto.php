@@ -42,7 +42,7 @@ class Contacto extends MX_Controller
 
     public function startup($startup_id, $desafio_id)
     {
-        if (!$this->session->userdata('user_data')->rol_id == ROL_EMPRESA) {
+        if ($this->session->userdata('user_data')->rol_id != ROL_EMPRESA) {
             redirect(base_url() . 'home');
         }
         $data['contacto_data'] = $this->Contacto_model->getContactoData($this->session->userdata('user_data')->id, $this->session->userdata('user_data')->rol_id, $startup_id, $desafio_id);
@@ -53,7 +53,7 @@ class Contacto extends MX_Controller
     }
     public function empresa($empresa_id, $desafio_id)
     {
-        if (!$this->session->userdata('user_data')->rol_id == ROL_STARTUP) {
+        if ($this->session->userdata('user_data')->rol_id != ROL_STARTUP) {
             redirect(base_url() . 'home');
         }
         $data['contacto_data'] = $this->Contacto_model->getContactoData($this->session->userdata('user_data')->id, $this->session->userdata('user_data')->rol_id, $empresa_id, $desafio_id);

@@ -147,7 +147,7 @@ class Auth extends MX_Controller
                     'valid_captcha' => 'El campo {field} no pudo ser validado correctamente, recargue la página e intente nuevamente.',
                 )
             );
-            if (!$this->form_validation->run() ==  FALSE) {
+            if ($this->form_validation->run() !=  FALSE) {
                 $email = $this->input->post('email');
                 $user_data = $this->Auth_model->getUserDataByEmail($email);
                 if ($user_data) {
@@ -413,7 +413,7 @@ class Auth extends MX_Controller
                                 $user_data['estado_id'] = USR_ENABLED;
                             }
                             $this->Auth_model->updateUser($user_data, $user->email);
-                            
+
                             $this->load->model('mensajes/Mensajes_model');
 
                             $mensaje_de_la_plataforma = $this->Mensajes_model->getMensaje('mensaje_cambio_contraseña');
@@ -578,6 +578,7 @@ class Auth extends MX_Controller
         }
         $data['sections_view'] = "message_view";
         $this->load->view('layout_front_view', $data);
+        $this->session->sess_destroy();
     }
 
     private function loginrules()

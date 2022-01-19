@@ -26,7 +26,7 @@ class Registro extends MX_Controller
     {
         if ($this->input->post()) {
             $this->rulesRegistro();
-            if (!$this->form_validation->run() == FALSE) {
+            if ($this->form_validation->run() != FALSE) {
 
                 $user_data['nombre'] = ucwords(mb_strtolower($this->input->post('name'), 'UTF-8'));
                 $user_data['apellido'] = ucwords(mb_strtolower($this->input->post('lastname'), 'UTF-8'));

@@ -16,7 +16,7 @@ class Empresas_model extends CI_Model {
         $this->db->join('postulaciones as p','p.desafio_id = vd.desafio_id','left');
         $this->db->join('contacto_startups as cs','cs.empresa_id = u.id','left');
         $this->db->where('u.estado_id !=',USR_DELETED);
-        if(!$this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA){
+        if($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA){
             $this->db->where('u.estado_id',USR_ENABLED);
             $this->db->or_where('u.estado_id',USR_VERIFIED);
         }

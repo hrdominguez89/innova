@@ -21,7 +21,7 @@ class Configuraciones extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
-        if (!$this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
+        if ($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA) {
             redirect(base_url() . 'home');
         }
         if ($this->input->post()) {

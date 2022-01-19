@@ -384,7 +384,7 @@ class Desafios extends MX_Controller
 
     public function ver($desafio_id)
     {
-        if (!$this->session->userdata('user_data')->rol_id == ROL_STARTUP) {
+        if ($this->session->userdata('user_data')->rol_id != ROL_STARTUP) {
             redirect(base_url() . 'home');
         }
         $data['files_js'] = array('desafios/desafio_postularme.js');
