@@ -4,6 +4,10 @@ var empresaId;
 var startupId;
 var startupData;
 var listadoDeStartups;
+var botonDesafioCompartido;
+var botonCompartirDesafio;
+var botonDesafioPostulado;
+
 const dataTableOptions = {
   destroy: true,
   responsive: true,
@@ -14,6 +18,26 @@ const dataTableOptions = {
   columns: [
     {
       data: "razon_social",
+    },
+    {
+      className: "text-center",
+      searchable: false,
+      render: function (data, type, full, meta) {
+        const postulado = parseInt(full.postulado)
+          ? '<i class="text-success far fa-check-circle"></i>'
+          : "";
+        return postulado;
+      },
+    },
+    {
+      className: "text-center",
+      searchable: false,
+      render: function (data, type, full, meta) {
+        const compartido = parseInt(full.compartido)
+          ? '<i class="text-success far fa-check-circle"></i>'
+          : "";
+        return compartido;
+      },
     },
     {
       className: "text-right",
@@ -33,21 +57,24 @@ window.addEventListener("load", () => {
   tablaStartupsCompatibles = $("#startupsCompatiblesTable").DataTable(
     dataTableOptions
   );
+  botonDesafioCompartido = $("#botonDesafioCompartido");
+  botonCompartirDesafio = $("#botonCompartirDesafio");
+  botonDesafioPostulado = $("#botonDesafioPostulado");
 });
 
 const escucharBotonCompartirDesafio = () => {
   const botonCompartir = $("#compartirDesafioBoton");
-  botonCompartir.on("click", () => {
+  botonCompartir.on("click", async () => {
     const respCompartir = compartirDesafio();
-    console.log(respCompartir);
-    mostrarResultadoCompartir(respCompartir);
+    await mostrarResultadoCompartir(respCompartir);
+    $("#compartirDesafio").modal("hide");
   });
 };
 
-const mostrarResultadoCompartir = (resultado)=>{
-  resultado.then((res)=>{
+const mostrarResultadoCompartir = (resultado) => {
+  resultado.then((res) => {
     console.log(res);
-    if (res) {
+    if (res.status) {
       swal({
         // title: "El desafio fue compartido",
         text: "El desafio fue compartido.",
@@ -56,24 +83,26 @@ const mostrarResultadoCompartir = (resultado)=>{
         timer: 5000,
         confirmButtonClass: "btn btn-success",
       });
+      botonDesafioCompartido.show();
+      botonCompartirDesafio.hide();
     } else {
       swal({
         // title: ,
-        text: 'No fue posible compartir el desafío, por favor aguarde e intente nuevamente.',
+        text: res.msg,
         type: "error",
         buttonsStyling: true,
         timer: 5000,
         confirmButtonClass: "btn btn-danger",
       });
     }
-  })
-}
+  });
+};
 
-const compartirDesafio = ()=>{
+const compartirDesafio = () => {
   const data = {
     desafio_id: desafioId,
     empresa_id: empresaId,
-    startup_id: startupId
+    startup_id: startupId,
   };
   let respuesta = new Promise((resolve, reject) => {
     $.ajax({
@@ -86,13 +115,13 @@ const compartirDesafio = ()=>{
       // error: function () {
       // },
       success: function (resp) {
-        resolve(resp.status);
+        resolve(resp);
       },
       // timeout: 5000,
     });
   });
   return respuesta;
-}
+};
 
 const escucharBotonVerStartupsCompatibles = () => {
   const botonesVerStartupsCompatibles = document.getElementsByClassName(
@@ -157,6 +186,9 @@ const switchLoadingGif = (idModal, accion = false) => {
 const verStartupCompatible = (data) => {
   startupId = data.dataset.startupId;
   startupData = getStartupData();
+  botonDesafioCompartido.hide();
+  botonCompartirDesafio.hide();
+  botonDesafioPostulado.hide();
   $("#startupCompatible").modal("show");
   mostrarDatosStartup();
 };
@@ -165,6 +197,16 @@ const mostrarDatosStartup = async () => {
   const bodyStartups = $("#startupCompatibleDiv");
   bodyStartups.html("");
   await startupData.then((resp) => {
+    if (parseInt(resp.compartido) || parseInt(resp.postulado)) {
+      if (parseInt(resp.postulado)) {
+        botonDesafioPostulado.show();
+      }
+      if (parseInt(resp.compartido)) {
+        botonDesafioCompartido.show();
+      }
+    } else {
+      botonCompartirDesafio.show();
+    }
     $("#startupCompatibleLabel").html(resp.razon_social);
     if (resp.logo) {
       bodyStartups.append(`

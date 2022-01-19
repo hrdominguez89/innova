@@ -17,7 +17,18 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default m-2" onclick="cerrarModal(this)" data-modal-id="startupCompatible">Cerrar</button>
-        <button type="button" class="btn btn-primary m-2" data-toggle="modal" data-target="#compartirDesafio">Compartir desafío</button>
+        <div id="botonDesafioPostulado" style="display:none">
+          <a href="javascript:void(0);"type="button" class="btn btn-success m-2">Startup postulada <i class="fas fa-check"></i></a>
+        </div>
+        <div id="botonDesafioCompartido" style="display:none">
+          <a href="javascript:void(0);"type="button" class="btn btn-success m-2">Desafío compartido <i class="fas fa-check"></i></a>
+        </div>
+
+        <div id="botonCompartirDesafio" style="display: none;">
+          <button type="button" class="btn btn-primary m-2" data-toggle="modal" data-target="#compartirDesafio">Compartir desafío</button>
+        </div>
+        
+        
       </div>
     </div>
   </div>

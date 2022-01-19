@@ -280,6 +280,16 @@ class Desafios_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    public function getDesafioCompartido($startup_id,$desafio_id,$partner_id){
+        return $this->db->select('*')
+        ->from('recomendaciones')
+        ->where('startup_id',$startup_id)
+        ->where('desafio_id',$desafio_id)
+        ->where('partner_id',$partner_id)
+        ->get()
+        ->row();
+    }
+    
     public function getDesafioById($desafio_id)
     {
         $this->db->select('vd.*,u.email as email_contacto');

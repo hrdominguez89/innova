@@ -122,8 +122,6 @@ class Startups extends MX_Controller
 
     public function getStartupsCompatiblesPorDesafioId()
     {
-
-
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
@@ -140,7 +138,7 @@ class Startups extends MX_Controller
         foreach ($categorias_desafio as $categoria) {
             $array_categorias_desafio[] = $categoria->categoria_id;
         }
-        $startupsCompatibles = $this->Startups_model->getStartupsCompatiblesPorDesafioId($array_categorias_desafio, $partner_id);
+        $startupsCompatibles = $this->Startups_model->getStartupsCompatiblesPorDesafioId($array_categorias_desafio, $partner_id, $desafio_id);
         $data = array(
             'status' => true,
             'data' => $startupsCompatibles
@@ -148,7 +146,8 @@ class Startups extends MX_Controller
         echo json_encode($data);
     }
 
-    public function getStartupById(){
+    public function getStartupById()
+    {
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
@@ -160,12 +159,11 @@ class Startups extends MX_Controller
         $desafio_id = $this->input->post('desafio_id');
         $startup_id = $this->input->post('startup_id');
         $partner_id = $this->session->userdata('user_data')->id;
-        $startup_data = $this->Startups_model->getStartupByIdForPartner($startup_id);
+        $startup_data = $this->Startups_model->getStartupByIdForPartner($startup_id, $partner_id, $desafio_id);
         $data = array(
             'status' => true,
             'data' => $startup_data
         );
         echo json_encode($data);
-
     }
 }

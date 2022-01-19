@@ -20,7 +20,13 @@
                 <td>
                   Nombre Startup
                 </td>
-                <td class="text-center">
+                <td>
+                  Postulado
+                </td>
+                <td>
+                  Compartido
+                </td>
+                <td>
                 </td>
               </tr>
             </thead>

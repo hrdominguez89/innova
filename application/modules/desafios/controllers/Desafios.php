@@ -382,6 +382,23 @@ class Desafios extends MX_Controller
         }
     }
 
+    public function ver($desafio_id)
+    {
+        if (!$this->session->userdata('user_data')->rol_id == ROL_STARTUP) {
+            redirect(base_url() . 'home');
+        }
+        $data['files_js'] = array('desafios/desafio_postularme.js');
+        $data['desafio'] = $this->Desafios_model->getDesafioById($desafio_id);
+        $this->load->model('postulados/Postulados_model');
+        $postulaciones = $this->Postulados_model->getPostulacionesByStartupId($this->session->userdata('user_data')->id);
+        foreach ($postulaciones as $postulacion) {
+            $data['postulaciones'][$postulacion->desafio_id] = $postulacion;
+        }
+        $data['sections_view'] = 'ficha_desafio_view_startup';
+        $data['title'] = 'Desafíos';
+        $this->load->view('layout_back_view', $data);
+    }
+
     public function verDesafio($desafio_id)
     {
         if (!$this->session->userdata('user_data')) {
@@ -396,7 +413,7 @@ class Desafios extends MX_Controller
             redirect(base_url() . 'desafios');
         }
         $data['files_js'] = array('activar_tabla_comun.js');
-        $data['sections_view'] = 'ficha_desafio_view';
+        $data['sections_view'] = 'ficha_desafio_view_admin';
         $data['title'] = 'Ver desafío';
         $this->load->view('layout_back_view', $data);
     }
@@ -407,8 +424,8 @@ class Desafios extends MX_Controller
             $data_usuario_para_id = 0;
             $data_usuario_rol_id = ROL_ADMIN_ORGANIZACION;
         } else {
-            $data_usuario_para_id = $data_usuario_para->id_empresa;
-            $data_usuario_rol_id = ROL_EMPRESA;
+            $data_usuario_para_id = @$data_usuario_para->id_empresa ? $data_usuario_para->id_empresa : @$data_usuario_para->usuario_id;
+            $data_usuario_rol_id = @$data_usuario_para->rol_id ? $data_usuario_para->rol_id : ROL_EMPRESA;
         }
 
         $de_usuario_id = $data_de_usuario->id;
@@ -591,7 +608,8 @@ class Desafios extends MX_Controller
         echo json_encode($data);
     }
 
-    public function compartirDesafio(){
+    public function compartirDesafio()
+    {
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
@@ -599,20 +617,70 @@ class Desafios extends MX_Controller
         if (!$this->input->is_ajax_request() && $this->session->userdata('user_data')->rol_id != ROL_PARTNER) {
             redirect(base_url() . 'home');
         }
+        
+        $desafio_compartido = $this->Desafios_model->getDesafioCompartido($this->input->post('desafio_id'),$this->input->post('startup_id'),$this->session->userdata('user_data')->id);
 
-        $data_compartir['desafio_id'] = $this->input->post('desafio_id');
-        $data_compartir['empresa_id'] = $this->input->post('empresa_id');
-        $data_compartir['startup_id'] = $this->input->post('startup_id');
-        $data_compartir['partner_id'] = $this->session->userdata('user_data')->id;
-        $data_compartir['fecha'] = date('Y-m-d H:i:s', time());
-        if($this->Desafios_model->compartirDesafio($data_compartir)){
-            $data = array(
-                'status' => true,
-            );
-        }else{
+        if($desafio_compartido){
             $data = array(
                 'status' => false,
+                'msg' =>'Este desafío ya fue compartido.',
             );
+        }else{
+            $data_compartir['desafio_id'] = $this->input->post('desafio_id');
+            $data_compartir['empresa_id'] = $this->input->post('empresa_id');
+            $data_compartir['startup_id'] = $this->input->post('startup_id');
+            $data_compartir['partner_id'] = $this->session->userdata('user_data')->id;
+            $data_compartir['fecha'] = date('Y-m-d H:i:s', time());
+            if ($this->Desafios_model->compartirDesafio($data_compartir)) {
+    
+                $this->load->model('startups/Startups_model');
+                $this->load->model('empresas/Empresas_model');
+                $this->load->model('partners/Partners_model');
+                $this->load->model('mensajes/Mensajes_model');
+                $this->load->helper(array('send_email_helper'));
+    
+                $startup_data = $this->Startups_model->getStartupById($this->input->post('startup_id'));
+                $empresa_data = $this->Empresas_model->getEmpresaById($this->input->post('empresa_id'));
+                $partner_data = $this->Partners_model->getPartnerById($this->session->userdata('user_data')->id);
+                $desafio_data = $this->Desafios_model->getDesafioById($this->input->post('desafio_id'));
+    
+    
+                $enlace_desafio = '<a href="' . base_url() . 'desafios/ver/' . $desafio_data->desafio_id . '">Ver desafío</a>';
+    
+                $buscar_y_reemplazar = array(
+                    array('buscar' => '{{RAZON_SOCIAL_STARTUP}}', 'reemplazar' => $startup_data->razon_social),
+                    array('buscar' => '{{RAZON_SOCIAL_EMPRESA}}', 'reemplazar' => $empresa_data->razon_social),
+                    array('buscar' => '{{RAZON_SOCIAL_PARTNER}}', 'reemplazar' => $partner_data->razon_social),
+                    array('buscar' => '{{DESAFIO_TITULO}}', 'reemplazar' => $desafio_data->nombre_del_desafio),
+                    array('buscar' => '{{ENLACE_DESAFIO}}', 'reemplazar' => $enlace_desafio)
+                );
+    
+                $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_compartir_desafio');
+    
+                switch ($mensaje_de_plataforma->tipo_de_envio_id) {
+                    case ENVIO_NOTIFICACION:
+                        $mensaje_de_notificacion = $this->Mensajes_model->getMensaje('mensaje_nueva_notificacion');
+                        $this->crearNotificacion($mensaje_de_plataforma, $startup_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
+                        $this->crearEmail($mensaje_de_notificacion, $startup_data, $buscar_y_reemplazar);
+                        break;
+                    case ENVIO_EMAIL:
+                        $this->crearEmail($mensaje_de_plataforma, $startup_data, $buscar_y_reemplazar);
+                        break;
+                    case ENVIO_NOTIF_EMAIL:
+                        $this->crearNotificacion($mensaje_de_plataforma, $startup_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
+                        $this->crearEmail($mensaje_de_plataforma, $startup_data, $buscar_y_reemplazar);
+                        break;
+                }
+    
+                $data = array(
+                    'status' => true,
+                );
+            } else {
+                $data = array(
+                    'status' => false,
+                    'msg' =>'No fue posible compartir este desafío, por favor aguarde unos instantes e intente nuevamente.',
+                );
+            }
         }
         echo json_encode($data);
     }
