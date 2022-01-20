@@ -1,22 +1,22 @@
-<div class="modal fade" id="startupCompatible" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-labelledby="startupCompatibleLabel" aria-hidden="true">
+<div class="modal fade" id="desafioCompatible" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-labelledby="desafioCompatibleLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="startupCompatibleLabel"></h5>
-        <button type="button" class="close" onclick="cerrarModal(this)" data-modal-id="startupCompatible" aria-label="Close">
+        <h5 class="modal-title" id="desafioCompatibleLabel"></h5>
+        <button type="button" class="close" onclick="cerrarModal(this)" data-modal-id="desafioCompatible" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div id="startupCompatibleLoading" class="text-center" style="display:block;">
+        <div id="desafioCompatibleLoading" class="text-center" style="display:block;">
           <img class="p-3" src="<?php echo base_url(); ?>assets/img/loading.gif" alt="loading gif">
           <p>Cargando...</p>
         </div>
-        <div id="startupCompatibleDiv" style="display:none;">
+        <div id="desafioCompatibleDiv" style="display:none;">
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default m-2" onclick="cerrarModal(this)" data-modal-id="startupCompatible">Cerrar</button>
+        <button type="button" class="btn btn-default m-2" onclick="cerrarModal(this)" data-modal-id="desafioCompatible">Cerrar</button>
         <div id="botonDesafioPostulado" style="display:none">
           <a href="javascript:void(0);"type="button" class="btn btn-success m-2">Startup postulada <i class="fas fa-check"></i></a>
         </div>

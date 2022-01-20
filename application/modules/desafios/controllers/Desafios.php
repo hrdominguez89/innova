@@ -86,13 +86,7 @@ class Desafios extends MX_Controller
                 $this->config_pagination['base_url'] = base_url() . 'desafios';
                 $this->config_pagination['total_rows'] = count($this->Desafios_model->getDesafiosVigentes());
                 $this->pagination->initialize($this->config_pagination);
-
                 $data['desafios'] = $this->Desafios_model->getDesafiosVigentes($this->start, $this->limit);
-                $this->load->model('postulados/Postulados_model');
-                $postulaciones = $this->Postulados_model->getPostulacionesByStartupId($this->session->userdata('user_data')->id);
-                foreach ($postulaciones as $postulacion) {
-                    $data['postulaciones'][$postulacion->desafio_id] = $postulacion;
-                }
                 $data['files_js'] =  array('partners/desafios_partner.js');
                 $data['sections_view'] = 'desafios_cartelera_partner_view';
                 break;
@@ -682,6 +676,52 @@ class Desafios extends MX_Controller
                 );
             }
         }
+        echo json_encode($data);
+    }
+    
+    public function getDesafiosCompatiblesPorStartupId(){
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
+        }
+
+        if (!$this->input->is_ajax_request() && $this->session->userdata('user_data')->rol_id != ROL_PARTNER) {
+            redirect(base_url() . 'home');
+        }
+
+        $startup_id = $this->input->post('startup_id');
+        $partner_id = $this->session->userdata('user_data')->id;
+        $this->load->model('startups/Startups_model');
+        $categorias_startup = $this->Startups_model->getCategoriasDeLaStartup($startup_id);
+        $array_categorias_startup = [];
+        foreach ($categorias_startup as $categoria) {
+            $array_categorias_startup[] = $categoria->categoria_id;
+        }
+        $desafiosCompatibles = $this->Desafios_model->getDesafiosCompatiblesPorStartupId($array_categorias_startup, $partner_id, $startup_id);
+        $data = array(
+            'status' => true,
+            'data' => $desafiosCompatibles
+        );
+        echo json_encode($data);
+    }
+
+    public function getDesafioById()
+    {
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
+        }
+
+        if (!$this->input->is_ajax_request() && $this->session->userdata('user_data')->rol_id != ROL_PARTNER) {
+            redirect(base_url() . 'home');
+        }
+
+        $desafio_id = $this->input->post('desafio_id');
+        $startup_id = $this->input->post('startup_id');
+        $partner_id = $this->session->userdata('user_data')->id;
+        $desafio_data = $this->Desafios_model->getDesafioByIdForPartner($startup_id, $partner_id, $desafio_id);
+        $data = array(
+            'status' => true,
+            'data' => $desafio_data
+        );
         echo json_encode($data);
     }
 }

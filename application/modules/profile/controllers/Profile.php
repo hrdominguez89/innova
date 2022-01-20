@@ -477,7 +477,7 @@ class Profile extends MX_Controller
                     $data_startup['url_twitter'] = $this->input->post('url_twitter');
                     $data_startup['rubro'] = $this->input->post('rubro');
                     $data_startup['descripcion'] = $this->input->post('descripcion');
-                    $data_startup['antecedentes'] = $this->input->post('descripcion');
+                    $data_startup['antecedentes'] = $this->input->post('antecedentes');
                     $data_startup['exporta'] = $this->input->post('exporta');
                     $data_startup['consentimiento'] = true;
                     $data_startup['usuario_id'] = $this->session->userdata('user_data')->id;

@@ -12,23 +12,72 @@ class Startups extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
+
+        $this->load->library(array('my_form_validation'));
+        $this->form_validation->run($this);
+
+        $this->load->library('pagination');
+
+
+        //config paginacion
+        $this->limit_default = 10;
+        $this->page = $this->input->get('page') ? $this->input->get('page') : 0;
+        $this->limit = $this->input->get('limit') ? $this->input->get('limit') : $this->limit_default;
+        $this->start = $this->page >= 1 ? ($this->page - 1) * $this->limit : 0;
+        $this->config_pagination = array(
+            'per_page'             => $this->limit,
+            'use_page_numbers'     => TRUE,
+            'page_query_string'    => TRUE,
+            'query_string_segment' => 'page',
+            'reuse_query_string'   => TRUE,
+            'full_tag_open'        => '<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">',
+            'full_tag_close'       => '</ul></nav>',
+            'first_link'           => 'Primero',
+            'first_tag_open'       => '<li class="page-item">',
+            'first_tag_close'      => '</li>',
+            'last_link'            => 'Último',
+            'last_tag_open'        => '<li class="page-item">',
+            'last_tag_close'       => '</li>',
+            'next_tag_open'        => '<li class="page-item">',
+            'next_tag_close'       => '</li>',
+            'prev_tag_open'        => '<li class="page-item">',
+            'prev_tag_close'       => '</li>',
+            'num_tag_open'         => '<li class="page-item">',
+            'num_tag_close'        => '</li>',
+            'cur_tag_open'         => '<li class="page-item active"><span class="page-link">',
+            'cur_tag_close'        => '</span></li>',
+            'attributes'           => array(
+                'class' => 'page-link'
+            ),
+        );
     }
 
     public function index()
     {
         switch ($this->session->userdata('user_data')->rol_id) {
+            case ROL_PARTNER:
+                $this->config_pagination['base_url'] = base_url() . 'desafios';
+                $this->config_pagination['total_rows'] = count($this->Startups_model->getStartupsActivos());
+                $this->pagination->initialize($this->config_pagination);
+
+                $data['startups'] = $this->Startups_model->getStartupsActivos($this->start, $this->limit);
+                $data['files_js'] =  array('startups/startups_partner.js');
+                $data['sections_view'] = 'startups_cartelera_partner_view';
+
+                break;
             case ROL_ADMIN_PLATAFORMA:
             case ROL_ADMIN_ORGANIZACION:
                 $data['startups'] = $this->Startups_model->getStartups();
-                $data['title'] = 'Startups';
                 $data['files_js'] = array('activar_tabla_comun.js', 'startups/startups.js');
                 $data['sections_view'] = 'startups_list_admin_view';
-                $this->load->view('layout_back_view', $data);
                 break;
             default:
                 redirect(base_url() . 'home');
                 break;
         }
+        
+        $data['title'] = 'Startups';
+        $this->load->view('layout_back_view', $data);
     }
 
     public function ver($startup_id)

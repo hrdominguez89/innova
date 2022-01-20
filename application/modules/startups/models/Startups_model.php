@@ -94,4 +94,28 @@ class Startups_model extends CI_Model
             ->get()->result();
         return $query;
     }
+
+    public function getStartupsActivos($start = false, $limit = false)
+    {
+        if ($limit !== false && $start !== false) {
+            $this->db->limit($limit, $start);
+        }
+        $query = $this->db->select('vsi.*')
+            ->from('vi_startups_info as vsi')
+            ->where('vsi.estado_usuario_id', USR_ENABLED)
+            ->or_where('vsi.estado_usuario_id', USR_VERIFIED)
+            ->order_by('vsi.usuario_id')
+            ->get()->result();
+        return $query;
+    }
+
+    public function getCategoriasDeLaStartup($startup_id)
+    {
+        $query = $this->db->select('*')
+            ->from('categorias_startups')
+            ->where('startup_id', $startup_id)
+            ->get()
+            ->result();
+        return $query;
+    }
 }

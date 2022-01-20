@@ -33,11 +33,11 @@
             </div>
 
             <div class="col-lg-4 col-md-6 col-sm-6">
-                <!-- <a href="<?php echo base_url(); ?>startups"> -->
-                <a href="javascript:void(0)">
+                <a href="<?php echo base_url(); ?>startups">
+                <!-- <a href="javascript:void(0)"> -->
 
                     <div class="card card-stats">
-                        <div class="card-header card-header-default card-header-icon">
+                        <div class="card-header card-header-info card-header-icon">
                             <div class="card-icon">
                                 <i class="material-icons">rocket_launch</i>
                             </div>

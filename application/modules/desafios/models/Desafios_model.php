@@ -119,7 +119,8 @@ class Desafios_model extends CI_Model
         } //If Rollback
     }
 
-    public function getDesafiosVigentes($start = false, $limit = false){
+    public function getDesafiosVigentes($start = false, $limit = false)
+    {
         if ($limit !== false && $start !== false) {
             $this->db->limit($limit, $start);
         }
@@ -171,18 +172,6 @@ class Desafios_model extends CI_Model
             ->group_by('vd.desafio_id')
             ->get()->result();
         return $query;
-    }
-
-    public function getStartupsByStatusUserId($limit, $start, $status_user_id)
-    {
-        $this->db->limit($limit, $start);
-        $this->db->select('*,u.id as user_id,u.name as user_name,s.id as startup_id,s.name as startup_name');
-        $this->db->from('users as u');
-        $this->db->join('startups as s', 'u.id = s.user_id');
-        $this->db->where('u.rol_id', ROL_STARTUP);
-        $this->db->where('u.status_user_id', $status_user_id);
-        $this->db->order_by('u.date_created', 'ASC');
-        return $this->db->get()->result();
     }
 
     public function getCategoriasStartups($usuario_id)
@@ -280,16 +269,17 @@ class Desafios_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    public function getDesafioCompartido($startup_id,$desafio_id,$partner_id){
+    public function getDesafioCompartido($startup_id, $desafio_id, $partner_id)
+    {
         return $this->db->select('*')
-        ->from('recomendaciones')
-        ->where('startup_id',$startup_id)
-        ->where('desafio_id',$desafio_id)
-        ->where('partner_id',$partner_id)
-        ->get()
-        ->row();
+            ->from('recomendaciones')
+            ->where('startup_id', $startup_id)
+            ->where('desafio_id', $desafio_id)
+            ->where('partner_id', $partner_id)
+            ->get()
+            ->row();
     }
-    
+
     public function getDesafioById($desafio_id)
     {
         $this->db->select('vd.*,u.email as email_contacto');
@@ -339,16 +329,18 @@ class Desafios_model extends CI_Model
 
     }
 
-    public function getCategoriasDelDesafio($desafio_id){
+    public function getCategoriasDelDesafio($desafio_id)
+    {
         $query = $this->db->select('*')
-        ->from('categorias_desafios')
-        ->where('desafio_id',$desafio_id)
-        ->get()
-        ->result();
+            ->from('categorias_desafios')
+            ->where('desafio_id', $desafio_id)
+            ->get()
+            ->result();
         return $query;
     }
 
-    public function compartirDesafio($data_compartir){
+    public function compartirDesafio($data_compartir)
+    {
         $this->db->trans_begin();
 
         $this->db->insert('recomendaciones', $data_compartir);
@@ -363,5 +355,46 @@ class Desafios_model extends CI_Model
             $this->db->trans_commit();
             return TRUE;
         } //If Rollback
+    }
+
+    public function getDesafiosCompatiblesPorStartupId($array_categorias, $partner_id, $startup_id)
+    {
+        $query = $this->db->select('
+            vd.id_empresa as empresa_id,
+            vd.nombre_empresa,
+            vd.nombre_del_desafio,
+            vd.fecha_fin_de_postulacion,
+            vd.desafio_id,
+            IF(ISNULL((SELECT post.startup_id FROM postulaciones post where post.startup_id=' . $startup_id . ' and post.desafio_id=vd.desafio_id)), 0, 1) as postulado,IF(ISNULL((SELECT rec.startup_id FROM recomendaciones rec where rec.startup_id=' . $startup_id . ' and rec.partner_id=' . $partner_id . ' and rec.desafio_id=vd.desafio_id)), 0, 1) as compartido')
+            ->from('vi_desafios vd')
+            ->join('categorias_desafios as cd', 'cd.desafio_id = vd.desafio_id')
+            ->where_in('cd.categoria_id', $array_categorias)
+            ->group_start()
+            ->where('vd.estado_usuario_id', USR_ENABLED)
+            ->or_where('vd.estado_usuario_id', USR_VERIFIED)
+            ->group_end()
+            ->where('vd.desafio_estado_id', DESAF_VIGENTE)
+            ->order_by('vd.desafio_id')
+            ->group_by('vd.desafio_id')
+            ->get()->result();
+        return $query;
+    }
+    public function getDesafioByIdForPartner($startup_id, $partner_id, $desafio_id)
+    {
+        $this->db->select('
+        vd.nombre_empresa,
+        vd.nombre_del_desafio,
+        vd.fecha_fin_de_postulacion,
+        vd.descripcion_del_desafio,
+        vd.requisitos_del_desafio,
+        vd.nombre_de_categorias,
+        vd.id_empresa,
+        vd.desafio_id,
+        IF(ISNULL((SELECT post.startup_id FROM postulaciones post where post.startup_id=' . $startup_id . ' and post.desafio_id=' . $desafio_id . ')), 0, 1) as postulado,
+        IF(ISNULL((SELECT rec.startup_id FROM recomendaciones rec where rec.startup_id=' . $startup_id . ' and rec.partner_id=' . $partner_id . ' and rec.desafio_id=' . $desafio_id . ')), 0, 1) as compartido
+        ');
+        $this->db->from('vi_desafios vd');
+        $this->db->where('vd.desafio_id', $desafio_id);
+        return $this->db->get()->row();
     }
 }

@@ -1,9 +1,9 @@
-var tablaStartupsCompatibles;
+var tablaDesafiosCompatibles;
 var desafioId;
 var empresaId;
 var startupId;
-var startupData;
-var listadoDeStartups;
+var desafioData;
+var listadoDeDesafios;
 var botonDesafioCompartido;
 var botonCompartirDesafio;
 var botonDesafioPostulado;
@@ -17,7 +17,17 @@ const dataTableOptions = {
   },
   columns: [
     {
-      data: "razon_social",
+      data: "nombre_del_desafio",
+    },
+    {
+      data: "nombre_empresa",
+    },
+    {
+      className: "text-center",
+      searchable: false,
+      render: function (data, type, full, meta) {
+        return moment(full.fecha_fin_de_postulacion).format("DD-MM-YYYY");
+      },
     },
     {
       className: "text-center",
@@ -44,17 +54,18 @@ const dataTableOptions = {
       searchable: false,
       orderable: false,
       render: function (data, type, full, meta) {
-        const startup_id = full.startup_id;
-        return `<a href="javascript:void(0);" class="text-primary" onclick="verStartupCompatible(this)" data-startup-id="${startup_id}"><i class="fas fa-eye"></i></a>`;
+        const desafio_id = full.desafio_id;
+        const empresa_id = full.empresa_id;
+        return `<a href="javascript:void(0);" class="text-primary" onclick="verDesafioCompatible(this)" data-empresa-id="${empresa_id}" data-desafio-id="${desafio_id}"><i class="fas fa-eye"></i></a>`;
       },
     },
   ],
 };
 
 window.addEventListener("load", () => {
-  escucharBotonVerStartupsCompatibles();
+  escucharBotonVerDesafiosCompatibles();
   escucharBotonCompartirDesafio();
-  tablaStartupsCompatibles = $("#startupsCompatiblesTable").DataTable(
+  tablaDesafiosCompatibles = $("#desafiosCompatiblesTable").DataTable(
     dataTableOptions
   );
   botonDesafioCompartido = $("#botonDesafioCompartido");
@@ -122,31 +133,30 @@ const compartirDesafio = () => {
   return respuesta;
 };
 
-const escucharBotonVerStartupsCompatibles = () => {
-  const botonesVerStartupsCompatibles = document.getElementsByClassName(
-    "verStartupsCompatibles"
+const escucharBotonVerDesafiosCompatibles = () => {
+  const botonesVerDesafiosCompatibles = document.getElementsByClassName(
+    "verDesafiosCompatibles"
   );
-  Array.from(botonesVerStartupsCompatibles).forEach(
-    (botonVerStartupsCompatibles) => {
-      botonVerStartupsCompatibles.addEventListener("click", () => {
-        $("#startupsCompatibles").modal("show");
-        desafioId = botonVerStartupsCompatibles.dataset.desafioId;
-        empresaId = botonVerStartupsCompatibles.dataset.empresaId;
-        listadoDeStartups = consultarStartupsCompatiblesParaDesafioId();
+  Array.from(botonesVerDesafiosCompatibles).forEach(
+    (botonVerDesafioCompatibles) => {
+      botonVerDesafioCompatibles.addEventListener("click", () => {
+        $("#desafiosCompatibles").modal("show");
+        startupId = botonVerDesafioCompatibles.dataset.startupId;
+        listadoDeDesafios = consultarDesafiosCompatiblesParaDesafioId();
         cargarDatatable();
       });
     }
   );
 };
 
-const consultarStartupsCompatiblesParaDesafioId = () => {
+const consultarDesafiosCompatiblesParaDesafioId = () => {
   const data = {
-    desafio_id: desafioId,
+    startup_id: startupId,
   };
   let respuesta = new Promise((resolve, reject) => {
     $.ajax({
       type: "POST",
-      url: BASE_URL + "startups/getStartupsCompatiblesPorDesafioId",
+      url: BASE_URL + "desafios/getDesafiosCompatiblesPorStartupId",
       dataType: "JSON",
       data: data,
       // beforeSend: function () {
@@ -163,12 +173,12 @@ const consultarStartupsCompatiblesParaDesafioId = () => {
 };
 
 const cargarDatatable = async () => {
-  tablaStartupsCompatibles.clear();
-  await listadoDeStartups.then((startups) => {
-    tablaStartupsCompatibles.rows.add(startups);
+  tablaDesafiosCompatibles.clear();
+  await listadoDeDesafios.then((desafios) => {
+    tablaDesafiosCompatibles.rows.add(desafios);
   });
-  tablaStartupsCompatibles.draw();
-  switchLoadingGif("startupsCompatibles", "ocultar");
+  tablaDesafiosCompatibles.draw();
+  switchLoadingGif("desafiosCompatibles", "ocultar");
 };
 
 const switchLoadingGif = (idModal, accion = false) => {
@@ -182,20 +192,24 @@ const switchLoadingGif = (idModal, accion = false) => {
   }
 };
 
-const verStartupCompatible = (data) => {
-  startupId = data.dataset.startupId;
-  startupData = getStartupData();
+const verDesafioCompatible = (data) => {
+  desafioId = data.dataset.desafioId;
+  empresaId = data.dataset.empresaId;
+  desafioData = getDesafioData();
   botonDesafioCompartido.hide();
   botonCompartirDesafio.hide();
   botonDesafioPostulado.hide();
-  $("#startupCompatible").modal("show");
-  mostrarDatosStartup();
+  $("#desafioCompatible").modal("show");
+  mostrarDatosDesafio();
 };
 
-const mostrarDatosStartup = async () => {
-  const bodyStartups = $("#startupCompatibleDiv");
-  bodyStartups.html("");
-  await startupData.then((resp) => {
+const mostrarDatosDesafio = async () => {
+  const bodyDesafios = $("#desafioCompatibleDiv");
+  bodyDesafios.html("");
+  // fecha_fin_de_postulacion
+  // id_empresa
+  // desafio_id
+  await desafioData.then((resp) => {
     if (parseInt(resp.compartido) || parseInt(resp.postulado)) {
       if (parseInt(resp.postulado)) {
         botonDesafioPostulado.show();
@@ -206,67 +220,69 @@ const mostrarDatosStartup = async () => {
     } else {
       botonCompartirDesafio.show();
     }
-    $("#startupCompatibleLabel").html(resp.razon_social);
+    $("#desafioCompatibleLabel").html(resp.razon_social);
     if (resp.logo) {
-      bodyStartups.append(`
+      bodyDesafios.append(`
       <div class="text-center">
-        <img src="${BASE_URL}uploads/imagenes_de_usuarios/${startupId}.png" class="rounded-circle" alt="Logo Startup">
+        <img src="${BASE_URL}uploads/imagenes_de_usuarios/${id_empresa}.png" class="rounded-circle" alt="Logo Startup">
       </div>
       `);
     } else {
-      bodyStartups.append(`
+      bodyDesafios.append(`
       <div class="text-center">
         <img src="${BASE_URL}assets/img/usuario.jpeg" class="rounded-circle" alt="Logo Startup">
       </div>
       `);
     }
-    if (resp.rubro) {
-      bodyStartups.append(`
+    if (resp.nombre_empresa) {
+      bodyDesafios.append(`
+        <p class="text-primary font-weight-bold">
+          Empresa: <span class="text-secondary font-weight-normal">${resp.nombre_empresa}</span>
+        </p>
+        `);
+    }
+    if (resp.nombre_del_desafio) {
+      bodyDesafios.append(`
       <p class="text-primary font-weight-bold">
-        Rubro: <span class="text-secondary font-weight-normal">${resp.rubro}</span>
+        Título desafío: <span class="text-secondary font-weight-normal">${resp.nombre_del_desafio}</span>
       </p>
       `);
     }
-    if (resp.descripcion) {
-      bodyStartups.append(`
-      <p class="text-primary font-weight-bold">
-        Descripción: <span class="text-secondary font-weight-normal">${resp.descripcion}</span>
-      </p>
-      `);
+    if (resp.descripcion_del_desafio) {
+      bodyDesafios.append(`
+        <p class="text-primary font-weight-bold">
+        Descripción: <span class="text-secondary font-weight-normal">${resp.descripcion_del_desafio}</span>
+        </p>
+        `);
     }
-    if (resp.antecedentes) {
-      bodyStartups.append(`
+    if (resp.requisitos_del_desafio) {
+      bodyDesafios.append(`
       <p class="text-primary font-weight-bold">
-        Antecedentes: <span class="text-secondary font-weight-normal">${resp.antecedentes}</span>
-      </p>
-      `);
-    }
-    if (resp.exporta) {
-      bodyStartups.append(`
-      <p class="text-primary font-weight-bold">
-        Exporta: <span class="text-secondary font-weight-normal">${resp.exporta}</span>
+        Requisitos: <span class="text-secondary font-weight-normal">${resp.requisitos_del_desafio}</span>
       </p>
       `);
     }
     if (resp.nombre_de_categorias) {
-      bodyStartups.append(`
-      <p class="text-primary font-weight-bold">
-        Categorías: <span class="text-secondary font-weight-normal">${resp.nombre_de_categorias}</span>
-      </p>
-      `);
+      bodyDesafios.append(`
+        <p class="text-primary font-weight-bold">
+          Productos/Servicios que solicita: <span class="text-secondary font-weight-normal">${resp.nombre_de_categorias}</span>
+        </p>
+        `);
     }
-    if (resp.objetivo_y_motivacion) {
-      bodyStartups.append(`
-      <p class="text-primary font-weight-bold">
-        Objetivo y motivación: <span class="text-secondary font-weight-normal">${resp.objetivo_y_motivacion}</span>
-      </p>
-      `);
+    if (resp.fecha_fin_de_postulacion) {
+      bodyDesafios.append(`
+          <p class="text-primary font-weight-bold">
+            Fecha fin de postulación: <span class="text-secondary font-weight-normal">${moment(
+              resp.fecha_fin_de_postulacion
+            ).format("DD-MM-YYYY")}</span>
+          </p>
+          `);
     }
   });
-  switchLoadingGif("startupCompatible", "ocultar");
+  switchLoadingGif("desafioCompatible", "ocultar");
 };
 
-const getStartupData = () => {
+const getDesafioData = () => {
   const data = {
     startup_id: startupId,
     desafio_id: desafioId,
@@ -274,7 +290,7 @@ const getStartupData = () => {
   let respuesta = new Promise((resolve, reject) => {
     $.ajax({
       type: "POST",
-      url: BASE_URL + "startups/getStartupById",
+      url: BASE_URL + "desafios/getDesafioById",
       dataType: "JSON",
       data: data,
       // beforeSend: function () {
