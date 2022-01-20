@@ -8,7 +8,7 @@ const cargarTabla = ()=>{
         responsive: true,
         info: false,
         language: {
-          url: "./assets/js/datatables/es_es.json",
+          url: `${BASE_URL}/assets/js/datatables/es_es.json`,
         },
         dom: 'Bfrtip',
         buttons: [

@@ -16,7 +16,7 @@
                 <div class="card">
                     <div class="card-header card-header-primary card-header-icon">
                         <div class="card-icon">
-                            <i class="material-icons">store</i>
+                            <i class="material-icons">rocket_launch</i>
                         </div>
                         <h4 class="card-title ">Lista de startups</h4>
                     </div>
@@ -113,7 +113,7 @@
         Una vez eliminado no podra revertir estos cambios.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary m-2" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-default m-2" data-dismiss="modal">Cancelar</button>
         <button type="button" id="botonEliminarStartup" onclick="eliminarStartup(this)" data-usuario-id="" class="btn btn-danger m-2">Eliminar</button>
       </div>
     </div>

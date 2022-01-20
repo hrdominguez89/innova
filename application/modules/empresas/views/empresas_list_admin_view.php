@@ -118,7 +118,7 @@
                 Una vez eliminado no podra revertir estos cambios.
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary m-2" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-default m-2" data-dismiss="modal">Cancelar</button>
                 <button type="button" id="botonEliminarEmpresa" onclick="eliminarEmpresa(this)" data-usuario-id="" class="btn btn-danger m-2">Eliminar</button>
             </div>
         </div>

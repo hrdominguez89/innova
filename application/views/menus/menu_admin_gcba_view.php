@@ -47,7 +47,7 @@
         <!-- menu Startups -->
         <li class="nav-item <?php echo $this->uri->segment(URI_SEGMENT) == 'startups' ? 'active' : ''; ?>">
           <a class="nav-link" href="<?php echo base_url(); ?>startups">
-            <i class="material-icons">store</i>
+            <i class="material-icons">rocket_launch</i>
             <p>
               Startups
             </p>

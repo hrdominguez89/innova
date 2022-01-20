@@ -104,7 +104,7 @@
                     <div class="card card-stats">
                         <div class="card-header card-header-info card-header-icon">
                             <div class="card-icon">
-                                <i class="material-icons">store</i>
+                                <i class="material-icons">rocket_launch</i>
                             </div>
                             <h4 class="card-title text-left">
                                 <span class="font-weight-bold">

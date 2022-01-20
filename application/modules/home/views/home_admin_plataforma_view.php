@@ -1,3 +1,6 @@
+<span class="material-icons-outlined">
+spatial_audio_off
+</span>
 <div class="content">
     <div class="container-fluid">
         <div class="row">
@@ -105,7 +108,7 @@
                     <div class="card card-stats">
                         <div class="card-header card-header-info card-header-icon">
                             <div class="card-icon">
-                                <i class="material-icons">store</i>
+                                <i class="material-icons">rocket_launch</i>
                             </div>
                             <h4 class="card-title text-left">
                                 <span class="font-weight-bold">
@@ -131,6 +134,28 @@
                             <h4 class="card-title text-left">
                                 <span class="font-weight-bold">
                                     Empresas
+                                </span>
+                            </h4>
+                        </div>
+                        <div class="card-footer">
+                            <div class="stats">
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <a href="<?php echo base_url(); ?>partners">
+                    <div class="card card-stats">
+                        <div class="card-header card-header-warning card-header-icon">
+                            <div class="card-icon">
+                                <i class="material-icons">groups</i>
+                                
+                            </div>
+                            <h4 class="card-title text-left">
+                                <span class="font-weight-bold">
+                                    Partners
                                 </span>
                             </h4>
                         </div>
