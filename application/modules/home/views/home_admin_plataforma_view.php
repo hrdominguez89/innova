@@ -1,6 +1,3 @@
-<span class="material-icons-outlined">
-spatial_audio_off
-</span>
 <div class="content">
     <div class="container-fluid">
         <div class="row">
