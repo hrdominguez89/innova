@@ -216,7 +216,7 @@ class Configuraciones extends MX_Controller
         $this->form_validation->set_rules(
             'texto_mensaje[]',
             'Mensaje',
-            'trim|max_length[2500]|required',
+            'trim|max_length[5000]|required',
             array(
                 'required' => 'El campo {field} es obligatorio'
             )
