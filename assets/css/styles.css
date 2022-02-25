@@ -97,3 +97,6 @@
 td.dt-nowrap {
   white-space: nowrap;
 }
+.sidebar .nav li a, .sidebar .nav li .dropdown-menu a,.sidebar .nav li i, .user-info a p{
+  color:#9c27b0;
+}
