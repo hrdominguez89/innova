@@ -26,8 +26,8 @@
               <table id="datatablesNotificaciones" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                 <thead>
                   <tr>
-                    <th class="disabled-sorting"></th>
-                    <th class="text-center">Nro</th>
+                    <th class="disabled-sorting text-center"></th>
+                    <th class="disabled-sorting text-center"></th>
                     <th class="text-center">Fecha</th>
                     <th>Título</th>
                     <th class="text-center">Estado</th>
@@ -36,8 +36,8 @@
                 </thead>
                 <tfoot>
                   <tr>
-                    <th></th>
-                    <th class="text-center">Nro</th>
+                    <th class="text-center"></th>
+                    <th class="text-center"></th>
                     <th class="text-center">Fecha</th>
                     <th>Título</th>
                     <th class="text-center">Estado</th>
@@ -49,15 +49,16 @@
                   $cantitad_total_notificaciones = count($total_notificaciones);
                   foreach ($total_notificaciones as $notificacion) :;
                   ?>
-                    <tr class="<?php echo !$notificacion->leido ? 'font-weight-bold font-italic notificacion-fuente-lista-'.$notificacion->id : ''; ?>">
-                      <td><i class="<?php echo !$notificacion->leido? 'fas fa-envelope notificacion-icono-lista-'.$notificacion->id:'far fa-envelope-open';?>"></i></td>
+                    <tr class="<?php echo !$notificacion->leido ? 'font-weight-bold font-italic notificacion-fuente-lista-' . $notificacion->id : ''; ?>">
                       <td class="text-center"><?php echo $cantitad_total_notificaciones; ?></td>
-                      <td class="text-center"><?php echo date('d/m/Y', strtotime($notificacion->fecha_alta)); ?></td>
+                      <td class="text-center"><i class="<?php echo !$notificacion->leido ? 'fas fa-envelope notificacion-icono-lista-' . $notificacion->id : 'far fa-envelope-open'; ?>"></i></td>
+                      <td class="text-center"><span style="display: none;"><?php echo strtotime($notificacion->fecha_alta); ?></span><?php echo date('d/m/Y', strtotime($notificacion->fecha_alta)); ?></td>
                       <td><?php echo $notificacion->titulo_mensaje; ?></td>
-                      <td class="text-center notificacion-leido-lista-<?php echo $notificacion->id;?>"><?php echo !$notificacion->leido ? 'No leido' : 'Leido'; ?></td>
+                      <td class="text-center notificacion-leido-lista-<?php echo $notificacion->id; ?>"><?php echo !$notificacion->leido ? 'No leido' : 'Leido'; ?></td>
                       <td class="text-right">
                         <!-- Button trigger modal -->
-                        <a href="#" class="verNotificacion" data-notificacion-id="<?php echo $notificacion->id; ?>" data-toggle="modal" data-target="#notificacionesModal"><i class="far fa-eye"></i></a></td>
+                        <a href="#" class="verNotificacion" data-notificacion-id="<?php echo $notificacion->id; ?>" data-toggle="modal" data-target="#notificacionesModal"><i class="far fa-eye"></i></a>
+                      </td>
                     </tr>
                     <?php $cantitad_total_notificaciones-- ?>
                   <?php endforeach; ?>

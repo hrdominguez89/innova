@@ -97,6 +97,18 @@
 td.dt-nowrap {
   white-space: nowrap;
 }
+
 .sidebar .nav li a, .sidebar .nav li .dropdown-menu a,.sidebar .nav li i, .user-info a p{
   color:#9c27b0;
+}
+.sidebar .nav li a:hover, .sidebar .nav li .dropdown-menu a:hover, .sidebar .nav li i:hover{
+  background-color:#9c27b0;
+  color: white;
+}
+.sidebar .nav .nav-item .nav-link:hover .material-icons{
+  color: white;
+}
+
+.sidebar > div{
+  background-color: #FFFFFF!important;
 }
