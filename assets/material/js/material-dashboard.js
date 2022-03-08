@@ -26,9 +26,9 @@
     if ($(".sidebar-wrapper").length != 0) {
       var ps1 = new PerfectScrollbar('.sidebar-wrapper');
     }
-    if ($(".main-panel").length != 0) {
-      var ps2 = new PerfectScrollbar('.main-panel');
-    }
+    // if ($(".main-panel").length != 0) {
+    //   var ps2 = new PerfectScrollbar('.main-panel');
+    // }
     if ($(".main").length != 0) {
       var ps3 = new PerfectScrollbar('main');
     }

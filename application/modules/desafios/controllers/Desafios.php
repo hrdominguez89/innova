@@ -96,7 +96,7 @@ class Desafios extends MX_Controller
                 $data['categorias'] = $this->Desafios_model->getCategorias();
                 $data['desafios'] = $this->Desafios_model->getTodosLosDesafios();
                 $data['sections_view'] = 'desafios_admin_list_view';
-                $data['files_js'] = array('desafios/desafios_abm_admin_plataforma.js', 'activar_tabla_comun.js');
+                $data['files_js'] = array('desafios/desafios_abm_admin_plataforma.js');
                 break;
         }
         $data['title'] = 'Desafíos';

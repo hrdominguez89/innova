@@ -23,7 +23,7 @@
                         <div class="toolbar mb-3 border-bottom pb-2">
                         </div>
                         <div class="material-datatables">
-                            <table id="dataTableComun" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <table id="tablaDesafiosADM" class="table table-striped table-no-bordered table-hover" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th style="width:20%">Empresa</th>
@@ -57,7 +57,7 @@
                                         </tr>
                                     <?php else :; ?>
                                         <?php foreach ($desafios as $desafio) :; ?>
-                                            <tr id="row_desafio_id_<?php echo $desafio->desafio_id;?>">
+                                            <tr id="row_desafio_id_<?php echo $desafio->desafio_id; ?>">
                                                 <td><?php echo $desafio->nombre_empresa; ?></td>
                                                 <td><?php echo $desafio->nombre_del_desafio; ?></td>
                                                 <td><?php echo $desafio->descripcion_del_desafio; ?></td>
@@ -68,10 +68,10 @@
                                                 <td><?php echo $desafio->nombre_de_categorias; ?></td>
                                                 <td class="text-center dt-nowrap">
                                                     <a class="m-2 text-primary" title="Ver desafío <?php echo $desafio->nombre_del_desafio; ?>" href="<?php echo base_url(); ?>desafios/verDesafio/<?php echo $desafio->desafio_id; ?>"><i class="far fa-eye"></i></a>
-                                                    <?php if($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA):;?>
-                                                    <a class="m-2 text-warning"  onclick="editarDesafio(<?php echo $desafio->desafio_id;?>)" title="Editar desafío <?php echo $desafio->nombre_del_desafio; ?>" href="javascript:void(0);"><i class="far fa-edit"></i></a>
-                                                    <a class="m-2 text-danger"  onclick="eliminarDesafioModal(this)" data-nombre-desafio="<?php echo $desafio->nombre_del_desafio;?>" data-desafio-id="<?php echo $desafio->desafio_id;?>" title="Eliminar desafío <?php echo $desafio->nombre_del_desafio; ?>" href="javascript:void(0);"><i class="fas fa-trash-alt"></i></a>
-                                                    <?php endif;?>
+                                                    <?php if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) :; ?>
+                                                        <a class="m-2 text-warning" onclick="editarDesafio(<?php echo $desafio->desafio_id; ?>)" title="Editar desafío <?php echo $desafio->nombre_del_desafio; ?>" href="javascript:void(0);"><i class="far fa-edit"></i></a>
+                                                        <a class="m-2 text-danger" onclick="eliminarDesafioModal(this)" data-nombre-desafio="<?php echo $desafio->nombre_del_desafio; ?>" data-desafio-id="<?php echo $desafio->desafio_id; ?>" title="Eliminar desafío <?php echo $desafio->nombre_del_desafio; ?>" href="javascript:void(0);"><i class="fas fa-trash-alt"></i></a>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
