@@ -19,6 +19,7 @@
                         }
                     }; ?>
 
+                    <?php if($this->session->userdata('user_data')->rol_id != ROL_PARTNER):;?>
                     <a class="nav-link <?php echo $notificaciones_sin_leer ? 'text-primary notificacion-color-header' : ''; ?>" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="material-icons notificacion-icono-header"><?php echo $notificaciones_sin_leer ? 'notifications_active' : 'notifications'; ?></i>
                         Notificaciones
@@ -26,6 +27,7 @@
                             &nbsp;&nbsp;<span class="badge badge-pill badge-primary notificacion-total-header"><?php echo $notificaciones_sin_leer; ?></span>
                         <?php endif; ?>
                     </a>
+                    <?php endif;?>
                     <div style="width:300px;max-height:250px;overflow-y:auto;" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
                         <?php
                         $notificaciones_maximas_header = $this->session->userdata('notificaciones_maximas_header');
