@@ -135,21 +135,23 @@
                         <div class="col-12 text-right mt-3 mb-2">
                             <button class="btn btn-primary" id="botonCrearUsuarioModal">Crear usuario</button>
                         </div>
-                        <table class="table table-hover" id="dataTableUsuarios">
-                            <thead class="text-primary">
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Email</th>
-                                    <th>Tipo de usuario</th>
-                                    <th>Fecha alta</th>
-                                    <th>Estado</th>
-                                    <th class="text-center n">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+                        <div class="material-datatables">
+                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%" id="dataTableUsuarios">
+                                <thead class="text-primary">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Apellido</th>
+                                        <th>Email</th>
+                                        <th>Tipo de usuario</th>
+                                        <th>Fecha alta</th>
+                                        <th>Estado</th>
+                                        <th class="text-center n">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

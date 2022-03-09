@@ -27,7 +27,11 @@ const escucharBotonCrearUsuarioModal = () => {
 
 const cargarTablaDeUsuarios = (rol_id = false) => {
   var tableUsuarios = $("#dataTableUsuarios").DataTable({
+    fixedHeader: {
+      header: true,
+    },
     destroy: true,
+    responsive: false,
     info: false,
     ajax: {
       type: "post",
@@ -95,7 +99,7 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
         orderable: true,
       },
       {
-        targets: 1, // your case first column
+        targets: 1,
         className: "text-left",
         orderable: true,
       },
@@ -128,6 +132,8 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
     language: {
       url: "./assets/js/datatables/es_es.json",
     },
+    dom: "Bfrtip",
+    buttons: ["excel", "pdf", "print"],
   });
 };
 

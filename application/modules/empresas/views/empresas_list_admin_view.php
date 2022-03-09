@@ -24,7 +24,7 @@
                         <div class="toolbar mb-3 border-bottom pb-2">
                         </div>
                         <div class="material-datatables">
-                            <table id="dataTableComun" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <table data-fix-header="true" id="dataTableComun" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Razón social</th>
