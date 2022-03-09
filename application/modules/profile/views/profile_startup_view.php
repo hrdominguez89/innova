@@ -154,6 +154,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         <?php echo form_error('url_twitter'); ?>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group bmd-form-group">
+                                        <label class="bmd-label-floating" for="url_linkedin">URL Linkedin <i class="fab fa-linkedin"></i></label>
+                                        <input type="url" class="form-control" id="url_linkedin" name="url_linkedin" value="<?php echo set_value('url_linkedin', $data_perfil->url_linkedin); ?>">
+                                        <?php echo form_error('url_linkedin'); ?>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">

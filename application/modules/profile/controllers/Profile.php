@@ -152,7 +152,7 @@ class Profile extends MX_Controller
         $this->form_validation->set_rules(
             'url_web',
             'URL Web',
-            'valid_url',
+            'trim|valid_url',
             array(
                 'valid_url' => 'El campo {field} debe ser una url valida, por ejemplo http://www.example.com',
             )
@@ -160,7 +160,7 @@ class Profile extends MX_Controller
         $this->form_validation->set_rules(
             'url_youtube',
             'URL YouTube',
-            'valid_url',
+            'trim|valid_url',
             array(
                 'valid_url' => 'El campo {field} debe ser una url valida, por ejemplo http://www.example.com',
             )
@@ -168,7 +168,7 @@ class Profile extends MX_Controller
         $this->form_validation->set_rules(
             'url_instagram',
             'URL Instagram',
-            'valid_url',
+            'trim|valid_url',
             array(
                 'valid_url' => 'El campo {field} debe ser una url valida, por ejemplo http://www.example.com',
             )
@@ -176,7 +176,7 @@ class Profile extends MX_Controller
         $this->form_validation->set_rules(
             'url_facebook',
             'URL Facebook',
-            'valid_url',
+            'trim|valid_url',
             array(
                 'valid_url' => 'El campo {field} debe ser una url valida, por ejemplo http://www.example.com',
             )
@@ -184,7 +184,16 @@ class Profile extends MX_Controller
         $this->form_validation->set_rules(
             'url_twitter',
             'URL Twitter',
-            'valid_url',
+            'trim|valid_url',
+            array(
+                'valid_url' => 'El campo {field} debe ser una url valida, por ejemplo http://www.example.com',
+            )
+        );
+        
+        $this->form_validation->set_rules(
+            'url_linkedin',
+            'URL Linkedin',
+            'trim|valid_url',
             array(
                 'valid_url' => 'El campo {field} debe ser una url valida, por ejemplo http://www.example.com',
             )
@@ -320,7 +329,16 @@ class Profile extends MX_Controller
             array(
                 'required'  => 'El campo {field} es obligatorio',
             )
-        );;
+        );
+        
+        $this->form_validation->set_rules(
+            'url_linkedin',
+            'URL Linkedin',
+            'trim|valid_url',
+            array(
+                'valid_url' => 'El campo {field} debe ser una url valida, por ejemplo http://www.example.com',
+            )
+        );
 
         $this->form_validation->set_rules(
             'tipo_de_partner',
@@ -475,6 +493,7 @@ class Profile extends MX_Controller
                     $data_startup['url_instagram'] = $this->input->post('url_instagram');
                     $data_startup['url_facebook'] = $this->input->post('url_facebook');
                     $data_startup['url_twitter'] = $this->input->post('url_twitter');
+                    $data_startup['url_linkedin'] = $this->input->post('url_linkedin');
                     $data_startup['rubro'] = $this->input->post('rubro');
                     $data_startup['descripcion'] = $this->input->post('descripcion');
                     $data_startup['antecedentes'] = $this->input->post('antecedentes');
@@ -539,6 +558,7 @@ class Profile extends MX_Controller
                     $data_empresa['url_instagram'] = $this->input->post('url_instagram');
                     $data_empresa['url_facebook'] = $this->input->post('url_facebook');
                     $data_empresa['url_twitter'] = $this->input->post('url_twitter');
+                    $data_empresa['url_linkedin'] = $this->input->post('url_linkedin');
                     $data_empresa['rubro'] = $this->input->post('rubro');
                     $data_empresa['descripcion'] = $this->input->post('descripcion');
                     $data_empresa['exporta'] = $this->input->post('exporta');
@@ -580,6 +600,7 @@ class Profile extends MX_Controller
                     break;
                 case ROL_PARTNER:
                     $data_partner['razon_social'] = $this->input->post('razon_social');
+                    $data_partner['url_linkedin'] = $this->input->post('url_linkedin');
                     $data_partner['tipo_de_partner_id'] = $this->input->post('tipo_de_partner');
 
                     $data_usuario['nombre'] = $this->input->post('nombre');

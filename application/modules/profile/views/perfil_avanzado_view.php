@@ -22,7 +22,7 @@
                                     <label class="bmd-label-floating" for="rol">Elija un rol: <small class="text-danger">*</small></label>
                                     <select class="selectpicker" id="rol" data-style="select-with-transition" name="rol" title="Elija un rol" data-size="9" tabindex="-98" required>
                                         <?php
-                                        $roles = [1 => 'Startup', 2 => 'Empresa', 5 => 'Partner'];
+                                        $roles = [1 => 'Startup', 2 => 'Empresa'];
                                         foreach ($roles as $rol_id => $rol_descripcion) :
                                             if ($rol_id != $this->session->userdata('user_data')->rol_id) :
                                         ?>

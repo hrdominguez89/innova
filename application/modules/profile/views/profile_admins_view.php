@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <?php if ($this->session->flashdata('message')) : ?>
     <?php $this->load->view('modal_alertas_view'); ?>
 <?php endif; ?>
+<script src="https://www.linkedin.com/autofill/js/autofill.js" type="text/javascript" async></script><script type="IN/Form2"></script>
 <div class="content">
     <div class="container-fluid">
         <div class="row">

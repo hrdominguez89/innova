@@ -54,6 +54,32 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <?php echo form_error('tipo_de_partner'); ?>
                                 </div>
                             </div>
+
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <label class="bmd-label-floating" for="tipo_de_partner">Tipo de partner<small class="text-danger"> *</small></label>
+                                    <select class="selectpicker" id="tipo_de_partner" data-style="select-with-transition" name="tipo_de_partner" title="Elija un tipo de partner" data-size="9" tabindex="-98" required>
+                                        <?php foreach ($tipos_de_partners as $tipo_de_partner) :; ?>
+                                            <option value="<?php echo $tipo_de_partner->id; ?>" <?php echo @$this->input->post('tipo_de_partner') == $tipo_de_partner->id || $data_perfil->tipo_de_partner_id == $tipo_de_partner->id ? 'selected' : ''; ?>><?php echo $tipo_de_partner->descripcion_partner; ?> </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <?php echo form_error('tipo_de_partner'); ?>
+                                </div>
+                                
+                            </div>
+
+                            
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <div class="form-group bmd-form-group">
+                                        <label class="bmd-label-floating" for="url_linkedin">URL Linkedin <i class="fab fa-linkedin"></i></label>
+                                        <input type="url" class="form-control" id="url_linkedin" name="url_linkedin" value="<?php echo set_value('url_linkedin', $data_perfil->url_linkedin); ?>">
+                                        <?php echo form_error('url_linkedin'); ?>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row mb-3">
                                 <label class="col-sm-3 col-form-label text-left pl-3" for="logo_imagen">Logo de la empresa</label>
                                 <input class="form-control pl-3" type="file" id="logo_imagen" name="logo_imagen" accept="image/png, image/jpeg">

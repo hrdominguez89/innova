@@ -1,6 +1,11 @@
 window.addEventListener('load',()=>{
     listenCategoriesCheckbox();
+    listenSelectTipoDePartner();
 });
+
+const listenSelectTipoDePartner = ()=>{
+    
+}
 
 const listenCategoriesCheckbox = ()=>{
     const categoriesCheckbox = document.getElementsByClassName('categoriesCheckbox');
