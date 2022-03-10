@@ -164,7 +164,7 @@
                                     </div>
                                     <div class="col-12">
                                         <div class="dropdown bootstrap-select show-tick">
-                                            <select class="selectpicker" id="selectValidarPostulacion" name="validar_postulacion" data-style="select-with-transition" title="Seleccione un estado" data-size="7" tabindex="-98" required>
+                                            <select class="select_chosen" id="selectValidarPostulacion" name="validar_postulacion" data-style="select-with-transition" title="Seleccione un estado" data-size="7" tabindex="-98" required>
                                                 <option hidden selected disabled <?php echo set_select('validar_postulacion', '', true); ?>> Seleccione un estado</option>
                                                 <option value="<?php echo POST_VALIDADO; ?>" <?php echo set_select('validar_postulacion', POST_VALIDADO); ?> <?php echo $startup->estado_postulacion == POST_VALIDADO ? 'selected' : ''; ?>> Validado</option>
                                                 <option value="<?php echo POST_RECHAZADO; ?>" <?php echo set_select('validar_postulacion', POST_RECHAZADO); ?> <?php echo $startup->estado_postulacion == POST_RECHAZADO ? 'selected' : ''; ?>> Rechazado</option>

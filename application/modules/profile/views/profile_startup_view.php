@@ -189,15 +189,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mb-4">
-                                <label class="col-sm-3 col-form-label text-left pl-3" for="exporta">¿Exporta? <small class="text-danger"> *</small></label>
-                                <div class="col-sm-9">
-                                    <div class="form-group bmd-form-group">
-                                    <select class="selectpicker" id="exporta" data-style="select-with-transition" name="exporta" title="¿Exporta?" data-size="9" tabindex="-98" required>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label class="bmd-label-floating" for="exporta">¿Exporta? <small class="text-danger"> *</small></label>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <select class="select_chosen" id="exporta" data-style="select-with-transition" name="exporta" title="¿Exporta?" data-size="9" tabindex="-98" required>
                                             <option value="Si" <?php echo $data_perfil->exporta == 'Si' ? 'selected' : ''; ?><?php echo set_select('exporta', $data_perfil->exporta); ?>>Si</option>
                                             <option value="No" <?php echo $data_perfil->exporta == 'No' ? 'selected' : ''; ?><?php echo set_select('exporta', $data_perfil->exporta); ?>>No</option>
                                         </select>
-                                        <?php echo form_error('exporta'); ?>
                                     </div>
                                 </div>
                             </div>
@@ -286,7 +287,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 </div>
             </div>
 
-            <?php echo $this->load->view('perfil_avanzado_view');?>
+            <?php echo $this->load->view('perfil_avanzado_view'); ?>
 
         </div>
     </div>

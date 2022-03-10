@@ -189,7 +189,7 @@ class Profile extends MX_Controller
                 'valid_url' => 'El campo {field} debe ser una url valida, por ejemplo http://www.example.com',
             )
         );
-        
+
         $this->form_validation->set_rules(
             'url_linkedin',
             'URL Linkedin',
@@ -330,7 +330,7 @@ class Profile extends MX_Controller
                 'required'  => 'El campo {field} es obligatorio',
             )
         );
-        
+
         $this->form_validation->set_rules(
             'url_linkedin',
             'URL Linkedin',
@@ -348,6 +348,17 @@ class Profile extends MX_Controller
                 'required'  => 'El campo {field} es obligatorio',
             )
         );
+
+        if ($this->input->post('tipo_de_partner') == 8) {
+            $this->form_validation->set_rules(
+                'descripcion_tipo_de_partner',
+                'Describa tipo de partner',
+                'trim|required|max_length[100]',
+                array(
+                    'required'  => 'El campo {field} es obligatorio',
+                )
+            );
+        }
 
         $this->form_validation->set_rules(
             'nombre',
@@ -601,6 +612,7 @@ class Profile extends MX_Controller
                 case ROL_PARTNER:
                     $data_partner['razon_social'] = $this->input->post('razon_social');
                     $data_partner['url_linkedin'] = $this->input->post('url_linkedin');
+                    $data_partner['descripcion_tipo_de_partner'] = $this->input->post('descripcion_tipo_de_partner');
                     $data_partner['tipo_de_partner_id'] = $this->input->post('tipo_de_partner');
 
                     $data_usuario['nombre'] = $this->input->post('nombre');

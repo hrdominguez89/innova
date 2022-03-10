@@ -42,11 +42,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mb-4">
 
-                                <div class="col-md-12">
+                                <div class="col-md-12" id="selectPrueba">
                                     <label class="bmd-label-floating" for="tipo_de_partner">Tipo de partner<small class="text-danger"> *</small></label>
-                                    <select class="selectpicker" id="tipo_de_partner" data-style="select-with-transition" name="tipo_de_partner" title="Elija un tipo de partner" data-size="9" tabindex="-98" required>
+                                </div>
+                                <div class="col-md-4" id="selectPrueba">
+                                    <select id="tipo_de_partner" class="select_chosen tipo_de_partner_select" name="tipo_de_partner" title="Elija un tipo de partner" data-size="9" tabindex="-98" required>
                                         <?php foreach ($tipos_de_partners as $tipo_de_partner) :; ?>
                                             <option value="<?php echo $tipo_de_partner->id; ?>" <?php echo @$this->input->post('tipo_de_partner') == $tipo_de_partner->id || $data_perfil->tipo_de_partner_id == $tipo_de_partner->id ? 'selected' : ''; ?>><?php echo $tipo_de_partner->descripcion_partner; ?> </option>
                                         <?php endforeach; ?>
@@ -55,22 +57,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <div class="row mb-4" id="descripcionOtroTipoDePartner" style="display: <?php echo @$data_perfil->tipo_de_partner_id == 8? 'block':'none';?>">
 
                                 <div class="col-md-12">
-                                    <label class="bmd-label-floating" for="tipo_de_partner">Tipo de partner<small class="text-danger"> *</small></label>
-                                    <select class="selectpicker" id="tipo_de_partner" data-style="select-with-transition" name="tipo_de_partner" title="Elija un tipo de partner" data-size="9" tabindex="-98" required>
-                                        <?php foreach ($tipos_de_partners as $tipo_de_partner) :; ?>
-                                            <option value="<?php echo $tipo_de_partner->id; ?>" <?php echo @$this->input->post('tipo_de_partner') == $tipo_de_partner->id || $data_perfil->tipo_de_partner_id == $tipo_de_partner->id ? 'selected' : ''; ?>><?php echo $tipo_de_partner->descripcion_partner; ?> </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <?php echo form_error('tipo_de_partner'); ?>
+                                    <div class="form-group bmd-form-group">
+                                        <label class="bmd-label-floating" for="descripcion_tipo_de_partner">Describa el tipo de partner <small class="text-danger"> *</small></label>
+                                        <input type="text" class="form-control" id="descripcion_tipo_de_partner" maxlength="100" name="descripcion_tipo_de_partner" value="<?php echo set_value('descripcion_tipo_de_partner', @$data_perfil->tipo_de_partner_id == 8? @$data_perfil->descripcion_tipo_de_partner:''); ?>" <?php echo @$data_perfil->tipo_de_partner_id == 8? 'required':'';?>>
+                                        <?php echo form_error('descripcion_tipo_de_partner'); ?>
+                                    </div>
                                 </div>
-                                
                             </div>
 
-                            
-                            <div class="row mt-2">
+
+                            <div class="row my-4">
                                 <div class="col-md-6">
                                     <div class="form-group bmd-form-group">
                                         <label class="bmd-label-floating" for="url_linkedin">URL Linkedin <i class="fab fa-linkedin"></i></label>
@@ -130,7 +129,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 </div>
             </div>
 
-            <?php echo $this->load->view('perfil_avanzado_view');?>
+            <?php echo $this->load->view('perfil_avanzado_view'); ?>
 
 
 

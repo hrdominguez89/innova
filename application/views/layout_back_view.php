@@ -31,6 +31,10 @@
   <link rel="stylesheet" href="<?php echo base_url() . 'assets/cropperjs/cropper.min.css'; ?>" integrity="sha512-NCJ1O5tCMq4DK670CblvRiob3bb5PAxJ7MALAz2cV40T9RgNMrJSAwJKy0oz20Wu7TDn9Z2WnveirOeHmpaIlA==" crossorigin="anonymous" />
   <link href="<?php echo base_url() . 'assets/css/perfect-scrollbar.css'; ?>" rel="stylesheet">
 
+  <!-- CHOSEN File -->
+  <link href='<?php echo base_url() . 'assets/chosen/chosen.min.css'; ?>' rel='stylesheet' type='text/css'>
+
+
   <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/styles.css">
   <?php
   if (isset($files_css)) {
@@ -96,7 +100,7 @@
   <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
   <script src="<?php echo base_url(); ?>assets/material/js/plugins/jquery.bootstrap-wizard.js"></script>
   <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
-  <script src="<?php echo base_url(); ?>assets/material/js/plugins/bootstrap-selectpicker.js"></script>
+  <!-- <script src="<?php echo base_url(); ?>assets/material/js/plugins/bootstrap-selectpicker.js"></script> -->
   <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
   <script src="<?php echo base_url(); ?>assets/material/js/plugins/bootstrap-datetimepicker.min.js"></script>
   <!--  DataTables.net Plugin, full documentation here: https://datatables.net/  -->
@@ -127,6 +131,9 @@
   <script src="<?php echo base_url(); ?>assets/material/js/material-dashboard.js?v=2.1.2" type="text/javascript"></script>
   <!-- CROPPER File -->
   <script src="<?php echo base_url() . 'assets/cropperjs/cropper.min.js'; ?>" integrity="sha512-FHa4dxvEkSR0LOFH/iFH0iSqlYHf/iTwLc5Ws/1Su1W90X0qnxFxciJimoue/zyOA/+Qz/XQmmKqjbubAAzpkA==" crossorigin="anonymous"></script>
+  <!-- CHOSEN File -->
+  <script src='<?php echo base_url() . 'assets/chosen/chosen.jquery.min.js'; ?>' type='text/javascript'></script>
+
   <script>
     $(document).ready(function() {
       $().ready(function() {
@@ -295,6 +302,14 @@
           }, 1000);
 
         });
+        //selects chosen
+        if ($(".select_chosen").length != 0) {
+          $('select').chosen({
+            width: '100%',
+            disable_search: true,
+            no_results_text: "No se encuentra coincidencias con",
+          });
+        }
       });
     });
   </script>

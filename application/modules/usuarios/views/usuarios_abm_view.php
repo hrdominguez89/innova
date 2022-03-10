@@ -29,7 +29,7 @@
                         <div class="form-group col-md-12">
                             <label for="rol_id">Rol <span class="text-danger">*</span></label>
                             <div class="col-md-12">
-                                <select class="selectpicker" title="Seleccione un rol" data-style="btn btn-sm btn-primary" id="rol_id" name="rol_id" required>
+                                <select class="select_chosen" title="Seleccione un rol" data-style="btn btn-sm btn-primary" id="rol_id" name="rol_id" required>
                                     <option disabled selected hidden>Seleccione un rol</option>
                                     <option value="3">Admin Organización</option>
                                     <option value="4">Admin Plataforma</option>
@@ -80,7 +80,7 @@
                         <div class="form-group col-md-12">
                             <label for="rol_id_editar">Rol <span class="text-danger">*</span></label>
                             <div class="col-md-12">
-                                <select class="selectpicker" title="Seleccione un rol" data-style="btn btn-sm btn-primary" id="rol_id_editar" name="rol_id" required>
+                                <select class="select_chosen" title="Seleccione un rol" data-style="btn btn-sm btn-primary" id="rol_id_editar" name="rol_id" required>
                                     <option disabled selected hidden>Seleccione un rol</option>
                                     <option value="3">Admin Organización</option>
                                     <option value="4">Admin Plataforma</option>

@@ -290,8 +290,8 @@
                                                 <?php if ($mensaje_de_la_plataforma->tipo_de_mensaje_id == MSJ_NOTIF_EMAIL) :; ?>
                                                     <div class="row">
                                                         <label class="text-primary col-sm-2 col-form-label">Tipo de envio <span class="text-danger"> *</span></label>
-                                                        <div class="col-sm-10">
-                                                            <select class="selectpicker" data-style="select-with-transition" name="tipo_de_envio_id[]" title="Elija un tipo de notificación" data-size="9" tabindex="-98" required>
+                                                        <div class="col-sm-10 mt-3">
+                                                            <select class="select_chosen" data-style="select-with-transition" name="tipo_de_envio_id[]" title="Elija un tipo de notificación" data-size="9" tabindex="-98" required>
                                                                 <?php foreach ($tipos_de_envio as $tipo_de_envio) :; ?>
                                                                     <option value="<?php echo $tipo_de_envio->id; ?>" <?php echo @$this->input->post('tipo_de_envio_id')[$i] == $tipo_de_envio->id || $mensaje_de_la_plataforma->tipo_de_envio_id == $tipo_de_envio->id ? 'selected' : ''; ?>><?php echo $tipo_de_envio->descripcion_de_envio; ?> </option>
                                                                 <?php endforeach; ?>
@@ -301,8 +301,8 @@
                                                     </div>
                                                     <div class="row">
                                                         <label class="text-primary col-sm-2 col-form-label">Enviar mensaje desde <span class="text-danger"> *</span></label>
-                                                        <div class="col-sm-10">
-                                                            <select class="selectpicker" data-style="select-with-transition" name="notificador_id[]" title="Elija un notificador" data-size="9" tabindex="-98" required>
+                                                        <div class="col-sm-10 mt-3">
+                                                            <select class="select_chosen" data-style="select-with-transition" name="notificador_id[]" title="Elija un notificador" data-size="9" tabindex="-98" required>
                                                                 <?php foreach ($notificadores as $notificador) :; ?>
                                                                     <option value="<?php echo $notificador->id; ?>" <?php echo @$this->input->post('notificador_id')[$i] == $notificador->id || $mensaje_de_la_plataforma->notificador_id == $notificador->id ? 'selected' : ''; ?>><?php echo $notificador->notificador_descripcion; ?> </option>
                                                                 <?php endforeach; ?>
@@ -314,8 +314,8 @@
                                                     <input type="hidden" name="tipo_de_envio_id[]" value="NULL">
                                                     <div class="row">
                                                         <label class="text-primary col-sm-2 col-form-label">Enviar mensaje desde <span class="text-danger"> *</span></label>
-                                                        <div class="col-sm-10">
-                                                            <select class="selectpicker" data-style="select-with-transition" name="notificador_id[]" title="Elija un notificador" data-size="9" tabindex="-98" required>
+                                                        <div class="col-sm-10 mt-3">
+                                                            <select class="select_chosen" data-style="select-with-transition" name="notificador_id[]" title="Elija un notificador" data-size="9" tabindex="-98" required>
                                                                 <?php foreach ($notificadores as $notificador) :; ?>
                                                                     <option value="<?php echo $notificador->id; ?>" <?php echo @$this->input->post('notificador_id')[$i] == $notificador->id || $mensaje_de_la_plataforma->notificador_id == $notificador->id ? 'selected' : ''; ?>><?php echo $notificador->notificador_descripcion; ?> </option>
                                                                 <?php endforeach; ?>
