@@ -332,6 +332,15 @@ class Profile extends MX_Controller
         );
 
         $this->form_validation->set_rules(
+            'descripcion',
+            'Descripción',
+            'trim|required',
+            array(
+                'required'  => 'El campo {field} es obligatorio',
+            )
+        );
+
+        $this->form_validation->set_rules(
             'url_linkedin',
             'URL Linkedin',
             'trim|valid_url',
@@ -384,6 +393,15 @@ class Profile extends MX_Controller
                 'valid_email' => 'El campo {field} no es un e-mail válido',
                 'required'  => 'El campo {field} es obligatorio',
                 'validar_email' => 'El E-Mail indicado ya se encuentra en uso.'
+            )
+        );
+
+        $this->form_validation->set_rules(
+            'telefono',
+            'Teléfono',
+            'trim|required',
+            array(
+                'required'  => 'El campo {field} es obligatorio',
             )
         );
     }
@@ -613,11 +631,13 @@ class Profile extends MX_Controller
                     $data_partner['razon_social'] = $this->input->post('razon_social');
                     $data_partner['url_linkedin'] = $this->input->post('url_linkedin');
                     $data_partner['descripcion_tipo_de_partner'] = $this->input->post('descripcion_tipo_de_partner');
+                    $data_partner['descripcion'] = $this->input->post('descripcion');
                     $data_partner['tipo_de_partner_id'] = $this->input->post('tipo_de_partner');
 
                     $data_usuario['nombre'] = $this->input->post('nombre');
                     $data_usuario['apellido'] = $this->input->post('apellido');
                     $data_usuario['email'] = $this->input->post('email');
+                    $data_usuario['telefono'] = $this->input->post('telefono');
                     $data_usuario['perfil_completo'] = true;
                     $data_usuario['fecha_modifico'] = date('Y-m-d H:i:s', time());
 

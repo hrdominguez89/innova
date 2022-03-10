@@ -42,12 +42,24 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group bmd-form-group">
+                                        <label class="bmd-label-floating" for="descripcion">Descripción<small class="text-danger"> *</small></label>
+                                        <textarea class="form-control" name="descripcion" id="" cols="30" rows="3" required><?php echo set_value('descripcion', $data_perfil->descripcion); ?></textarea>
+                                        <?php echo form_error('descripcion'); ?>
+                                    </div>
+                                </div>
+                            </div>
+
+
                             <div class="row mb-4">
 
-                                <div class="col-md-12" id="selectPrueba">
+                                <div class="col-md-12">
                                     <label class="bmd-label-floating" for="tipo_de_partner">Tipo de partner<small class="text-danger"> *</small></label>
                                 </div>
-                                <div class="col-md-4" id="selectPrueba">
+                                <div class="col-md-4">
                                     <select id="tipo_de_partner" class="select_chosen tipo_de_partner_select" name="tipo_de_partner" title="Elija un tipo de partner" data-size="9" tabindex="-98" required>
                                         <?php foreach ($tipos_de_partners as $tipo_de_partner) :; ?>
                                             <option value="<?php echo $tipo_de_partner->id; ?>" <?php echo @$this->input->post('tipo_de_partner') == $tipo_de_partner->id || $data_perfil->tipo_de_partner_id == $tipo_de_partner->id ? 'selected' : ''; ?>><?php echo $tipo_de_partner->descripcion_partner; ?> </option>
@@ -56,6 +68,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <?php echo form_error('tipo_de_partner'); ?>
                                 </div>
                             </div>
+
+                            
 
                             <div class="row mb-4" id="descripcionOtroTipoDePartner" style="display: <?php echo @$data_perfil->tipo_de_partner_id == 8? 'block':'none';?>">
 
@@ -115,6 +129,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         <label class="bmd-label-floating" for="email">E-mail <small class="text-danger"> *</small></label>
                                         <input type="email" class="form-control" name="email" id="email" value="<?php echo set_value('email', $data_perfil->email); ?>" required>
                                         <?php echo form_error('email'); ?>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group bmd-form-group">
+                                        <label class="bmd-label-floating" for="telefono">Teléfono<small class="text-danger"> *</small></label>
+                                        <input type="text" class="form-control" name="telefono" id="telefono" value="<?php echo set_value('telefono', $data_perfil->telefono); ?>" required>
+                                        <?php echo form_error('telefono'); ?>
                                     </div>
                                 </div>
 
