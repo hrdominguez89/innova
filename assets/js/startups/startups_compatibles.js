@@ -50,13 +50,13 @@ const dataTableOptions = {
       },
     },
     {
-      className: "text-right",
+      className: "text-right text-primary",
       searchable: false,
       orderable: false,
       render: function (data, type, full, meta) {
         const desafio_id = full.desafio_id;
         const empresa_id = full.empresa_id;
-        return `<a href="javascript:void(0);" class="text-primary" onclick="verDesafioCompatible(this)" data-empresa-id="${empresa_id}" data-desafio-id="${desafio_id}"><i class="fas fa-eye"></i></a>`;
+        return `<a href="javascript:void(0);" onclick="verDesafioCompatible(this)" data-empresa-id="${empresa_id}" data-desafio-id="${desafio_id}"><i class="far fa-eye"></i></a>`;
       },
     },
   ],
@@ -79,6 +79,7 @@ const escucharBotonCompartirDesafio = () => {
     const respCompartir = compartirDesafio();
     await mostrarResultadoCompartir(respCompartir);
     $("#compartirDesafio").modal("hide");
+    cargarDatatable();
   });
 };
 
@@ -221,10 +222,11 @@ const mostrarDatosDesafio = async () => {
       botonCompartirDesafio.show();
     }
     $("#desafioCompatibleLabel").html(resp.razon_social);
+    console.log(resp);
     if (resp.logo) {
       bodyDesafios.append(`
       <div class="text-center">
-        <img src="${BASE_URL}uploads/imagenes_de_usuarios/${id_empresa}.png" class="rounded-circle" alt="Logo Startup">
+        <img src="${BASE_URL}uploads/imagenes_de_usuarios/${resp.id_empresa}.png" class="rounded-circle" alt="Logo Startup">
       </div>
       `);
     } else {

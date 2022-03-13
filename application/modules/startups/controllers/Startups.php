@@ -56,17 +56,17 @@ class Startups extends MX_Controller
     {
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_PARTNER:
-                $this->config_pagination['base_url'] = base_url() . 'desafios';
+            case ROL_ADMIN_ORGANIZACION:
+                $this->config_pagination['base_url'] = base_url() . 'startups';
                 $this->config_pagination['total_rows'] = count($this->Startups_model->getStartupsActivos());
                 $this->pagination->initialize($this->config_pagination);
 
                 $data['startups'] = $this->Startups_model->getStartupsActivos($this->start, $this->limit);
-                $data['files_js'] =  array('startups/startups_partner.js');
-                $data['sections_view'] = 'startups_cartelera_partner_view';
+                $data['files_js'] =  array('startups/startups_compatibles.js');
+                $data['sections_view'] = 'startups_cartelera_compartir_view';
 
                 break;
             case ROL_ADMIN_PLATAFORMA:
-            case ROL_ADMIN_ORGANIZACION:
                 $data['startups'] = $this->Startups_model->getStartups();
                 $data['files_js'] = array('activar_tabla_comun.js', 'startups/startups.js');
                 $data['sections_view'] = 'startups_list_admin_view';

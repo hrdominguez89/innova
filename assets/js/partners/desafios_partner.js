@@ -45,7 +45,7 @@ const dataTableOptions = {
       orderable: false,
       render: function (data, type, full, meta) {
         const startup_id = full.startup_id;
-        return `<a href="javascript:void(0);" class="text-primary" onclick="verStartupCompatible(this)" data-startup-id="${startup_id}"><i class="fas fa-eye"></i></a>`;
+        return `<a href="javascript:void(0);" class="text-primary" onclick="verStartupCompatible(this)" data-startup-id="${startup_id}"><i class="far fa-eye"></i></a>`;
       },
     },
   ],

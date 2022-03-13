@@ -141,7 +141,9 @@ const reiniciarModalCrearUsuario = () => {
   $("#errorCrearUsuarioModal").html("");
   $("#errorCrearUsuarioModal").css("display", "none");
   $("#crearUsuarioForm")[0].reset();
-  $(".filter-option-inner-inner")[0].innerHTML = "Seleccione un rol";
+  $('#rol_id')
+    .find('option:first-child').prop('selected', true)
+    .end().trigger('chosen:updated');
 };
 
 const crearUsuario = () => {

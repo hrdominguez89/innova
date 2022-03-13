@@ -382,6 +382,7 @@ class Desafios_model extends CI_Model
     public function getDesafioByIdForPartner($startup_id, $partner_id, $desafio_id)
     {
         $this->db->select('
+        vd.logo,
         vd.nombre_empresa,
         vd.nombre_del_desafio,
         vd.fecha_fin_de_postulacion,
