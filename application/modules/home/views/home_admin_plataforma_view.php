@@ -22,9 +22,6 @@
                                         Tipos de usuarios registrados
                                     </span>
                                 </div>
-                                <div class="col-2 text-right">
-                                <a download="usuarios_registrados.xls" href="javascript:void(0);" onclick="return ExcellentExport.excel(this, 'tabla_usuarios_registrados', 'Usuarios Registrados');" class="text-muted" title="Descargar datos a tabla excel"><i style="font-size:25px;" class="fas fa-file-download"></i></a>
-                                </div>
                             </div>
                         </h4>
                         <div style="display:none;">
@@ -47,11 +44,32 @@
                             </table>
                         </div>
                         <div>
-                            
+
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="ct-chart ct-minor-sixth" id="tiposDeUsuarios"></div>
+                        <div class="row">
+                            <div class="col-10"></div>
+                            <div class="col-2 text-right">
+                                <div class="dropdown">
+                                    <a class="bg-white" href="javascript:;" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <div class="apexcharts-menu-icon" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                <path fill="none" d="M0 0h24v24H0V0z"></path>
+                                                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+                                            </svg>
+                                        </div>
+                                    </a>
+
+                                    <div class="dropdown-menu apexcharts-toolbar dropdown-graficos text-center" aria-labelledby="dropdownMenuLink">
+                                        <a id="export" class="apexcharts-menu-item exportSVG dropdown-item-hamburguesa" href="javascript:void(0);" title="Descargar grafico en Imagen">Descargar imagen</a>
+                                        <a class="apexcharts-menu-item exportSVG dropdown-item-hamburguesa" href="javascript:void(0);" download="usuarios_registrados.xls" href="javascript:void(0);" onclick="return ExcellentExport.excel(this, 'tabla_usuarios_registrados', 'Usuarios Registrados');" title="Descargar datos a tabla excel">Descargar excel</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center">
+                                <div class="ct-chart ct-minor-sixth" id="tiposDeUsuarios"></div>
+                            </div>
+                        </div>
                     </div>
                     <!-- <div class="card-footer">
                         <div class="row">
@@ -77,14 +95,14 @@
                     <div class="card-body">
                         <div class="ct-chart ct-double-octave" id="categoriasSeleccionadas"></div>
                     </div>
-                    <div class="card-footer">
+                    <!-- <div class="card-footer">
                         <div class="row">
                             <div class="col-md-12">
                                 <i class="fa fa-circle ct-series-a"></i> Desafíos <br>
                                 <i class="fa fa-circle ct-series-b"></i> Categorias Startups <br>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
             </div>

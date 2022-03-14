@@ -98,17 +98,42 @@ td.dt-nowrap {
   white-space: nowrap;
 }
 
-.sidebar .nav li a, .sidebar .nav li .dropdown-menu a,.sidebar .nav li i, .user-info a p{
-  color:#9c27b0;
+.sidebar .nav li a,
+.sidebar .nav li .dropdown-menu a,
+.sidebar .nav li i,
+.user-info a p {
+  color: #9c27b0;
 }
-.sidebar .nav li a:hover, .sidebar .nav li .dropdown-menu a:hover, .sidebar .nav li i:hover{
-  background-color:#9c27b0;
+.sidebar .nav li a:hover,
+.sidebar .nav li .dropdown-menu a:hover,
+.sidebar .nav li i:hover {
+  background-color: #9c27b0;
   color: white;
 }
-.sidebar .nav .nav-item .nav-link:hover .material-icons{
+.sidebar .nav .nav-item .nav-link:hover .material-icons {
   color: white;
 }
 
-.sidebar > div{
-  background-color: #FFFFFF!important;
+.sidebar > div {
+  background-color: #ffffff !important;
+}
+.dropdown-graficos {
+  padding: 3px!important;
+  border: 1px!important;
+  width: 102px!important;
+}
+.dropdown-item-hamburguesa {
+  color: #777777 !important;
+  padding: 6px 7px 6px 7px !important;
+  display: inline-block !important;
+  width: 100%!important;
+}
+
+.dropdown-item-hamburguesa:hover {
+  background-color: #eee !important;
+  box-shadow: initial !important;
+}
+.apexcharts-menu-open{
+  width: 154px!important;
+  text-align: center!important;
 }

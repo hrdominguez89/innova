@@ -2,6 +2,24 @@ window.addEventListener("load", () => {
   getTotalUsuariosPorRoles();
   getCategoriasTotales();
 });
+
+const listenDescargarGraficoTotalDeUsuarios = () => {
+  $("#export").on("click", function () {
+    html2canvas(document.querySelector("#tiposDeUsuarios")).then((canvas) => {
+      var url = canvas.toDataURL();
+      $("<a>", {
+        href: url,
+        download: "tipos_de_usuarios.png",
+      })
+        .on("click", function () {
+          $(this).remove();
+        })
+        .appendTo("body")[0]
+        .click();
+    });
+  });
+};
+
 const getTotalUsuariosPorRoles = () => {
   $.ajax({
     type: "POST",
@@ -25,7 +43,6 @@ const getCategoriasTotales = () => {
 };
 
 const cargarGraficoPie = (totalDeUsuariosPorRoles) => {
-  console.log(totalDeUsuariosPorRoles);
   let totalDeUsuarios = 0;
   const total = {
     Startups: 0,
@@ -34,9 +51,9 @@ const cargarGraficoPie = (totalDeUsuariosPorRoles) => {
   };
   const labels = ["Startups", "Empresas", "Partners"];
   for (i = 0; i < totalDeUsuariosPorRoles.length; i++) {
-    totalDeUsuarios = totalDeUsuarios + parseInt(
-      totalDeUsuariosPorRoles[i].total_de_usuarios_por_roles
-    );
+    totalDeUsuarios =
+      totalDeUsuarios +
+      parseInt(totalDeUsuariosPorRoles[i].total_de_usuarios_por_roles);
     switch (parseInt(totalDeUsuariosPorRoles[i].rol_id)) {
       case 1:
         total.Startups = parseInt(
@@ -62,22 +79,23 @@ const cargarGraficoPie = (totalDeUsuariosPorRoles) => {
     tablaUsuariosRegistrados.getElementsByTagName("tbody")[0];
   const tfootTablaUsuariosRegistrados =
     tablaUsuariosRegistrados.getElementsByTagName("tfoot")[0];
-    const trTfootTablaUsuariosRegistrados = tfootTablaUsuariosRegistrados.getElementsByTagName("tr")[0];
-    labels.forEach(label => {
-        const etiquetaTr = document.createElement('tr');
-        const etiquetaTdTipoDeUsuario = document.createElement('td');
-        const etiquetaTdCantidadTipoDeUsuario = document.createElement('td');
+  const trTfootTablaUsuariosRegistrados =
+    tfootTablaUsuariosRegistrados.getElementsByTagName("tr")[0];
+  labels.forEach((label) => {
+    const etiquetaTr = document.createElement("tr");
+    const etiquetaTdTipoDeUsuario = document.createElement("td");
+    const etiquetaTdCantidadTipoDeUsuario = document.createElement("td");
 
-        etiquetaTdTipoDeUsuario.innerHTML = label;
-        etiquetaTdCantidadTipoDeUsuario.innerHTML = total[label]; 
-             
-        etiquetaTr.appendChild(etiquetaTdTipoDeUsuario);
-        etiquetaTr.appendChild(etiquetaTdCantidadTipoDeUsuario);
-        tbodyTablaUsuariosRegistrados.appendChild(etiquetaTr);
-    });
-    const etiquetaThTotalDeUsuarios = document.createElement('th');
-    etiquetaThTotalDeUsuarios.innerHTML = totalDeUsuarios;
-    trTfootTablaUsuariosRegistrados.appendChild(etiquetaThTotalDeUsuarios);
+    etiquetaTdTipoDeUsuario.innerHTML = label;
+    etiquetaTdCantidadTipoDeUsuario.innerHTML = total[label];
+
+    etiquetaTr.appendChild(etiquetaTdTipoDeUsuario);
+    etiquetaTr.appendChild(etiquetaTdCantidadTipoDeUsuario);
+    tbodyTablaUsuariosRegistrados.appendChild(etiquetaTr);
+  });
+  const etiquetaThTotalDeUsuarios = document.createElement("th");
+  etiquetaThTotalDeUsuarios.innerHTML = totalDeUsuarios;
+  trTfootTablaUsuariosRegistrados.appendChild(etiquetaThTotalDeUsuarios);
 
   var options = {
     chart: {
@@ -118,13 +136,11 @@ const cargarGraficoPie = (totalDeUsuariosPorRoles) => {
     },
     series: [total.Startups, total.Empresas, total.Partners],
     labels: labels,
-    colors: ["#2E93fA", "#66DA26", "#546E7A"],
+    colors: ["#00bcd4", "#f44336", "#ff9800"],
     legend: {
       show: true,
       position: "bottom",
       horizontalAlign: "center",
-      // formatter: undefined,
-      // customLegendItems: ['hola','como','estas'],
       offsetX: 0,
       offsetY: 0,
       markers: {
@@ -200,42 +216,7 @@ const cargarGraficoPie = (totalDeUsuariosPorRoles) => {
   );
 
   chart.render();
-  // const total = {
-  //     startups: 0,
-  //     empresas: 0,
-  //     partners: 0,
-  // }
-  // for (i = 0; i < totalDeUsuariosPorRoles.length; i++) {
-  //     switch (parseInt(totalDeUsuariosPorRoles[i].rol_id)) {
-  //         case 1:
-  //             total.startups = parseInt(totalDeUsuariosPorRoles[i].total_de_usuarios_por_roles);
-  //             break;
-  //         case 2:
-  //             total.empresas = parseInt(totalDeUsuariosPorRoles[i].total_de_usuarios_por_roles);
-  //             break;
-  //         case 5:
-  //             total.partners = parseInt(totalDeUsuariosPorRoles[i].total_de_usuarios_por_roles);
-  //             break;
-  //     }
-  // }
-
-  // let data = {
-  //     series: [total.startups, total.empresas, total.partners]
-  // };
-
-  // let sum = function(a, b) {
-  //     return a + b
-  // };
-
-  // let j = 0;
-  // new Chartist.Pie('#tiposDeUsuarios', data, {
-  //     labelInterpolationFnc: function(value) {
-  //         const label = Math.round(value / data.series.reduce(sum) * 100) + '%';
-  //         $(`#porcentaje${j}`).html(`(${value}) ${label}`);
-  //         j++;
-  //         return label;
-  //     }
-  // });
+  listenDescargarGraficoTotalDeUsuarios();
 };
 
 const cargarGraficoBar = (categoriasTotales) => {
@@ -256,57 +237,86 @@ const cargarGraficoBar = (categoriasTotales) => {
       )
     );
   }
-
-  let data = {
-    labels: categoriasLabel,
-    series: [categoriasDesafiosLabel, categoriasStartupsLabel],
-  };
-
-  var defaultOptions = {
-    low: 0,
-    // Options for X-Axis
-    axisX: {
-      // The offset of the chart drawing area to the border of the container
-      offset: 35,
-      // Position where labels are placed. Can be set to `start` or `end` where `start` is equivalent to left or top on vertical axis and `end` is equivalent to right or bottom on horizontal axis.
-      position: "end",
-      // Allows you to correct label positioning on this axis by positive or negative x and y offset.
-      labelOffset: {
-        x: 0,
-        y: 0,
+  var options = {
+    series: [
+      {
+        name: "Desafios",
+        data: categoriasDesafiosLabel,
       },
-      // If labels should be shown or not
-      showLabel: true,
-      // If the axis grid should be drawn or not
-      showGrid: true,
+      {
+        name: "Startups",
+        data: categoriasStartupsLabel,
+      },
+    ],
+    chart: {
+      type: "bar",
+      height: 250,
+      toolbar: {
+        show: true,
+        offsetX: 0,
+        offsetY: 0,
+        tools: {
+          download: true,
+        },
+        export: {
+          csv: {
+            filename:
+              "Cantidad de Desafios y Startups discriminados por categorias",
+            columnDelimiter: ";",
+            headerCategory: "Categorias",
+            headerValue: "value",
+            dateFormatter(timestamp) {
+              return new Date(timestamp).toDateString();
+            },
+          },
+          svg: {
+            filename: "Cantidad de Desafios y Startups discriminados por categorias",
+          },
+          png: {
+            filename: "Cantidad de Desafios y Startups discriminados por categorias",
+          },
+        },
+      },
     },
-    // Options for Y-Axis
-    axisY: {
-      // The offset of the chart drawing area to the border of the container
-      offset: 20,
-      // Position where labels are placed. Can be set to `start` or `end` where `start` is equivalent to left or top on vertical axis and `end` is equivalent to right or bottom on horizontal axis.
-      position: "start",
-      // If labels should be shown or not
-      showLabel: true,
-      // If the axis grid should be drawn or not
-      showGrid: true,
-      // This value specifies the minimum height in pixel of the scale steps
-      scaleMinSpace: 20,
-      // Use only integer values (whole numbers) for the scale steps
-      onlyInteger: true,
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: "55%",
+        endingShape: "rounded",
+      },
     },
-    // Unless low/high are explicitly set, bar chart will be centered at zero by default. Set referenceValue to null to auto scale.
-    referenceValue: 5,
-    // Padding of the chart drawing area to the container element and labels as a number or padding object {top: 5, right: 5, bottom: 5, left: 5}
-    chartPadding: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
+    dataLabels: {
+      enabled: false,
     },
-    // Specify the distance in pixel of bars in a group
-    // seriesBarDistance: 15,
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ["transparent"],
+    },
+    xaxis: {
+      categories: categoriasLabel,
+    },
+    yaxis: {
+      title: {
+        text: "Cantidad",
+      },
+    },
+    fill: {
+      opacity: 1,
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return val;
+        },
+      },
+    },
+    colors: ["#f44336", "#00bcd4"],
   };
 
-  new Chartist.Bar("#categoriasSeleccionadas", data, defaultOptions);
+  var chart = new ApexCharts(
+    document.querySelector("#categoriasSeleccionadas"),
+    options
+  );
+  chart.render();
 };
