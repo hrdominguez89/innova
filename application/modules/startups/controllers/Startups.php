@@ -56,7 +56,7 @@ class Startups extends MX_Controller
     {
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_PARTNER:
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
                 $this->config_pagination['base_url'] = base_url() . 'startups';
                 $this->config_pagination['total_rows'] = count($this->Startups_model->getStartupsActivos());
                 $this->pagination->initialize($this->config_pagination);
@@ -88,7 +88,7 @@ class Startups extends MX_Controller
 
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_ADMIN_PLATAFORMA:
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
                 $data['startup'] = $this->Startups_model->getStartupById($startup_id);
                 if (!$data['startup']) {
                     redirect(base_url() . 'home');

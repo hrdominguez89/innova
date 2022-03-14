@@ -68,7 +68,7 @@ class Notificaciones_model extends CI_Model
                 ->where('para_usuario_id', $usuario_id)
                 ->or_group_start()
                 ->where('para_usuario_id', 0)
-                ->where('para_rol_id', ROL_ADMIN_ORGANIZACION)
+                ->where('para_rol_id', ROL_VALIDADOR)
                 ->group_end()
                 ->group_end();
             $this->db->order_by('fecha_alta', 'DESC');
@@ -86,7 +86,7 @@ class Notificaciones_model extends CI_Model
             ->where('para_usuario_id', $usuario_id)
             ->or_group_start()
             ->where('para_usuario_id', 0)
-            ->where('para_rol_id', ROL_ADMIN_ORGANIZACION)
+            ->where('para_rol_id', ROL_VALIDADOR)
             ->group_end()
             ->or_group_start()
             ->where('para_usuario_id', 0)

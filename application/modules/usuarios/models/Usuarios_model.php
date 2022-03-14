@@ -26,7 +26,7 @@ class Usuarios_model extends CI_Model
         $this->db->from('usuarios as u');
         $this->db->join('roles as r', 'r.id = u.rol_id');
         $this->db->join('estados_usuarios as es', 'es.id = u.estado_id');
-        $this->db->where('rol_id', ROL_ADMIN_ORGANIZACION);
+        $this->db->where('rol_id', ROL_VALIDADOR);
         $this->db->or_where('rol_id', ROL_ADMIN_PLATAFORMA);
         $this->db->order_by('email', 'ASC');
         return $this->db->get()->result();

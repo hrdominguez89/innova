@@ -19,7 +19,7 @@ class Empresas extends MX_Controller
     {
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_ADMIN_PLATAFORMA:
-            // case ROL_ADMIN_ORGANIZACION:
+            // case ROL_VALIDADOR:
                 $data['empresas'] = $this->Empresas_model->getEmpresas();
                 $data['files_js'] = array('activar_tabla_comun.js','empresas/empresas.js');
                 $data['title'] = 'Empresas';
@@ -39,7 +39,7 @@ class Empresas extends MX_Controller
 
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_ADMIN_PLATAFORMA:
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
                 $data['empresa'] = $this->Empresas_model->getEmpresaById($empresa_id);
                 if (!$data['empresa']) {
                     redirect(base_url() . 'home');

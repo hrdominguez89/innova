@@ -57,7 +57,7 @@ class Usuarios extends MX_Controller
                 array('buscar' => '{{APELLIDO_USUARIO}}', 'reemplazar' => $usuario['apellido']),
             );
 
-            if ($usuario['rol_id'] == ROL_ADMIN_ORGANIZACION) {
+            if ($usuario['rol_id'] == ROL_VALIDADOR) {
                 $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_admin_organizacion');
             } else {
                 $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_admin_plataforma');

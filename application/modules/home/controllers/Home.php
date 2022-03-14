@@ -27,7 +27,7 @@ class Home extends MX_Controller
             case ROL_PARTNER:
                 $data['sections_view'] = 'home_partner_view';
                 break;
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
                 $data['sections_view'] = 'home_admin_gcba_view';
                 $data['files_js'] = array('graficos/graficos.js');
                 break;
@@ -45,7 +45,7 @@ class Home extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
-        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_ORGANIZACION)) {
+        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_VALIDADOR)) {
             redirect(base_url() . 'home');
         }
         $total_de_usuarios_por_rol = $this->Home_model->getTotalesPorRoles();
@@ -58,7 +58,7 @@ class Home extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
-        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_ORGANIZACION)) {
+        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_VALIDADOR)) {
             redirect(base_url() . 'home');
         }
         $categorias['categorias'] = $this->Home_model->getCategoriasActivas();

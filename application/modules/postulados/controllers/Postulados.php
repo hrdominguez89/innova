@@ -71,7 +71,7 @@ class Postulados extends MX_Controller
                 $data['title'] = 'Postulados a mis desafíos';
 
                 break;
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
             case ROL_ADMIN_PLATAFORMA:
                 $data['postulados'] = $this->Postulados_model->getTodosLosPostulados();
                 $data['files_js'] = array('activar_tabla_comun.js');
@@ -127,7 +127,7 @@ class Postulados extends MX_Controller
                         }
 
                         break;
-                    case ROL_ADMIN_ORGANIZACION:
+                    case ROL_VALIDADOR:
                     case ROL_ADMIN_PLATAFORMA:
                         $this->load->model('mensajes/Mensajes_model');
                         $data['mensaje_de_plataforma_rechazado'] = $this->Mensajes_model->getMensaje('mensaje_rechazo_postulacion');
@@ -306,7 +306,7 @@ class Postulados extends MX_Controller
     {
         if (!$data_usuario_para) {
             $data_usuario_para_id = 0;
-            $data_usuario_rol_id = ROL_ADMIN_ORGANIZACION;
+            $data_usuario_rol_id = ROL_VALIDADOR;
         }else{
             $data_usuario_para_id = $data_usuario_para->usuario_id;
             $data_usuario_rol_id = ROL_STARTUP;

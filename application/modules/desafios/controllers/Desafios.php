@@ -91,7 +91,7 @@ class Desafios extends MX_Controller
                 $data['sections_view'] = 'desafios_cartelera_partner_view';
                 break;
 
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
             case ROL_ADMIN_PLATAFORMA:
                 $data['categorias'] = $this->Desafios_model->getCategorias();
                 $data['desafios'] = $this->Desafios_model->getTodosLosDesafios();
@@ -398,7 +398,7 @@ class Desafios extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
-        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_ORGANIZACION)) {
+        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_VALIDADOR)) {
             redirect(base_url() . 'home');
         }
         $data['desafio'] = $this->Desafios_model->getDesafioById($desafio_id);
@@ -416,7 +416,7 @@ class Desafios extends MX_Controller
     {
         if (!$data_usuario_para) {
             $data_usuario_para_id = 0;
-            $data_usuario_rol_id = ROL_ADMIN_ORGANIZACION;
+            $data_usuario_rol_id = ROL_VALIDADOR;
         } else {
             $data_usuario_para_id = @$data_usuario_para->id_empresa ? $data_usuario_para->id_empresa : @$data_usuario_para->usuario_id;
             $data_usuario_rol_id = @$data_usuario_para->rol_id ? $data_usuario_para->rol_id : ROL_EMPRESA;

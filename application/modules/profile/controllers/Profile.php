@@ -35,7 +35,9 @@ class Profile extends MX_Controller
                 $data['tipos_de_partners'] = $this->Profile_model->getTiposDePartners();
                 $data['sections_view'] = 'profile_partner_view';
                 break;
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:// cambio de nombre ahora es validadores
+                $data['sections_view'] = 'profile_validador_view';
+                break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['sections_view'] = 'profile_admins_view';
                 break;
@@ -497,7 +499,7 @@ class Profile extends MX_Controller
 
     public function formularioPerfil($data)
     {
-        if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_ORGANIZACION || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
+        if ($this->session->userdata('user_data')->rol_id == ROL_VALIDADOR || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
             $this->rulesPerfilAdmin($data['data_perfil']);
         } else if ($this->session->userdata('user_data')->rol_id == ROL_PARTNER) {
             $this->rulesPerfilPartner($data['data_perfil']);
@@ -668,7 +670,7 @@ class Profile extends MX_Controller
                     redirect(base_url() . 'home');
                     break;
 
-                case ROL_ADMIN_ORGANIZACION:
+                case ROL_VALIDADOR:
                 case ROL_ADMIN_PLATAFORMA:
                     //Guardo datos del usuario
                     $data_usuario['nombre'] = $this->input->post('nombre');

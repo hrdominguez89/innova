@@ -38,6 +38,8 @@ class Profile_model extends CI_Model
             $this->db->join('empresas as em', 'u.id = em.usuario_id','left');
         } else if ($rol_id == ROL_PARTNER) {
             $this->db->join('partners as pa', 'u.id = pa.usuario_id','left');
+        } else if ($rol_id == ROL_VALIDADOR){
+
         }
         $this->db->where('u.id', $usuario_id);
         return $this->db->get()->row();

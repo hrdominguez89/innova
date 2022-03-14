@@ -19,7 +19,7 @@ class Notificaciones extends MX_Controller
             redirect('/auth/login');
         }
         switch ($this->session->userdata('user_data')->rol_id) {
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
                 $data['total_notificaciones'] = $this->Notificaciones_model->getNotificacionesAdminOrganizacion($this->session->userdata('user_data')->id);
                 break;
             case ROL_ADMIN_PLATAFORMA:
@@ -66,7 +66,7 @@ class Notificaciones extends MX_Controller
         if ($this->session->userdata('user_data')) {
             $configuraciones = $this->Configuraciones_model->getConfiguracionesDeLaPlataforma();
             switch ($this->session->userdata('user_data')->rol_id) {
-                case ROL_ADMIN_ORGANIZACION:
+                case ROL_VALIDADOR:
                     $this->session->notificaciones = $this->Notificaciones_model->getNotificacionesAdminOrganizacion($this->session->userdata('user_data')->id);
                     break;
                 case ROL_ADMIN_PLATAFORMA:

@@ -60,7 +60,7 @@
       case ROL_PARTNER:
         $this->load->view('menus/menu_partners_view');
         break;
-      case ROL_ADMIN_ORGANIZACION:
+      case ROL_VALIDADOR:
         $this->load->view('menus/menu_admin_gcba_view');
         break;
       case ROL_ADMIN_PLATAFORMA:

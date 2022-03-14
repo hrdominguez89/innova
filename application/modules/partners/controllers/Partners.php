@@ -18,7 +18,7 @@ class Partners extends MX_Controller
     {
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_ADMIN_PLATAFORMA:
-                // case ROL_ADMIN_ORGANIZACION:
+                // case ROL_VALIDADOR:
                 $data['partners'] = $this->Partners_model->getPartnersYCantidadDeDesafiosCompartidosDeUsuariosActivos();
                 $data['title'] = 'Partners';
                 $data['files_js'] = array('activar_tabla_comun.js', 'partners/partners.js');
@@ -39,7 +39,7 @@ class Partners extends MX_Controller
 
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_ADMIN_PLATAFORMA:
-            // case ROL_ADMIN_ORGANIZACION:
+            // case ROL_VALIDADOR:
                 $data['partner'] = $this->Partners_model->getPartnerById($partner_id);
                 if (!$data['partner']) {
                     redirect(base_url() . 'home');

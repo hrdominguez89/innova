@@ -240,7 +240,7 @@ const cargarGraficoBar = (categoriasTotales) => {
   var options = {
     series: [
       {
-        name: "Desafios",
+        name: "Desafíos",
         data: categoriasDesafiosLabel,
       },
       {
@@ -261,7 +261,7 @@ const cargarGraficoBar = (categoriasTotales) => {
         export: {
           csv: {
             filename:
-              "Cantidad de Desafios y Startups discriminados por categorias",
+              "Cantidad de Desafíos y Startups discriminados por categorias",
             columnDelimiter: ";",
             headerCategory: "Categorias",
             headerValue: "value",
@@ -270,10 +270,10 @@ const cargarGraficoBar = (categoriasTotales) => {
             },
           },
           svg: {
-            filename: "Cantidad de Desafios y Startups discriminados por categorias",
+            filename: "Cantidad de Desafíos y Startups discriminados por categorias",
           },
           png: {
-            filename: "Cantidad de Desafios y Startups discriminados por categorias",
+            filename: "Cantidad de Desafíos y Startups discriminados por categorias",
           },
         },
       },
