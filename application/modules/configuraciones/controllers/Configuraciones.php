@@ -31,8 +31,8 @@ class Configuraciones extends MX_Controller
                     $config_plataforma['postulaciones_maximas'] = $this->input->post('postulaciones_maximas');
                     $config_plataforma['notificaciones_maximas_header'] = $this->input->post('notificaciones_maximas_header');
                     $config_plataforma['notificaciones_maximas_menu_lateral'] = $this->input->post('notificaciones_maximas_menu_lateral');
-                    $config_plataforma['nombre_notificacion_admin_organizacion'] = $this->input->post('nombre_notificacion_admin_organizacion');
-                    $config_plataforma['correo_notificacion_admin_organizacion'] = $this->input->post('correo_notificacion_admin_organizacion');
+                    $config_plataforma['nombre_notificacion_validador'] = $this->input->post('nombre_notificacion_validador');
+                    $config_plataforma['correo_notificacion_validador'] = $this->input->post('correo_notificacion_validador');
                     $config_plataforma['nombre_notificacion_admin_plataforma'] = $this->input->post('nombre_notificacion_admin_plataforma');
                     $config_plataforma['correo_notificacion_admin_plataforma'] = $this->input->post('correo_notificacion_admin_plataforma');
                     $config_plataforma['nombre_notificacion_no_responder'] = $this->input->post('nombre_notificacion_no_responder');
@@ -113,16 +113,16 @@ class Configuraciones extends MX_Controller
             )
         );
         $this->form_validation->set_rules(
-            'nombre_notificacion_admin_organizacion',
-            'Nombre "Admin Organización',
+            'nombre_notificacion_validador',
+            'Nombre "Validador',
             'trim|required',
             array(
                 'required' => 'El campo {field} es obligatorio.'
             )
         );
         $this->form_validation->set_rules(
-            'correo_notificacion_admin_organizacion',
-            'Correo "Admin Organización',
+            'correo_notificacion_validador',
+            'Correo "Validador',
             'trim|valid_email|required',
             array(
                 'required' => 'El campo {field} es obligatorio.'

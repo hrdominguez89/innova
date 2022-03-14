@@ -58,7 +58,7 @@ class Usuarios extends MX_Controller
             );
 
             if ($usuario['rol_id'] == ROL_VALIDADOR) {
-                $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_admin_organizacion');
+                $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_validador');
             } else {
                 $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_admin_plataforma');
             }

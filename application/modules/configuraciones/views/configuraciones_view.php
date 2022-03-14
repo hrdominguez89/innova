@@ -98,22 +98,22 @@
 
                                         <div class="row d-flex align-items-center">
 
-                                            <label class="text-primary col-sm-4 col-md-3 col-form-label text-left" for="nombre_notificacion_admin_organizacion"><span class="font-weight-bold text-primary">Nombre "Admin Organización"</span><span class="text-danger"> *</span><br><small>(Escriba el nombre para mostrar en las notificaciones)</small></label>
+                                            <label class="text-primary col-sm-4 col-md-3 col-form-label text-left" for="nombre_notificacion_validador"><span class="font-weight-bold text-primary">Nombre "Validador"</span><span class="text-danger"> *</span><br><small>(Escriba el nombre para mostrar en las notificaciones)</small></label>
                                             <div class="col-sm-8 col-md-9">
                                                 <div class="form-group bmd-form-group is-filled">
-                                                    <input type="text" maxlength="255" class="form-control" id="nombre_notificacion_admin_organizacion" name="nombre_notificacion_admin_organizacion" value="<?php echo set_value('nombre_notificacion_admin_organizacion', $configuraciones_de_la_plataforma->nombre_notificacion_admin_organizacion); ?>" required>
-                                                    <?php echo form_error('nombre_notificacion_admin_organizacion'); ?>
+                                                    <input type="text" maxlength="255" class="form-control" id="nombre_notificacion_validador" name="nombre_notificacion_validador" value="<?php echo set_value('nombre_notificacion_validador', $configuraciones_de_la_plataforma->nombre_notificacion_validador); ?>" required>
+                                                    <?php echo form_error('nombre_notificacion_validador'); ?>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="row d-flex align-items-center">
 
-                                            <label class="text-primary col-sm-4 col-md-3 col-form-label text-left" for="correo_notificacion_admin_organizacion"><span class="font-weight-bold text-primary">Correo "Admin Organización"</span><span class="text-danger"> *</span><br><small>(Escriba la cuenta de correo que se mostrará en las notificaciones)</small></label>
+                                            <label class="text-primary col-sm-4 col-md-3 col-form-label text-left" for="correo_notificacion_validador"><span class="font-weight-bold text-primary">Correo "Validador"</span><span class="text-danger"> *</span><br><small>(Escriba la cuenta de correo que se mostrará en las notificaciones)</small></label>
                                             <div class="col-sm-8 col-md-9">
                                                 <div class="form-group bmd-form-group is-filled">
-                                                    <input type="email" maxlength="255" class="form-control" id="correo_notificacion_admin_organizacion" name="correo_notificacion_admin_organizacion" value="<?php echo set_value('correo_notificacion_admin_organizacion', $configuraciones_de_la_plataforma->correo_notificacion_admin_organizacion); ?>" required>
-                                                    <?php echo form_error('correo_notificacion_admin_organizacion'); ?>
+                                                    <input type="email" maxlength="255" class="form-control" id="correo_notificacion_validador" name="correo_notificacion_validador" value="<?php echo set_value('correo_notificacion_validador', $configuraciones_de_la_plataforma->correo_notificacion_validador); ?>" required>
+                                                    <?php echo form_error('correo_notificacion_validador'); ?>
                                                 </div>
                                             </div>
                                         </div>
