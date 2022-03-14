@@ -1,16 +1,3 @@
-<?php if (isset($message_sweat_alert)) :; ?>
-    <script>
-        window.addEventListener('load', () => {
-            swal({
-                title: "<?php echo $message_sweat_alert['msg']; ?>",
-                type: "<?php echo $message_sweat_alert['status'] ? 'success' : 'error'; ?>",
-                buttonsStyling: true,
-                timer: 5000,
-                confirmButtonClass: "btn btn-<?php echo $message_sweat_alert['status'] ? 'success' : 'default'; ?>",
-            });
-        })
-    </script>
-<?php endif; ?>
 <div class="content" id="top">
     <div class="container-fluid">
         <div class="row">
@@ -25,6 +12,9 @@
                 </nav>
             </div>
             <div class="col-12">
+                <?php if (isset($message_sweat_alert)) :; ?>
+                    <div class="alert alert-<?php echo $message_sweat_alert['status']? 'success':'danger';?>"><?php echo $message_sweat_alert['msg'];?></div>
+                <?php endif; ?>
                 <div class="card ">
                     <div class="card-header ">
                     </div>

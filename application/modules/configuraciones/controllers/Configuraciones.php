@@ -66,7 +66,7 @@ class Configuraciones extends MX_Controller
                 if ($status) {
                     $data['message_sweat_alert'] = array(
                         'status' => true,
-                        'msg' => 'Configuración gardada exitosamente.',
+                        'msg' => 'Configuración guardada exitosamente.',
                     );
                 } else {
                     $data['message_sweat_alert'] = array(
