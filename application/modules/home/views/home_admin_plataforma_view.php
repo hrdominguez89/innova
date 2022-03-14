@@ -16,15 +16,44 @@
                 <div class="card card-stats">
                     <div class="card-header">
                         <h4 class="card-title text-left">
-                            <span class="font-weight-bold">
-                                Tipos de usuarios registrados
-                            </span>
+                            <div class="row">
+                                <div class="col-10 text-left">
+                                    <span class="font-weight-bold">
+                                        Tipos de usuarios registrados
+                                    </span>
+                                </div>
+                                <div class="col-2 text-right">
+                                <a download="usuarios_registrados.xls" href="javascript:void(0);" onclick="return ExcellentExport.excel(this, 'tabla_usuarios_registrados', 'Usuarios Registrados');" class="text-muted" title="Descargar datos a tabla excel"><i style="font-size:25px;" class="fas fa-file-download"></i></a>
+                                </div>
+                            </div>
                         </h4>
+                        <div style="display:none;">
+                            <table id="tabla_usuarios_registrados">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo de usuario</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>
+                                            Total de usuarios registrados
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div>
+                            
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="ct-chart ct-minor-sixth" id="tiposDeUsuarios"></div>
                     </div>
-                    <div class="card-footer">
+                    <!-- <div class="card-footer">
                         <div class="row">
                             <div class="col-md-12">
                                 <i class="fa fa-circle ct-series-a"></i> Startups <span id="porcentaje0"></span> <br>
@@ -32,7 +61,7 @@
                                 <i class="fa fa-circle ct-series-c"></i> Partners <span id="porcentaje2"></span>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="col-md-8 d-flex align-items-stretch">
@@ -141,14 +170,14 @@
                     </div>
                 </a>
             </div>
-            
+
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <a href="<?php echo base_url(); ?>partners">
                     <div class="card card-stats">
                         <div class="card-header card-header-warning card-header-icon">
                             <div class="card-icon">
                                 <i class="material-icons">groups</i>
-                                
+
                             </div>
                             <h4 class="card-title text-left">
                                 <span class="font-weight-bold">
