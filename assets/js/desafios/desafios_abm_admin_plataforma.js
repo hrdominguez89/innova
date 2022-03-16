@@ -152,61 +152,6 @@ const toggleModalInfo = (cargando) => {
   }
 };
 
-const eliminarDesafioModal = (data) => {
-  $("#nombre_del_desafio_modal").html(data.dataset.nombreDesafio);
-  $("#botonEliminarDesafio").attr("data-desafio-id", data.dataset.desafioId);
-  $("#modalEliminarDesafio").modal("show");
-};
-
-const eliminarDesafio = async (dataBoton) => {
-  let desafioId = dataBoton.dataset.desafioId;
-
-  let data = `desafio_id=${desafioId}`;
-
-  let respuesta;
-
-  await $.ajax({
-    type: "POST",
-    url: BASE_URL + "desafios/eliminar",
-    dataType: "JSON",
-    data: data,
-    // beforeSend: function () {
-    // codigo
-    // },
-    error: function (resp) {
-      alert(resp);
-    },
-    success: function (resp) {
-      if (resp.status) {
-        respuesta = true;
-      } else {
-        alert(resp.msg);
-      }
-    },
-    timeout: 5000,
-  });
-  if (respuesta) {
-    $("#modalEliminarDesafio").modal("hide");
-    eliminarLineaDeDesafio(desafioId);
-    mensajeDesafioEliminado();
-  }
-};
-
-const eliminarLineaDeDesafio = (desafioId) => {
-  $(`#row_desafio_id_${desafioId}`).remove();
-};
-
-const mensajeDesafioEliminado = () => {
-  swal({
-    title: "Desafío eliminado",
-    text: "El desafío se eliminó correctamente",
-    type: "success",
-    buttonsStyling: true,
-    timer: 5000,
-    confirmButtonClass: "btn btn-success",
-  });
-};
-
 const cargarTabla = () => {
   var table = $("#tablaDesafiosADM").DataTable({
     fixedHeader: {

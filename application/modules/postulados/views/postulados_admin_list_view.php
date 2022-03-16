@@ -1,4 +1,5 @@
-<?php //echo '<pre>';var_dump($postulados);die();?>
+<?php //echo '<pre>';var_dump($postulados);die();
+?>
 <div class="content">
     <div class="container-fluid">
         <div class="row">
@@ -51,15 +52,20 @@
                                 </tfoot>
                                 <tbody>
                                     <?php foreach ($postulados as $postulado) :; ?>
-                                        <tr>
+                                        <tr id="row_postulacion_id_<?php echo $postulado->id; ?>">
                                             <td><?php echo $postulado->razon_social; ?></td>
-                                            <td><?php echo $postulado->nombre.' '.$postulado->apellido; ?></td>
+                                            <td><?php echo $postulado->nombre . ' ' . $postulado->apellido; ?></td>
                                             <td><?php echo $postulado->nombre_del_desafio; ?></td>
                                             <td><?php echo $postulado->descripcion_del_desafio; ?></td>
                                             <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_postulacion)); ?></td>
                                             <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_fin_de_postulacion)); ?></td>
                                             <td class="text-center"><?php echo $postulado->estado_postulacion_nombre; ?></td>
-                                            <td class="text-center"><a title="ver startup" href="<?php echo base_url(); ?>postulados/startup/<?php echo $postulado->startup_id.'/'.$postulado->desafio_id;?>"><i class="far fa-eye"></i></a></td>
+                                            <td class="text-center">
+                                                <a title="Ver startup" href="<?php echo base_url(); ?>postulados/startup/<?php echo $postulado->startup_id . '/' . $postulado->desafio_id; ?>"><i class="far fa-eye"></i></a>
+                                                <?php if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) :; ?>
+                                                    <a class="m-2 text-danger" onclick="eliminarPostulacion(this)" data-postulacion-id="<?php echo $postulado->id; ?>" title="Eliminar postulación" href="javascript:void(0);"><i class="fas fa-trash-alt"></i></a>
+                                                <?php endif; ?>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -73,3 +79,4 @@
         </div>
     </div>
 </div>
+<?php echo $this->load->view('modals/postulaciones/eliminar_postulacion_modal_view'); ?>

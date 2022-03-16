@@ -143,7 +143,7 @@ class Postulados_model extends CI_Model
     public function getDesafioData($desafio_id)
     {
         $this->db->select('*');
-        $this->db->from('vi_desafios');
+        $this->db->from('vi_desafios as vd');
         $this->db->where('desafio_id', $desafio_id);
         $this->db->group_start();
         $this->db->where('vd.estado_usuario_id', USR_ENABLED);

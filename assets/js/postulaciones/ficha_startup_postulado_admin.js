@@ -4,13 +4,15 @@ window.addEventListener('load', () => {
 
     const escucharSelectValidarPostulacion = () => {
         let selectValidarPostulacion = document.getElementById('selectValidarPostulacion');
-        selectValidarPostulacion.addEventListener('change', () => {
-            if (selectValidarPostulacion.value == 2) {
-                toggleDetalleRechazado(false);
-            } else if (selectValidarPostulacion.value == 4) {
-                toggleDetalleRechazado(true);
-            }
-        });
+        if(selectValidarPostulacion){
+            selectValidarPostulacion.addEventListener('change', () => {
+                if (selectValidarPostulacion.value == 2) {
+                    toggleDetalleRechazado(false);
+                } else if (selectValidarPostulacion.value == 4) {
+                    toggleDetalleRechazado(true);
+                }
+            });
+        }
     }
 
     const toggleDetalleRechazado = (value) => {
