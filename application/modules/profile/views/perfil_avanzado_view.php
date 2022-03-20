@@ -13,7 +13,7 @@
                     </h5>
                 </div>
 
-                <div id="cambiarRolBody" class="collapse border <?php echo $collapse_cambiar_rol ? 'show' : ''; ?>" role="tabpanel" aria-labelledby="cambiarRolHead" data-parent="#opcionesAvanzadas">
+                <div id="cambiarRolBody" class="collapse border <?php echo @$collapse_cambiar_rol ? 'show' : ''; ?>" role="tabpanel" aria-labelledby="cambiarRolHead" data-parent="#opcionesAvanzadas">
                     <div class="card-body bg-white p-3">
                         <p>Estimado usuario, al cambiar de rol se eliminaran los datos cargados en su rol actual y no podrán recuperarse.</p>
                         <div>
@@ -80,7 +80,7 @@
                     </a>
                 </h5>
             </div>
-            <div id="eliminarCuentaBody" class="collapse border <?php echo $collapse_eliminar_cuenta ? 'show' : ''; ?>" role="tabpanel" aria-labelledby="eliminarCuentaHead" data-parent="#opcionesAvanzadas">
+            <div id="eliminarCuentaBody" class="collapse border <?php echo @$collapse_eliminar_cuenta ? 'show' : ''; ?>" role="tabpanel" aria-labelledby="eliminarCuentaHead" data-parent="#opcionesAvanzadas">
                 <div class="card-body bg-white p-3">
                     <p>Estimado usuario, al eliminar la cuenta se borrarán los datos cargados y no podra recuperarlos.</p>
                     <form method="post" action="">
