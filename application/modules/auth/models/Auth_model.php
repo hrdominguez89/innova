@@ -13,7 +13,7 @@ class Auth_model extends CI_Model
 
     public function getUserDataByEmail($email)
     {
-        $this->db->select('*');
+        $this->db->select('id,oauth_uid,rol_id,nombre,apellido,email,telefono,codigo_de_verificacion,logo,perfil_completo,cambiar_password,reiniciar_password_fecha,estado_id,ultimo_login,usuario_alta_id,fecha_alta,usuario_id_modifico,fecha_modifico');
         $this->db->where('email', $email);
         $this->db->where('estado_id!=', USR_DELETED);
         return $this->db->get('usuarios')->row();
@@ -25,10 +25,13 @@ class Auth_model extends CI_Model
         switch ($rol_id) {
             case ROL_STARTUP:
                 $tabla = 'startups';
+                break;
             case ROL_EMPRESA:
                 $tabla = 'empresas';
+                break;
             case ROL_PARTNER:
                 $tabla = 'partners';
+                break;
         }
         $this->db->from($tabla);
         $this->db->where('usuario_id', $usuario_id);
@@ -92,5 +95,25 @@ class Auth_model extends CI_Model
             $this->db->trans_commit();
             return TRUE;
         } //If Rollback
+    }
+
+    public function insertarUsuarioApi ($userdata){
+        
+        $this->db->trans_begin();
+
+        $this->db->insert('usuarios', $userdata);
+        $insert_id = $this->db->insert_id();
+
+        // Condicional del Rollback 
+        if ($this->db->trans_status() === FALSE) {
+            //Hubo errores en la consulta, entonces se cancela la transacción.   
+            $this->db->trans_rollback();
+            return FALSE;
+        } else {
+            //Todas las consultas se hicieron correctamente.  
+            $this->db->trans_commit();
+            return TRUE;
+        } //If Rollback
+        
     }
 }

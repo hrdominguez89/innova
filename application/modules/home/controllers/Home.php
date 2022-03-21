@@ -16,7 +16,7 @@ class Home extends MX_Controller
 
     public function index()
     {
-
+        var_dump($this->session->userdata('user_data'));die();
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_STARTUP:
                 $data['sections_view'] = 'home_startup_view';
@@ -33,7 +33,13 @@ class Home extends MX_Controller
                 break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['sections_view'] = 'home_admin_plataforma_view';
-                $data['files_js'] = array('excellentexport.js','html2canvas.js','canvas2image.js','apexcharts.js','graficos/graficos.js');
+                $data['files_js'] = array('excellentexport.js', 'html2canvas.js', 'canvas2image.js', 'apexcharts.js', 'graficos/graficos.js');
+                break;
+            default:
+                echo 'te logueaste con una cuenta de google';
+                echo '<pre>';
+                var_dump($this->session->userdata('user_data'));
+                die();
                 break;
         }
         $data['title'] = 'Home';

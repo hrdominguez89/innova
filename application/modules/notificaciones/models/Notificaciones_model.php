@@ -44,6 +44,14 @@ class Notificaciones_model extends CI_Model
             ->row();
     }
 
+    public function getTextoCargarRol()
+    {
+        return $this->db->select('texto_mensaje')
+            ->where('nombre_mensaje', 'mensaje_cargar_rol')
+            ->get('mensajes_de_la_plataforma')
+            ->row();
+    }
+
     public function insertarNotificacion($notificacion_data)
     {
         $this->db->trans_begin();

@@ -12,6 +12,8 @@ class Auth extends MX_Controller
         $this->config->load('custom_config');
         $this->data_captcha_google = $this->config->item('data_captcha_google');
 
+        $this->google_api = $this->config->item('google_api');
+
         //Cargo Helper de Recaptcha de Google y Correo
         $this->load->helper(array('grecaptcha_helper', 'send_email_helper'));
 
@@ -47,10 +49,10 @@ class Auth extends MX_Controller
                 $email = $this->input->post('email');
                 $pw_post = $this->input->post('password');
                 $user_data = $this->Auth_model->getUserDataByEmail($email);
-                if(ENVIRONMENT == 'development'){
+                if (ENVIRONMENT == 'development') {
                     $no_password = true;
                 }
-                if($user_data && (@$no_password || password_verify($pw_post,@$user_data->password))){
+                if ($user_data && (@$no_password || password_verify($pw_post, @$user_data->password))) {
                     if ($user_data->reiniciar_password_fecha != NULL) { //si habia un pedido de reinicio de contraseña pero el usuario se acordo la password seteo a null el pedido de reinicio de password
                         $user_update['reiniciar_password_fecha'] = NULL;
                         $this->Auth_model->updateUser($user_update, $email);
@@ -617,5 +619,71 @@ class Auth extends MX_Controller
     public function valid_captcha($captcha)
     {
         return valid_captcha_helper($captcha);
+    }
+
+    public function google_login()
+    {
+        require APPPATH . '../vendor/autoload.php';
+
+        $google_client =  new Google_Client();
+        $google_client->setClientId($this->google_api->setClientId);
+        $google_client->setClientSecret($this->google_api->setClientSecret);
+        $google_client->setRedirectUri(base_url() . $this->google_api->setRedirectUri);
+
+        //endpoints a consultar
+        $google_client->addScope('email');
+        $google_client->addScope('profile');
+
+        if ($this->input->get('code')) {
+            $token = $google_client->fetchAccessTokenWithAuthCode($this->input->get('code'));
+            if (!isset($token['error'])) {
+
+                $google_client->setAccessToken($token['access_token']);
+
+                $google_service = new Google_Service_Oauth2($google_client);
+
+                $google_data = $google_service->userinfo->get();
+
+                $user_data['oauth_uid'] = $google_data->id;
+
+                $usuario_existente = $this->Auth_model->getUserDataByEmail($google_data['email']);
+
+                if ($usuario_existente) {
+                    if($usuario_existente->oauth_uid){
+                        //si existe usuario oauth_uid comparo si es igual al oauth_id
+                        if($usuario_existente->oauth_uid != $google_data->id){
+                            //actualizo oauth_id
+                            $this->Auth_model->updateUser($user_data,$google_data['email']);
+                        }
+                    }else{
+                        //actualizo oauth_id
+                        $this->Auth_model->updateUser($user_data,$google_data['email']);
+                    }
+                } else {
+                    //inserto usuario
+                    $user_data['oauth_uid'] = $google_data->id;
+                    $user_data['rol_id'] = null;
+                    $user_data['nombre'] = $google_data->givenName;
+                    $user_data['apellido'] = $google_data->familyName;
+                    $user_data['email'] = $google_data->email;
+
+
+                    $user_data['fecha_alta'] = date('Y-m-d H:i:s', time());
+                    $user_data['codigo_de_verificacion'] = md5($user_data['fecha_alta']);
+
+                    $user_data['estado_id'] = 3;
+                    $user_data['ultimo_login'] = date('Y-m-d H:i:s', time());
+
+                    $this->Auth_model->insertarUsuarioApi($user_data);
+
+                    $usuario_existente = $this->Auth_model->getUserDataByEmail($google_data['email']);
+                    
+                }
+                //guardo la sesion
+                $this->session->set_userdata('user_data',$usuario_existente);
+                redirect(base_url().'home');
+            }
+        }
+        redirect($google_client->createAuthUrl());
     }
 }

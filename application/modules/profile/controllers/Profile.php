@@ -22,6 +22,7 @@ class Profile extends MX_Controller
 
         $data['data_perfil'] = $this->Profile_model->getPerfilData($this->session->userdata('user_data')->id, $this->session->userdata('user_data')->rol_id);
         //CARGO LAS VISTAS Y SUS DATOS SEGUN EL ROL
+        $data['subtitle'] = 'Editar perfil';
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_STARTUP:
                 $data['categorias'] = $this->Profile_model->getCategorias();
@@ -35,17 +36,20 @@ class Profile extends MX_Controller
                 $data['tipos_de_partners'] = $this->Profile_model->getTiposDePartners();
                 $data['sections_view'] = 'profile_partner_view';
                 break;
-            case ROL_VALIDADOR:// cambio de nombre ahora es validadores
+            case ROL_VALIDADOR: // cambio de nombre ahora es validadores
                 $data['sections_view'] = 'profile_validador_view';
                 break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['sections_view'] = 'profile_admins_view';
                 break;
+            default:
+                $data['subtitle'] = 'Elegir rol';
+                $data['sections_view'] = 'profile_cargar_rol_view';
+                break;
         }
 
         $data['files_js'] = array('profile.js', 'perfil/images.js');
         $data['title'] = 'Perfil';
-        $data['subtitle'] = 'Editar perfil';
 
 
 
@@ -54,10 +58,13 @@ class Profile extends MX_Controller
         if ($this->input->post()) {
             switch ($this->input->post('formulario')) {
                 case 'cambiar_rol':
-                    $data['collapse_cambiar_rol'] = $this->formularioCambiarRol();
+                    $data['collapse_cambiar_rol'] = !$this->formularioCambiarRol();
                     break;
                 case 'eliminar_cuenta':
                     $data['collapse_eliminar_cuenta'] = !$this->formularioEliminarCuenta();
+                    break;
+                case 'elegir_rol':
+                    $this->elegir_rol();
                     break;
                 default:
                     $this->formularioPerfil($data);
@@ -706,6 +713,30 @@ class Profile extends MX_Controller
                     redirect(base_url() . 'home');
                     break;
             }
+        }
+    }
+
+    public function elegir_rol(){
+        $this->form_validation->set_error_delimiters('<div class="text-danger">', '</div>');
+
+        $this->form_validation->set_rules(
+            'rol',
+            'Elija un rol',
+            'trim|integer|required',
+            array(
+                'required'  => 'El campo {field} es obligatorio',
+            )
+        );
+        if ($this->form_validation->run() != FALSE) {
+            $this->load->model('auth/Auth_model');
+            $user_data['rol_id'] = $this->input->post('rol');
+            $user_data['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
+            $user_data['fecha_modifico'] = date('Y-d-m H:i:s', time());
+            $this->Auth_model->updateUserById($this->session->userdata('user_data')->id, $user_data);
+            $this->session->userdata('user_data')->rol_id = $this->input->post('rol');
+            redirect(base_url() . 'profile');
+        } else {
+            return FALSE;
         }
     }
 }
