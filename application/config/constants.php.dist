@@ -1,0 +1,153 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+/*
+|--------------------------------------------------------------------------
+| Display Debug backtrace
+|--------------------------------------------------------------------------
+|
+| If set to TRUE, a backtrace will be displayed along with php errors. If
+| error_reporting is disabled, the backtrace will not display, regardless
+| of this setting
+|
+*/
+defined('SHOW_DEBUG_BACKTRACE') or define('SHOW_DEBUG_BACKTRACE', TRUE);
+
+/*
+|--------------------------------------------------------------------------
+| File and Directory Modes
+|--------------------------------------------------------------------------
+|
+| These prefs are used when checking and setting modes when working
+| with the file system.  The defaults are fine on servers with proper
+| security, but you may wish (or even need) to change the values in
+| certain environments (Apache running a separate process for each
+| user, PHP under CGI with Apache suEXEC, etc.).  Octal values should
+| always be used to set the mode correctly.
+|
+*/
+defined('FILE_READ_MODE')  or define('FILE_READ_MODE', 0644);
+defined('FILE_WRITE_MODE') or define('FILE_WRITE_MODE', 0666);
+defined('DIR_READ_MODE')   or define('DIR_READ_MODE', 0755);
+defined('DIR_WRITE_MODE')  or define('DIR_WRITE_MODE', 0755);
+
+/*
+|--------------------------------------------------------------------------
+| File Stream Modes
+|--------------------------------------------------------------------------
+|
+| These modes are used when working with fopen()/popen()
+|
+*/
+defined('FOPEN_READ')                           or define('FOPEN_READ', 'rb');
+defined('FOPEN_READ_WRITE')                     or define('FOPEN_READ_WRITE', 'r+b');
+defined('FOPEN_WRITE_CREATE_DESTRUCTIVE')       or define('FOPEN_WRITE_CREATE_DESTRUCTIVE', 'wb'); // truncates existing file data, use with care
+defined('FOPEN_READ_WRITE_CREATE_DESTRUCTIVE')  or define('FOPEN_READ_WRITE_CREATE_DESTRUCTIVE', 'w+b'); // truncates existing file data, use with care
+defined('FOPEN_WRITE_CREATE')                   or define('FOPEN_WRITE_CREATE', 'ab');
+defined('FOPEN_READ_WRITE_CREATE')              or define('FOPEN_READ_WRITE_CREATE', 'a+b');
+defined('FOPEN_WRITE_CREATE_STRICT')            or define('FOPEN_WRITE_CREATE_STRICT', 'xb');
+defined('FOPEN_READ_WRITE_CREATE_STRICT')       or define('FOPEN_READ_WRITE_CREATE_STRICT', 'x+b');
+
+/*
+|--------------------------------------------------------------------------
+| Exit Status Codes
+|--------------------------------------------------------------------------
+|
+| Used to indicate the conditions under which the script is exit()ing.
+| While there is no universal standard for error codes, there are some
+| broad conventions.  Three such conventions are mentioned below, for
+| those who wish to make use of them.  The CodeIgniter defaults were
+| chosen for the least overlap with these conventions, while still
+| leaving room for others to be defined in future versions and user
+| applications.
+|
+| The three main conventions used for determining exit status codes
+| are as follows:
+|
+|    Standard C/C++ Library (stdlibc):
+|       http://www.gnu.org/software/libc/manual/html_node/Exit-Status.html
+|       (This link also contains other GNU-specific conventions)
+|    BSD sysexits.h:
+|       http://www.gsp.com/cgi-bin/man.cgi?section=3&topic=sysexits
+|    Bash scripting:
+|       http://tldp.org/LDP/abs/html/exitcodes.html
+|
+*/
+defined('EXIT_SUCCESS')        or define('EXIT_SUCCESS', 0); // no errors
+defined('EXIT_ERROR')          or define('EXIT_ERROR', 1); // generic error
+defined('EXIT_CONFIG')         or define('EXIT_CONFIG', 3); // configuration error
+defined('EXIT_UNKNOWN_FILE')   or define('EXIT_UNKNOWN_FILE', 4); // file not found
+defined('EXIT_UNKNOWN_CLASS')  or define('EXIT_UNKNOWN_CLASS', 5); // unknown class
+defined('EXIT_UNKNOWN_METHOD') or define('EXIT_UNKNOWN_METHOD', 6); // unknown class member
+defined('EXIT_USER_INPUT')     or define('EXIT_USER_INPUT', 7); // invalid user input
+defined('EXIT_DATABASE')       or define('EXIT_DATABASE', 8); // database error
+defined('EXIT__AUTO_MIN')      or define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
+defined('EXIT__AUTO_MAX')      or define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+/*
+|--------------------------------------------------------------------------
+| Constantes definidas para la app
+|--------------------------------------------------------------------------
+*/
+
+//SETEO ROLES
+defined('ROL_STARTUP')          or define('ROL_STARTUP', 1);
+defined('ROL_EMPRESA')          or define('ROL_EMPRESA', 2);
+defined('ROL_VALIDADOR')       or define('ROL_VALIDADOR', 3);
+defined('ROL_ADMIN_PLATAFORMA') or define('ROL_ADMIN_PLATAFORMA', 4);
+defined('ROL_PARTNER') or define('ROL_PARTNER', 5);
+
+
+//Seteo estados de usuario
+defined('USR_PENDING')          or define('USR_PENDING', 1);
+defined('USR_VERIFIED')         or define('USR_VERIFIED', 2);
+defined('USR_ENABLED')          or define('USR_ENABLED', 3);
+defined('USR_DISABLED')         or define('USR_DISABLED', 4);
+defined('USR_DELETED')         or define('USR_DELETED', 5);
+
+
+//Seteo estados de postulaciones
+defined('POST_PENDIENTE')    or define('POST_PENDIENTE', 1);
+defined('POST_VALIDADO')     or define('POST_VALIDADO', 2);
+defined('POST_ACEPTADO')     or define('POST_ACEPTADO', 3);
+defined('POST_RECHAZADO')    or define('POST_RECHAZADO', 4);
+defined('POST_CANCELADO')    or define('POST_CANCELADO', 5);
+defined('POST_ELIMINADO')    or define('POST_ELIMINADO', 5);
+
+defined('DESAF_NUEVO')    or define('DESAF_NUEVO', 1);
+defined('DESAF_VIGENTE')     or define('DESAF_VIGENTE', 2);
+defined('DESAF_CANCELADO')     or define('DESAF_CANCELADO', 3);
+defined('DESAF_RECHAZADO')    or define('DESAF_RECHAZADO', 4);
+defined('DESAF_FINALIZADO')    or define('DESAF_FINALIZADO', 5);
+defined('DESAF_CERRADO')    or define('DESAF_CERRADO', 6);
+defined('DESAF_ELIMINADO')    or define('DESAF_ELIMINADO', 7);
+
+
+//SETEO TIPOS DE MENSAJES
+defined('MSJ_PLATAFORMA')    or define('MSJ_PLATAFORMA', 1);
+defined('MSJ_NOTIFICACION')     or define('MSJ_NOTIFICACION', 2);
+defined('MSJ_EMAIL')     or define('MSJ_EMAIL', 3);
+defined('MSJ_NOTIF_EMAIL')    or define('MSJ_NOTIF_EMAIL', 4);
+
+//SETEO TIPOS DE ENVIO
+defined('ENVIO_NOTIFICACION')     or define('ENVIO_NOTIFICACION', 1);
+defined('ENVIO_EMAIL')     or define('ENVIO_EMAIL', 2);
+defined('ENVIO_NOTIF_EMAIL')    or define('ENVIO_NOTIF_EMAIL', 3);
+
+
+
+//Seteo segmento , depende del nivel donde se situe la carpeta
+//ejemplo si es public segment = 0 si es public/nombre = segment = 1, si es public/nombre/otroNombre = 2 etc...
+defined('URI_SEGMENT')  or define('URI_SEGMENT', 1);
+
+// DEFINO URI DE INNOVA
+defined('URI_WP')  or define('URI_WP', 'index');
+
+//Defino estados de emails
+defined('EMAIL_NUEVO')    or define('EMAIL_NUEVO', 1);
+defined('EMAIL_PENDIENTE')     or define('EMAIL_PENDIENTE', 2);
+defined('EMAIL_ENVIADO')     or define('EMAIL_ENVIADO', 3);
+
+
+//Defino ruta donde esta alojada la carpeta public
+defined('PATH_SERVER')     or define('PATH_SERVER', '/home/c2370525/public_html/');
