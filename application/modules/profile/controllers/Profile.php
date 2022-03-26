@@ -491,7 +491,7 @@ class Profile extends MX_Controller
             $this->load->model('auth/Auth_model');
             $user_data['rol_id'] = $this->input->post('rol');
             $user_data['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
-            $user_data['fecha_modifico'] = date('Y-d-m H:i:s', time());
+            $user_data['fecha_modifico'] = date('Y-m-d H:i:s', time());
             $user_data['perfil_completo'] = FALSE;
             $options['accion'] = 'eliminar'; //elimina porque al cambiar de rol elimino de la tabla SEGUN ROL los datos de ese usuario
             $options['rol_id'] = $this->session->userdata('user_data')->rol_id;
@@ -731,9 +731,11 @@ class Profile extends MX_Controller
             $this->load->model('auth/Auth_model');
             $user_data['rol_id'] = $this->input->post('rol');
             $user_data['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
-            $user_data['fecha_modifico'] = date('Y-d-m H:i:s', time());
+            $user_data['fecha_modifico'] = date('Y-m-d H:i:s', time());
             $this->Auth_model->updateUserById($this->session->userdata('user_data')->id, $user_data);
             $this->session->userdata('user_data')->rol_id = $this->input->post('rol');
+            $user_data_rol['usuario_id'] = $this->session->userdata('user_data')->id;
+            $this->Auth_model->insertRolUsuarioApi($user_data['rol_id'],$user_data_rol);
             redirect(base_url() . 'profile');
         } else {
             return FALSE;

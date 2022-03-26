@@ -22,8 +22,6 @@ class Empresas_model extends CI_Model {
         }
         $this->db->group_by('u.id');
         return $this->db->get()->result();
-        // $this->db->get()->result();
-        // var_dump($this->db->last_query());die();
     }
 
     public function getEmpresaById($empresa_id){
@@ -42,8 +40,6 @@ class Empresas_model extends CI_Model {
         $this->db->group_by('vd.desafio_id');
         $this->db->where('vd.id_empresa',$empresa_id);
         return $this->db->get()->result();
-        // $this->db->get()->result();
-        // var_dump($this->db->last_query());die();
     }
 
     public function actualizarEmpresa($data, $empresa_id)

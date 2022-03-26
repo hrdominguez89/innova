@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Auth extends MX_Controller
 {
+    protected $token;
 
     public function __construct()
     {
@@ -13,6 +14,8 @@ class Auth extends MX_Controller
         $this->data_captcha_google = $this->config->item('data_captcha_google');
 
         $this->google_api = $this->config->item('google_api');
+        $this->linkedin_api = $this->config->item('linkedin_api');
+
 
         //Cargo Helper de Recaptcha de Google y Correo
         $this->load->helper(array('grecaptcha_helper', 'send_email_helper'));
@@ -649,15 +652,15 @@ class Auth extends MX_Controller
                 $usuario_existente = $this->Auth_model->getUserDataByEmail($google_data['email']);
 
                 if ($usuario_existente) {
-                    if($usuario_existente->oauth_uid){
+                    if ($usuario_existente->oauth_uid) {
                         //si existe usuario oauth_uid comparo si es igual al oauth_id
-                        if($usuario_existente->oauth_uid != $google_data->id){
+                        if ($usuario_existente->oauth_uid != $google_data->id) {
                             //actualizo oauth_id
-                            $this->Auth_model->updateUser($user_data,$google_data['email']);
+                            $this->Auth_model->updateUser($user_data, $google_data['email']);
                         }
-                    }else{
+                    } else {
                         //actualizo oauth_id
-                        $this->Auth_model->updateUser($user_data,$google_data['email']);
+                        $this->Auth_model->updateUser($user_data, $google_data['email']);
                     }
                 } else {
                     //inserto usuario
@@ -677,13 +680,177 @@ class Auth extends MX_Controller
                     $this->Auth_model->insertarUsuarioApi($user_data);
 
                     $usuario_existente = $this->Auth_model->getUserDataByEmail($google_data['email']);
-                    
                 }
                 //guardo la sesion
-                $this->session->set_userdata('user_data',$usuario_existente);
-                redirect(base_url().'home');
+                $this->session->set_userdata('user_data', $usuario_existente);
+                redirect(base_url() . 'home');
             }
         }
         redirect($google_client->createAuthUrl());
+    }
+
+    public function linkedin_login()
+    {
+        // si existe error imprimo el error que linkedin retrono
+        if ($this->input->get('error')) {
+            $mensaje_status_login = $this->input->get('error_description');
+            switch (ENVIRONMENT) {
+                case 'development':
+                    $this->session->set_flashdata('message', '<div class="alert alert-warning">' . $mensaje_status_login . '</div>');
+                    redirect(base_url('auth/message'));
+                    break;
+                case 'testing':
+                case 'production':
+                    $_SESSION['mensaje_back'] = $mensaje_status_login;
+                    redirect(base_url() . URI_WP . '/mensajes');
+                    break;
+            }
+        } elseif ($this->input->get('code')) { //si no hay error y si existe CODE, quiere decir que el usuario dio su autorizacion
+            // User authorized your application
+            if ($this->session->userdata('state') == $this->input->get('state')) {
+
+
+                $this->getAccessTokenLinkedin();
+
+                $user_nombre_y_apellido = $this->getDataLinkedin($this->linkedin_api->urlGetProfileData);
+                $user_email = $this->getDataLinkedin($this->linkedin_api->urlGetEmailData);
+
+                // $data_user['nombre'] = $user_nombre_y_apellido->firstName->localized->es_ES;
+                // $data_user['apellido'] = $user_nombre_y_apellido->lastName->localized->es_ES;
+                // $data_user['email'] = $user_email->elements[0]->{'handle~'}->emailAddress;
+                $data_user['linkedin_id'] =  $user_nombre_y_apellido->id;
+                $data_user['email_linkedin'] = $user_email->elements[0]->{'handle~'}->emailAddress;
+
+
+                $usuario_existente = $this->Auth_model->getUserDataByEmail($user_email->elements[0]->{'handle~'}->emailAddress);
+
+                if ($usuario_existente) {
+                    if ($usuario_existente->linkedin_id) {
+                        //si existe usuario oauth_uid comparo si es igual al oauth_id
+                        if ($usuario_existente->linkedin_id != $data_user['linkedin_id']) {
+                            //actualizo oauth_id
+                            $this->Auth_model->updateUser($data_user, $data_user['email_linkedin']);
+                        }
+                    } else {
+                        //actualizo oauth_id
+                        $this->Auth_model->updateUser($data_user, $data_user['email_linkedin']);
+                    }
+                } else {
+                    //inserto usuario
+
+                    $data_user['nombre'] = $user_nombre_y_apellido->firstName->localized->es_ES;
+                    $data_user['apellido'] = $user_nombre_y_apellido->lastName->localized->es_ES;
+                    $data_user['email'] = $user_email->elements[0]->{'handle~'}->emailAddress;
+                    $data_user['rol_id'] = null;
+
+                    $data_user['fecha_alta'] = date('Y-m-d H:i:s', time());
+                    $data_user['codigo_de_verificacion'] = md5($data_user['fecha_alta']);
+
+                    $data_user['estado_id'] = 3;
+                    $data_user['ultimo_login'] = date('Y-m-d H:i:s', time());
+
+                    $this->Auth_model->insertarUsuarioApi($data_user);
+
+                    $usuario_existente = $this->Auth_model->getUserDataByEmail($data_user['email']);
+                }
+                //guardo la sesion
+                $this->session->set_userdata('user_data', $usuario_existente);
+                redirect(base_url() . 'home');
+            }
+        }
+        // Start authorization process
+        $this->getAuthorizationCodeLinkedin();
+    }
+
+    protected function getAuthorizationCodeLinkedin()
+    {
+        $params = array(
+            'response_type' => 'code',
+            'client_id' => $this->linkedin_api->clientId,
+            'scope' => $this->linkedin_api->scope,
+            'state' => uniqid('', true), // unique long string
+            'redirect_uri' => base_url() . $this->linkedin_api->redirectUri,
+        );
+
+        // Authentication request
+        $url = $this->linkedin_api->urlAuthorization . http_build_query($params);
+
+        // Needed to identify request when it returns to us
+        $this->session->set_userdata('state', $params['state']);
+
+        // Redirect user to authenticate
+        redirect($url);
+    }
+
+    protected function getDataLinkedin($url)
+    {
+        $options = array('http' => array(
+            'method'  => 'GET',
+            'header' => 'Authorization: Bearer ' . $this->token->access_token
+        ));
+        $context  = stream_context_create($options);
+        $data = json_decode(file_get_contents($url, false, $context));
+
+        return $data;
+    }
+
+    protected function getAccessTokenLinkedin()
+    {
+        // Access Token request
+        $result = $this->http_post($this->linkedin_api->urlAccessToken, 'POST', array(
+            'grant_type' => 'authorization_code',
+            'client_id' => $this->linkedin_api->clientId,
+            'client_secret' => $this->linkedin_api->clientSecret,
+            'code' => $this->input->get('code'),
+            'redirect_uri' => base_url() . $this->linkedin_api->redirectUri,
+        ), false);
+
+        // Retrieve access token information
+
+        // Native PHP object, please
+        $this->token = json_decode($result['body']);
+
+        return;
+    }
+
+    protected function http_post($url, $method, $data, $ignore_errors = false)
+    {
+        $data_query = http_build_query($data);
+        $data_len = strlen($data_query);
+
+        $headers = array(
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Accept' => 'application/xml',
+            'Content-Length' => $data_len
+        );
+
+        $response =
+            file_get_contents($url, false, stream_context_create(
+                array(
+                    'http' => array(
+                        'method' => $method,
+                        'header' => $this->prepare_headers($headers),
+                        'content' => $data_query,
+                        'ignore_errors' => $ignore_errors
+                    )
+                )
+            ));
+
+        return (false === $response) ? false :
+            array(
+                'headers' => $http_response_header,
+                'body' => $response
+            );
+    }
+
+    protected function prepare_headers($headers)
+    {
+        return
+            implode(
+                '',
+                array_map(function ($key, $value) {
+                    return "$key: $value\r\n";
+                }, array_keys($headers), array_values($headers))
+            );
     }
 }

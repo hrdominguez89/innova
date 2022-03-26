@@ -42,9 +42,6 @@ class Contacto_model extends CI_Model
         $this->db->join('vi_desafios as vd', 'cs.desafio_id = vd.desafio_id');
         $this->db->order_by('cs.fecha_de_contacto', 'DESC');
         return $this->db->get()->result();
-
-        // $this->db->get()->result();
-        // var_dump($this->db->last_query());die();
     }
 
     public function getContactoData($usuario_id, $tipo_de_empresa, $usuario_a_buscar, $desafio_id)

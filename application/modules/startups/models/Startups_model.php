@@ -26,9 +26,6 @@ class Startups_model extends CI_Model
         $this->db->group_end();
         $this->db->group_by('u.id');
         return $this->db->get()->result();
-        // $this->db->get()->result();
-        // var_dump($this->db->last_query());
-        // die();
     }
 
 

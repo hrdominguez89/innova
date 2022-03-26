@@ -94,7 +94,6 @@ class Startups extends MX_Controller
                     redirect(base_url() . 'home');
                 }
                 $data['postulaciones'] = $this->Startups_model->getPostulacionesByStartupId($startup_id);
-                // echo '<pre>';var_dump($data['startup'],$data['postulaciones']);die();
                 $data['title'] = 'Startup';
                 $data['files_js'] = array('activar_tabla_comun.js');
                 $data['sections_view'] = 'ficha_startup_view';

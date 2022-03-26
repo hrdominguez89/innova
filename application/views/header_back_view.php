@@ -19,7 +19,7 @@
                         }
                     }; ?>
 
-                    <?php if($this->session->userdata('user_data')->rol_id != ROL_PARTNER):;?>
+                    <?php if(!($this->session->userdata('user_data')->rol_id == ROL_PARTNER || $this->session->userdata('user_data')->rol_id == null)):;?>
                     <a class="nav-link <?php echo $notificaciones_sin_leer ? 'text-primary notificacion-color-header' : ''; ?>" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="material-icons notificacion-icono-header"><?php echo $notificaciones_sin_leer ? 'notifications_active' : 'notifications'; ?></i>
                         Notificaciones

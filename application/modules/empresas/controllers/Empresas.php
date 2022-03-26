@@ -45,7 +45,6 @@ class Empresas extends MX_Controller
                     redirect(base_url() . 'home');
                 }
                 $data['desafios'] = $this->Empresas_model->getDesafiosByEmpresaId($empresa_id);
-                // echo '<pre>';var_dump($data['empresa'],$data['desafios']);die();
                 $data['title'] = 'Empresa';
                 $data['files_js'] = array('activar_tabla_comun.js');
                 $data['sections_view'] = 'ficha_empresa_view';

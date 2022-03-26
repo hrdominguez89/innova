@@ -13,9 +13,6 @@ class A_model extends CI_Model {
         $this->db->where('para_usuario_id',$usuario_id);
         $this->db->order_by('fecha_alta', 'ASC');
         return $this->db->get('notificaciones')->result();
-
-        //$this->db->get('notificaciones')->result();
-        //var_dump($this->db->last_query());die();
     }
 
     public function getNotificacionesMaximas(){

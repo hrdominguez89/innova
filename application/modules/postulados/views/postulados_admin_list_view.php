@@ -1,5 +1,3 @@
-<?php //echo '<pre>';var_dump($postulados);die();
-?>
 <div class="content">
     <div class="container-fluid">
         <div class="row">

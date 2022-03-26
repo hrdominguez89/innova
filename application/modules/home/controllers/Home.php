@@ -16,7 +16,6 @@ class Home extends MX_Controller
 
     public function index()
     {
-        var_dump($this->session->userdata('user_data'));die();
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_STARTUP:
                 $data['sections_view'] = 'home_startup_view';
@@ -35,12 +34,6 @@ class Home extends MX_Controller
                 $data['sections_view'] = 'home_admin_plataforma_view';
                 $data['files_js'] = array('excellentexport.js', 'html2canvas.js', 'canvas2image.js', 'apexcharts.js', 'graficos/graficos.js');
                 break;
-            default:
-                echo 'te logueaste con una cuenta de google';
-                echo '<pre>';
-                var_dump($this->session->userdata('user_data'));
-                die();
-                break;
         }
         $data['title'] = 'Home';
         $this->load->view('layout_back_view', $data);
@@ -55,7 +48,6 @@ class Home extends MX_Controller
             redirect(base_url() . 'home');
         }
         $total_de_usuarios_por_rol = $this->Home_model->getTotalesPorRoles();
-        // var_dump($total_de_usuarios_por_rol);
         echo json_encode($total_de_usuarios_por_rol);
     }
 
@@ -70,7 +62,6 @@ class Home extends MX_Controller
         $categorias['categorias'] = $this->Home_model->getCategoriasActivas();
         $categorias['categorias_desafios'] = $this->Home_model->getTotalCategoriasPorDesafio();
         $categorias['categorias_startups'] = $this->Home_model->getTotalCategoriasPorStartup();
-        // var_dump($total_de_usuarios_por_rol);
         echo json_encode($categorias);
     }
 }

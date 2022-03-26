@@ -57,6 +57,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <a href="<?php base_url();?>auth/google_login">Loguear con google</a>
                                 
                                 </div>
+
+                                <div class="form-row">
+                                    
+                                    <a href="<?php base_url();?>auth/linkedin_login">Loguear con Linkedin</a>
+                                
+                                </div>
     
                                 <div class="form-row">
     
