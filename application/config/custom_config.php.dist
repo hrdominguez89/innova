@@ -15,8 +15,8 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
 $config['site_config'] = (object) array(
 	'base_url'	    => 'http://localhost:8080/ria', //URL de inicio ejemplo https://localhost NO FINALIZAR CON BARRA -> /
 	'wp_url'		=> 'http://localhost:8080/ria/' . URI_WP,
-	'db'	        => 'ria',
-	'db_username'   => 'root',
+	'db'	        => '',
+	'db_username'   => '',
 	'db_password'   => '',
 );
 
@@ -29,10 +29,10 @@ $config['site_config'] = (object) array(
 
 $config['email_config'] = (object) array(
 	'protocol'      => 'smtp',
-	'smtp_host'     => 'c2091173.ferozo.com',
+	'smtp_host'     => '',
 	'smtp_port'     => 587,
-	'smtp_user'     => 'no-reply@c2091173.ferozo.com',
-	'smtp_pass'     => 'mAwjSZ8bZb',
+	'smtp_user'     => '',
+	'smtp_pass'     => '',
 	'mailtype'      => 'html',
 	'charset'       => 'utf-8',
 	'wrapchars'		=> 200,
@@ -42,7 +42,7 @@ $config['email_config'] = (object) array(
 );
 
 $config['no_reply'] = (object) array(
-	'from_email'	=> 'no-reply@c2091173.ferozo.com', // ejemplo noreply@ejemplo.com
+	'from_email'	=> '', // ejemplo noreply@ejemplo.com
 	'from_name'		=> 'No responder' // ejemplo No responder
 );
 
@@ -54,8 +54,8 @@ $config['no_reply'] = (object) array(
 
 $config['data_captcha_google'] = (object) array(
 	'url'       =>  'https://www.google.com/recaptcha/api/siteverify',
-	'siteKey'   => '6LdE320aAAAAAHG14eYOQdVVjNywz3XIRzV3yCZ2',
-	'secretKey' =>  '6LdE320aAAAAAMHfoA_M5qWLy46zL7JZFuKHJ2YX',
+	'siteKey'   => '',
+	'secretKey' =>  '',
 );
 /*
 |--------------------------------------------------------------------------
@@ -64,7 +64,7 @@ $config['data_captcha_google'] = (object) array(
 */
 
 $config['google_maps'] = (object) array(
-	'api_key'       =>  'AIzaSyDKjmlAnixlF0hQTcoipQWZ10Dndd_-eM8',
+	'api_key'       =>  '',
 );
 /*
 |--------------------------------------------------------------------------
@@ -88,8 +88,8 @@ $config['db'] = (object) array(
 */
 
 $config['google_api'] = (object) array(
-	'setClientId' => '266520135785-3539c1dn2o668nroh548afruqls1j35l.apps.googleusercontent.com',
-	'setClientSecret' => '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',
+	'setClientId' => '',
+	'setClientSecret' => '',
 	'setRedirectUri' => 'auth/google_login'
 );
 
@@ -100,8 +100,8 @@ $config['google_api'] = (object) array(
 */
 
 $config['linkedin_api'] = (object) array(
-	'clientId'			=> '77oarrzivrg1gm',
-	'clientSecret'		=> '3kUxpFS8LWCMHzP1',
+	'clientId'			=> '',
+	'clientSecret'		=> '',
 	'redirectUri'		=> 'auth/linkedin_login',
 	'scope' 			=> 'r_liteprofile r_emailaddress w_member_social',
 	'urlAuthorization'	=>'https://www.linkedin.com/oauth/v2/authorization?',
