@@ -210,6 +210,26 @@
                     </div>
                 </a>
             </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <a href="<?php echo base_url(); ?>estadisticas">
+                    <div class="card card-stats">
+                        <div class="card-header card-header-primary card-header-icon">
+                            <div class="card-icon">
+                                <i class="material-icons">query_stats</i>
+                            </div>
+                            <h4 class="card-title text-left">
+                                <span class="font-weight-bold">
+                                    Estadísticas
+                                </span>
+                            </h4>
+                        </div>
+                        <div class="card-footer">
+                            <div class="stats">
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
         <hr>
         <div class="row">

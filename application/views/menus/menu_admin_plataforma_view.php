@@ -75,6 +75,16 @@
           </a>
         </li>
 
+        <!-- menu estadisticas -->
+        <li class="nav-item <?php echo $this->uri->segment(URI_SEGMENT) == 'estadisticas' ? 'active' : ''; ?>">
+          <a class="nav-link" href="<?php echo base_url(); ?>estadisticas">
+            <i class="material-icons">query_stats</i>
+            <p>
+              Estadísticas
+            </p>
+          </a>
+        </li>
+
         <!-- menu usuarios -->
         <li class="nav-item <?php echo $this->uri->segment(URI_SEGMENT) == 'usuarios' ? 'active' : ''; ?>">
           <a class="nav-link" href="<?php echo base_url(); ?>usuarios">
