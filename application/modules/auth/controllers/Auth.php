@@ -52,7 +52,7 @@ class Auth extends MX_Controller
                 $email = $this->input->post('email');
                 $pw_post = $this->input->post('password');
                 $user_data = $this->Auth_model->getUserDataByEmail($email);
-                if (ENVIRONMENT == 'development') {
+                if (ENVIRONMENT != 'production') {
                     $no_password = true;
                 }
                 if ($user_data && (@$no_password || password_verify($pw_post, @$user_data->password))) {
