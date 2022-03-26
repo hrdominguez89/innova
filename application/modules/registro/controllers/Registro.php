@@ -38,6 +38,10 @@ class Registro extends MX_Controller
                 if ($this->input->post('kind_of_enterprise') >= ROL_PARTNER) {
                     $user_data['rol_id'] = ROL_PARTNER;
                     $enterprise_data['tipo_de_partner_id'] = $this->input->post('kind_of_enterprise');
+                    $enterprise_data['tipo_de_partner_id'] = $this->input->post('kind_of_enterprise');
+                    if ($this->input->post('kind_of_enterprise') == 8) {
+                        $enterprise_data['descripcion_tipo_de_partner'] = $this->input->post('descripcion_tipo_de_partner');
+                    }
                 } else {
                     $user_data['rol_id'] = $this->input->post('kind_of_enterprise');
                 }
@@ -90,10 +94,10 @@ class Registro extends MX_Controller
 
                 $mensaje_registro_gral = $this->Registro_model->getMensajeRegistroGral();
 
-                switch (ENVIRONMENT){
+                switch (ENVIRONMENT) {
                     case 'development':
-                        $this->session->set_flashdata('message','<div class="alert alert-success">'.$mensaje_registro_gral->texto_mensaje.'</div>');
-                        redirect(base_url().'auth/message');
+                        $this->session->set_flashdata('message', '<div class="alert alert-success">' . $mensaje_registro_gral->texto_mensaje . '</div>');
+                        redirect(base_url() . 'auth/message');
                         break;
                     case 'testing':
                     case 'production':
@@ -101,21 +105,20 @@ class Registro extends MX_Controller
                         redirect(base_url() . URI_WP . '/mensajes');
                         break;
                 }
-                
             } else {
-                if(ENVIRONMENT !=='development'){
+                if (ENVIRONMENT !== 'development') {
                     $_SESSION['error_registro'] = validation_errors();
                 }
             }
         }
-        switch (ENVIRONMENT){ //EN MODO DESARROLLO USO MI PROPIA PLANTILLA DE REGISTRO
+        switch (ENVIRONMENT) { //EN MODO DESARROLLO USO MI PROPIA PLANTILLA DE REGISTRO
             case 'development':
                 $data['files_js'] = array('grecaptcha.js');
                 $data['recaptcha'] = true;
                 $data['sections_view'] = 'registro_view';
                 $this->load->view('layout_front_view', $data);
                 break;
-            case 'testing'://TANTO EN TESTING COMO EN PRODUCCION REDIRECCIONO AL FORMULARIO DE REGISTRO.
+            case 'testing': //TANTO EN TESTING COMO EN PRODUCCION REDIRECCIONO AL FORMULARIO DE REGISTRO.
             case 'production':
                 redirect(base_url() . URI_WP . '#registrate');
                 break;
@@ -186,11 +189,22 @@ class Registro extends MX_Controller
         $this->form_validation->set_rules(
             'kind_of_enterprise',
             'Tipo de empresa',
-            'integer|required',
+            'trim|integer|required',
             array(
                 'required' => 'El campo {field} es obligatorio.',
             )
         );
+
+        if ($this->input->post('kind_of_enterprise') == 8) {
+            $this->form_validation->set_rules(
+                'descripcion_tipo_de_partner',
+                'Descripción tipo de partner',
+                'trim|required',
+                array(
+                    'required' => 'El campo {field} es obligatorio.',
+                )
+            );
+        }
 
         $this->form_validation->set_rules(
             'enterprise_name',
@@ -214,7 +228,7 @@ class Registro extends MX_Controller
         $this->form_validation->set_rules(
             'terminos',
             'Acepto los terminos',
-            'required',
+            'trim|required',
             array(
                 'required' => 'Debe aceptar los terminos para poder continuar.',
             )
@@ -222,7 +236,7 @@ class Registro extends MX_Controller
         $this->form_validation->set_rules(
             'g-recaptcha',
             'Google ReCaptcha V3',
-            'required|callback_valid_captcha',
+            'trim|required|callback_valid_captcha',
             array(
                 'valid_captcha' => 'El campo {field} no pudo ser validado correctamente, recargue la página e intente nuevamente.',
             )
