@@ -72,6 +72,11 @@ class Postulados extends MX_Controller
 
                 break;
             case ROL_VALIDADOR:
+                $data['files_js'] = array('activar_tabla_comun.js');
+                $data['postulados'] = $this->Postulados_model->getTodosLosPostulados();
+                $data['sections_view'] = 'postulados_validador_list_view';
+                $data['title'] = 'Postulados';
+                break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['postulados'] = $this->Postulados_model->getTodosLosPostulados();
                 $data['files_js'] = array('activar_tabla_comun.js','postulaciones/eliminar_postulacion.js');
@@ -351,17 +356,17 @@ class Postulados extends MX_Controller
             );
         } else {
             $postulado_id = $this->input->post('postulado_id');
-            $data_postulado['estado_id'] = DESAF_ELIMINADO;
+            $data_postulado['estado_postulacion'] = POST_ELIMINADO;
             $data_postulado['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
             $data_postulado['fecha_modifico'] = date('Y-m-d H:i:s', time());
-            if ($this->Desafios_model->actualizarDesafio($data_postulado, $postulado_id)) {
+            if ($this->Postulados_model->updatePostulacion($data_postulado, $postulado_id)) {
                 $data = array(
                     'status'    => true,
                 );
             } else {
                 $data = array(
                     'status'    => false,
-                    'msg'       => 'No fue posible modificar el desafío.'
+                    'msg'       => 'No fue posible eliminar la postulación.'
                 );
             }
         }

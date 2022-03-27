@@ -3,6 +3,7 @@
 /application/config/custom_config.php
 /application/config/constants.php
 /application/modules/controllerBase/*
+/application/modules/controllerBase/
 /index/*
 index.php
 ria.zip

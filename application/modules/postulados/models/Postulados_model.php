@@ -20,6 +20,7 @@ class Postulados_model extends CI_Model
             ->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion')
             ->where('p.startup_id', $usuario_id)
             ->where('vd.desafio_estado_id !=', DESAF_ELIMINADO)
+            ->where('p.estado_postulacion !=', POST_ELIMINADO)
             ->group_start()
             ->where('vd.estado_usuario_id', USR_ENABLED)
             ->or_where('vd.estado_usuario_id', USR_VERIFIED)
@@ -39,6 +40,8 @@ class Postulados_model extends CI_Model
             ->join('postulaciones as p', 'p.desafio_id = vd.desafio_id', 'left')
             ->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion', 'left')
             ->where('vd.id_empresa', $usuario_id)
+            ->where('vd.desafio_estado_id !=', DESAF_ELIMINADO)
+            ->where('p.estado_postulacion !=', POST_ELIMINADO)
             ->group_start()
             ->where('vd.estado_usuario_id', USR_ENABLED)
             ->or_where('vd.estado_usuario_id', USR_VERIFIED)
@@ -59,6 +62,7 @@ class Postulados_model extends CI_Model
             ->join('startups as st', 'st.usuario_id = u.id')
             ->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion')
             ->where('p.desafio_id', $desafio_id)
+            ->where('p.estado_postulacion !=', POST_ELIMINADO)
             ->get()->result();
         return $query;
     }
@@ -69,6 +73,7 @@ class Postulados_model extends CI_Model
             ->from('vi_desafios as vd')
             ->where('vd.id_empresa', $usuario_id)
             ->where('vd.desafio_id', $desafio_id)
+            ->where('vd.desafio_estado_id !=', DESAF_ELIMINADO)
             ->group_start()
             ->where('vd.estado_usuario_id', USR_ENABLED)
             ->or_where('vd.estado_usuario_id', USR_VERIFIED)
@@ -86,6 +91,8 @@ class Postulados_model extends CI_Model
             ->join('vi_desafios as vd', 'vd.desafio_id = p.desafio_id')
             ->join('contacto_startups as cs', 'cs.desafio_id = vd.desafio_id', 'left')
             ->where('vsi.usuario_id', $startup_id)
+            ->where('vd.desafio_estado_id !=', DESAF_ELIMINADO)
+            ->where('p.estado_postulacion !=', POST_ELIMINADO)
             ->where('p.desafio_id', $desafio_id)
             ->group_start()
             ->where('vd.estado_usuario_id', USR_ENABLED)
@@ -115,12 +122,13 @@ class Postulados_model extends CI_Model
 
     public function getTodosLosPostulados()
     {
-        $this->db->select('*,ep.estado as estado_postulacion_nombre');
+        $this->db->select('*,p.id as postulacion_id,ep.estado as estado_postulacion_nombre');
         $this->db->from('postulaciones as p');
         $this->db->join('vi_desafios as vd', 'vd.desafio_id = p.desafio_id');
         $this->db->join('vi_startups_info as vsi', 'vsi.usuario_id = p.startup_id');
         $this->db->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion');
         $this->db->where('vd.desafio_estado_id!=', DESAF_ELIMINADO);
+        $this->db->where('p.estado_postulacion!=', POST_ELIMINADO);
         $this->db->group_start();
         $this->db->where('vd.estado_usuario_id', USR_ENABLED);
         $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
@@ -129,22 +137,42 @@ class Postulados_model extends CI_Model
     }
     public function updatePostulacion($data_postulacion, $postulacion_id)
     {
+        $this->db->trans_begin();
+
+
         $this->db->where('id', $postulacion_id);
         $this->db->update('postulaciones', $data_postulacion);
+
+        // Condicional del Rollback 
+        if ($this->db->trans_status() === FALSE) {
+            //Hubo errores en la consulta, entonces se cancela la transacción.   
+            $this->db->trans_rollback();
+            return FALSE;
+        } else {
+            //Todas las consultas se hicieron correctamente.  
+            $this->db->trans_commit();
+            return TRUE;
+        } //If Rollback
     }
 
     public function getStartupData($startup_id)
     {
-        $this->db->select('*');
-        $this->db->where('usuario_id', $startup_id);
-        return $this->db->get('vi_startups_info')->row();
+        $this->db->select('vst.*');
+        $this->db->from('vi_startups_info as vst');
+        $this->db->where('vst.usuario_id', $startup_id);
+        $this->db->group_start();
+        $this->db->where('vst.estado_usuario_id', USR_ENABLED);
+        $this->db->or_where('vst.estado_usuario_id', USR_VERIFIED);
+        $this->db->group_end();
+        return $this->db->get()->row();
     }
 
     public function getDesafioData($desafio_id)
     {
         $this->db->select('*');
         $this->db->from('vi_desafios as vd');
-        $this->db->where('desafio_id', $desafio_id);
+        $this->db->where('vd.desafio_id', $desafio_id);
+        $this->db->where('vd.desafio_estado_id !=', DESAF_ELIMINADO);
         $this->db->group_start();
         $this->db->where('vd.estado_usuario_id', USR_ENABLED);
         $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
@@ -166,7 +194,8 @@ class Postulados_model extends CI_Model
             ->join('desafios as d', 'p.desafio_id = d.id')
             ->where('p.desafio_id', $desafio_id)
             ->where('p.startup_id', $startup_id)
-            ->where('d.estado_id !=',DESAF_ELIMINADO)
+            ->where('d.estado_id !=', DESAF_ELIMINADO)
+            ->where('p.estado_postulacion !=', POST_ELIMINADO)
             ->get()
             ->result();
     }
@@ -176,7 +205,8 @@ class Postulados_model extends CI_Model
             ->from('postulaciones p')
             ->join('desafios as d', 'p.desafio_id = d.id')
             ->where('startup_id', $startup_id)
-            ->where('d.estado_id !=',DESAF_ELIMINADO)
+            ->where('d.estado_id !=', DESAF_ELIMINADO)
+            ->where('p.estado_postulacion !=', POST_ELIMINADO)
             ->order_by('desafio_id')
             ->get()
             ->result();

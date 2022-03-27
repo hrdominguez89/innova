@@ -60,7 +60,6 @@
                                             <td class="text-center"><?php echo $postulado->estado_postulacion_nombre; ?></td>
                                             <td class="text-center">
                                                 <a title="Ver startup" href="<?php echo base_url(); ?>postulados/startup/<?php echo $postulado->startup_id . '/' . $postulado->desafio_id; ?>"><i class="far fa-eye"></i></a>
-                                                <a class="m-2 text-danger" onclick="eliminarPostulacionModal(this)" data-postulacion-id="<?php echo $postulado->postulacion_id; ?>" title="Eliminar postulación" href="javascript:void(0);"><i class="fas fa-trash-alt"></i></a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -75,4 +74,3 @@
         </div>
     </div>
 </div>
-<?php echo $this->load->view('modals/postulaciones/eliminar_postulacion_modal_view'); ?>
