@@ -176,13 +176,16 @@ class Auth extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . URI_WP . '/login-ria');
         }
-        $this->session->sess_destroy();
+        if(ENVIRONMENT == 'testing'){
+            $this->session->unset_userdata('user_data');
+        }else{
+            $this->session->sess_destroy();
+        }
         switch (ENVIRONMENT) {
             case 'development':
                 redirect(base_url('auth/login'));
                 break;
             case 'testing':
-                $this->session->set_userdata('prelogin', true);
                 redirect(base_url() . 'auth/login');
             case 'production':
                 redirect(base_url() . URI_WP . '/login-ria');
