@@ -46,6 +46,9 @@ class Auth extends MX_Controller
         if (ENVIRONMENT != 'testing') {
             redirect(base_url() . URI_WP);
         }
+        if($this->session->userdata('prelogin')){
+            redirect(base_url().'auth/login');
+        }
         if ($this->input->post()) {
             $this->loginrules();
 
@@ -170,7 +173,7 @@ class Auth extends MX_Controller
 
     public function logout()
     {
-        if (!$this->session->userdata()) {
+        if (!$this->session->userdata('user_data')) {
             redirect(base_url() . URI_WP . '/login-ria');
         }
         $this->session->sess_destroy();
