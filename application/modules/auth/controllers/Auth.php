@@ -90,6 +90,7 @@ class Auth extends MX_Controller
                 redirect(base_url() . 'auth/prelogin');
             };
         }
+        var_dump('aca todo ok');die();
 
         if ($this->session->userdata('user_data')) {
             redirect(base_url() . 'home');
