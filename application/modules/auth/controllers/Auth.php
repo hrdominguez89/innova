@@ -84,7 +84,7 @@ class Auth extends MX_Controller
     public function login()
     {
         if (ENVIRONMENT == 'testing') {
-            if ($this->session->userdata('prelogin')) {
+            if (!$this->session->userdata('prelogin')) {
                 redirect(base_url() . 'auth/prelogin');
             };
         }
