@@ -269,6 +269,20 @@ class Desafios_model extends CI_Model
         return $this->db->get()->result();
     }
 
+    public function getTodosLosDesafiosVigentes()
+    {
+        $this->db->select('vd.*,SUM(CASE WHEN p.startup_id IS NULL THEN 0 ELSE 1 END) AS cantidad_de_startups_postuladas');
+        $this->db->from('vi_desafios as vd');
+        $this->db->join('postulaciones as p', 'p.desafio_id = vd.desafio_id', 'left');
+        $this->db->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion', 'left');
+        $this->db->where('vd.desafio_estado_id', DESAF_VIGENTE);
+        $this->db->group_start();
+        $this->db->where('vd.estado_usuario_id', USR_ENABLED);
+        $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
+        $this->db->group_end();
+        $this->db->group_by('vd.desafio_id');
+        return $this->db->get()->result();
+    }
     public function getDesafioCompartido($startup_id, $desafio_id, $partner_id)
     {
         return $this->db->select('*')

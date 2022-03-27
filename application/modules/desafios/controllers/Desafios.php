@@ -92,6 +92,10 @@ class Desafios extends MX_Controller
                 break;
 
             case ROL_VALIDADOR:
+                $data['desafios'] = $this->Desafios_model->getTodosLosDesafiosVigentes();
+                $data['sections_view'] = 'desafios_admin_list_view';
+                $data['files_js'] = array('desafios/desafios_abm_admin_plataforma.js');
+                break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['categorias'] = $this->Desafios_model->getCategorias();
                 $data['desafios'] = $this->Desafios_model->getTodosLosDesafios();
