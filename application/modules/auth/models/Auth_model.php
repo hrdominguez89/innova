@@ -11,6 +11,13 @@ class Auth_model extends CI_Model
         $this->load->database();
     }
 
+    public function getUserDataAndPasswordByEmail($email){
+        $this->db->select('id,password,oauth_uid,rol_id,nombre,apellido,email,telefono,codigo_de_verificacion,logo,perfil_completo,cambiar_password,reiniciar_password_fecha,estado_id,ultimo_login,usuario_alta_id,fecha_alta,usuario_id_modifico,fecha_modifico,linkedin_id,email_linkedin');
+        $this->db->where('email', $email);
+        $this->db->where('estado_id!=', USR_DELETED);
+        return $this->db->get('usuarios')->row();
+    }
+
     public function getUserDataByEmail($email)
     {
         $this->db->select('id,oauth_uid,rol_id,nombre,apellido,email,telefono,codigo_de_verificacion,logo,perfil_completo,cambiar_password,reiniciar_password_fecha,estado_id,ultimo_login,usuario_alta_id,fecha_alta,usuario_id_modifico,fecha_modifico,linkedin_id,email_linkedin');

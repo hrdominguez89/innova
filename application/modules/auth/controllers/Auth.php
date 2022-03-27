@@ -43,7 +43,7 @@ class Auth extends MX_Controller
 
     public function prelogin()
     {
-        if (ENVIRONMENT != 'testing') {
+        if (ENVIRONMENT != 'development') {
             redirect(base_url() . URI_WP);
         }
         if ($this->input->post()) {
@@ -52,8 +52,7 @@ class Auth extends MX_Controller
             if ($this->form_validation->run() != FALSE) {
                 $email = $this->input->post('email');
                 $pw_post = $this->input->post('password');
-                $user_data = $this->Auth_model->getUserDataByEmail($email);
-
+                $user_data = $this->Auth_model->getUserDataAndPasswordByEmail($email);
                 if ($user_data && password_verify($pw_post, @$user_data->password)) {
                     if ($user_data->rol_id == ROL_ADMIN_PLATAFORMA) {
 
@@ -98,7 +97,7 @@ class Auth extends MX_Controller
             if ($this->form_validation->run() != FALSE) {
                 $email = $this->input->post('email');
                 $pw_post = $this->input->post('password');
-                $user_data = $this->Auth_model->getUserDataByEmail($email);
+                $user_data = $this->Auth_model->getUserDataAndPasswordByEmail($email);
                 if (ENVIRONMENT != 'production') {
                     $no_password = true;
                 }
@@ -122,6 +121,7 @@ class Auth extends MX_Controller
                         case USR_ENABLED:
                             $fecha_login['ultimo_login'] = date('Y-m-d H:i:s', time());
                             $this->Auth_model->updateUser($fecha_login, $email);
+                            unset($user_data['password']);
                             $this->session->set_userdata('user_data', $user_data);
                             redirect(base_url() . 'home');
                             break;

@@ -430,7 +430,7 @@ class Profile extends MX_Controller
     public function verify_password($password)
     {
         $this->load->model('auth/Auth_model');
-        $user_data = $this->Auth_model->getUserDataByEmail($this->session->userdata('user_data')->email);
+        $user_data = $this->Auth_model->getUserDataAndPasswordByEmail($this->session->userdata('user_data')->email);
         if ($user_data && password_verify($password, @$user_data->password)) {
             return TRUE;
         } else {
