@@ -46,8 +46,8 @@ class Auth extends MX_Controller
         if (ENVIRONMENT != 'testing') {
             redirect(base_url() . URI_WP);
         }
-        if($this->session->userdata('prelogin')){
-            redirect(base_url().'auth/login');
+        if ($this->session->userdata('prelogin')) {
+            redirect(base_url() . 'auth/login');
         }
         if ($this->input->post()) {
             $this->loginrules();
@@ -90,7 +90,7 @@ class Auth extends MX_Controller
                 redirect(base_url() . 'auth/prelogin');
             };
         }
-        
+
         if ($this->session->userdata('user_data')) {
             redirect(base_url() . 'home');
         }
@@ -171,14 +171,19 @@ class Auth extends MX_Controller
         }
     }
 
-    public function logout()
+    public function logout($completo = false)
     {
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . URI_WP . '/login-ria');
         }
-        if(ENVIRONMENT == 'testing'){
-            $this->session->unset_userdata('user_data');
-        }else{
+        if (ENVIRONMENT == 'testing') {
+            if ($completo == 'all') {
+                $this->session->sess_destroy();
+                redirect(base_url() . URI_WP);
+            } else {
+                $this->session->unset_userdata('user_data');
+            }
+        } else {
             $this->session->sess_destroy();
         }
         switch (ENVIRONMENT) {
