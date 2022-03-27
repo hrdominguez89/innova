@@ -6,8 +6,8 @@
         </div>
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">
-                <?php if ($this->session->userdata('user_data')->estado_id != USR_ENABLED && $this->session->userdata('user_data')->perfil_completo) :; ?>
-                    <span class="badge badge-danger">Cuenta pendiente de habilitación</span>
+                <?php if (ENVIRONMENT == 'testing'): ?>
+                    <span class="badge badge-danger">SITIO DE TESTING</span>
                 <?php endif; ?>
                 <li class="nav-item dropdown">
                     <?php
