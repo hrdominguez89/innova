@@ -98,6 +98,7 @@ class Auth extends MX_Controller
             $this->loginrules();
 
             if ($this->form_validation->run() != FALSE) {
+                var_dump('paso el post y las validaciones');die();
                 $email = $this->input->post('email');
                 $pw_post = $this->input->post('password');
                 $user_data = $this->Auth_model->getUserDataAndPasswordByEmail($email);
@@ -166,7 +167,6 @@ class Auth extends MX_Controller
                 break;
             case 'testing':
             case 'production':
-                var_dump('aca redirecciono a wp');die();
                 redirect(base_url() . URI_WP . '/login-ria');
                 break;
         }
