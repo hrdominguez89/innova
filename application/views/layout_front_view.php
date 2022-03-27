@@ -35,7 +35,6 @@
 
 <body class="off-canvas-sidebar">
   <!-- HEADER -->
-  <?php $this->load->view('header_front_view');?>
   <!-- FIN HEADER -->
 
   <div class="wrapper wrapper-full-page">

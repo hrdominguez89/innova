@@ -34,14 +34,64 @@ class Auth extends MX_Controller
                 redirect(base_url('auth/login'));
                 break;
             case 'testing':
+                redirect(base_url() . 'auth/prelogin');
             case 'production':
                 redirect(base_url() . URI_WP);
                 break;
         }
     }
 
+    public function prelogin()
+    {
+        if (ENVIRONMENT != 'testing') {
+            redirect(base_url() . URI_WP);
+        }
+        if ($this->input->post()) {
+            $this->loginrules();
+
+            if ($this->form_validation->run() != FALSE) {
+                $email = $this->input->post('email');
+                $pw_post = $this->input->post('password');
+                $user_data = $this->Auth_model->getUserDataByEmail($email);
+
+                if ($user_data && password_verify($pw_post, @$user_data->password)) {
+                    if ($user_data->rol_id == ROL_ADMIN_PLATAFORMA) {
+
+                        switch ($user_data->estado_id) {
+                            case USR_PENDING:
+                                $mensaje_status_login = 'Su E-mail, se encuentra pendiente de validación. Por favor revise su correo inclusive la casilla de spam/correo no deseado. Si necesita que se reenvie el e-mail de verificación, haga <a href="' . $enlace_para_validar_email . '">click aquí</a>.';
+                                break;
+                            case USR_DISABLED:
+                                $mensaje_status_login = 'Su cuenta se encuentra Deshabilitada.';
+                                break;
+                            case USR_VERIFIED:
+                            case USR_ENABLED:
+                                $this->session->set_userdata('prelogin', true);
+                                redirect(base_url() . 'auth/login');
+                                break;
+                        }
+                    }
+                    $_SESSION['mensaje_back'] = $mensaje_status_login;
+                    redirect(base_url() . URI_WP . '/mensajes');
+                } else {
+                    $data['error_message'] = 'Usuario y/o Password incorrecto.';
+                }
+            }
+        }
+        $data['files_js'] = array('grecaptcha.js');
+        $data['recaptcha'] = true;
+        $data['sections_view'] = "prelogin_form_view";
+        $this->load->view('layout_front_view', $data);
+    }
+
     public function login()
     {
+        if (ENVIRONMENT == 'testing') {
+            if ($this->session->userdata('prelogin')) {
+                redirect(base_url() . 'auth/prelogin');
+            };
+        }
+
         if ($this->session->userdata('user_data')) {
             redirect(base_url() . 'home');
         }
@@ -123,12 +173,17 @@ class Auth extends MX_Controller
 
     public function logout()
     {
+        if (!$this->session->userdata()) {
+            redirect(base_url() . URI_WP . '/login-ria');
+        }
         $this->session->sess_destroy();
         switch (ENVIRONMENT) {
             case 'development':
                 redirect(base_url('auth/login'));
                 break;
             case 'testing':
+                $this->session->set_userdata('prelogin', true);
+                redirect(base_url() . 'auth/login');
             case 'production':
                 redirect(base_url() . URI_WP . '/login-ria');
                 break;
