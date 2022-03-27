@@ -15,8 +15,10 @@ class Notificaciones extends MX_Controller
 
     public function index()
     {
-        if (!$this->session->userdata('user_data')) {
-            redirect('/auth/login');
+        if(ENVIRONMENT != 'testing'){
+            if (!$this->session->userdata('user_data')) {
+                redirect('/auth/login');
+            }
         }
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_VALIDADOR:

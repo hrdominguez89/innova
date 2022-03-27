@@ -58,9 +58,6 @@ class Auth extends MX_Controller
                     if ($user_data->rol_id == ROL_ADMIN_PLATAFORMA) {
 
                         switch ($user_data->estado_id) {
-                            case USR_PENDING:
-                                $mensaje_status_login = 'Su E-mail, se encuentra pendiente de validación. Por favor revise su correo inclusive la casilla de spam/correo no deseado. Si necesita que se reenvie el e-mail de verificación, haga <a href="' . $enlace_para_validar_email . '">click aquí</a>.';
-                                break;
                             case USR_DISABLED:
                                 $mensaje_status_login = 'Su cuenta se encuentra Deshabilitada.';
                                 break;
