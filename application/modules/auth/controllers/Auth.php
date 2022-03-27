@@ -92,10 +92,8 @@ class Auth extends MX_Controller
         }
         
         if ($this->session->userdata('user_data')) {
-            var_dump('aca pregunto si existe user_data');
             redirect(base_url() . 'home');
         }
-        var_dump('me saltie el user_data');die();
         if ($this->input->post()) {
             $this->loginrules();
 
@@ -168,6 +166,7 @@ class Auth extends MX_Controller
                 break;
             case 'testing':
             case 'production':
+                var_dump('aca redirecciono a wp');die();
                 redirect(base_url() . URI_WP . '/login-ria');
                 break;
         }
