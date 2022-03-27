@@ -24,14 +24,12 @@ const eliminarPostulacion = async (dataBoton) => {
     },
     timeout: 5000,
   });
-  console.log(respuesta);
   if (respuesta.status) {
     $("#modalEliminarPostulacion").modal("hide");
     eliminarLineaDePostulacion();
     mensajePostulacionEliminado();
   } else {
     $("#modalEliminarPostulacion").modal("hide");
-    console.log(respuesta.msg);
     mensajePostulacionEliminado(respuesta.msg);
     
   }

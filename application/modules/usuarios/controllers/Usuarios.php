@@ -7,6 +7,7 @@ class Usuarios extends MX_Controller
     public function __construct()
     {
         parent::__construct();
+        if ($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA);
         $this->load->library(array('my_form_validation'));
         if ($this->form_validation->run($this));
 
@@ -287,5 +288,29 @@ class Usuarios extends MX_Controller
         $email_asunto =  $asunto;
 
         encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+    }
+
+    public function eliminar()
+    {
+        if ($this->input->is_ajax_request()) {
+            $usuario_id = $this->input->post('usuario_id');
+            $data_usuario['estado_id'] = USR_DELETED;
+            $data_usuario['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
+            $data_usuario['fecha_modifico'] = date('Y-m-d H:i:s', time());
+            if ($this->Usuarios_model->updateUsuario($data_usuario, $usuario_id)){
+                $data = array(
+                    'status'  =>  true,
+                );
+
+            }else{
+                $data = array(
+                    'status'  =>  false,
+                    'msg'  =>  'Error al intentar eliminar el usuario',
+                );
+            }
+        } else {
+            redirect(base_url() . 'auth/login');
+        }
+        echo json_encode($data);
     }
 }

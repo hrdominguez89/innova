@@ -26,8 +26,11 @@ class Usuarios_model extends CI_Model
         $this->db->from('usuarios as u');
         $this->db->join('roles as r', 'r.id = u.rol_id');
         $this->db->join('estados_usuarios as es', 'es.id = u.estado_id');
-        $this->db->where('rol_id', ROL_VALIDADOR);
-        $this->db->or_where('rol_id', ROL_ADMIN_PLATAFORMA);
+        $this->db->where('u.estado_id !=', USR_DELETED);
+        $this->db->group_start();
+        $this->db->where('u.rol_id', ROL_VALIDADOR);
+        $this->db->or_where('u.rol_id', ROL_ADMIN_PLATAFORMA);
+        $this->db->group_end();
         $this->db->order_by('email', 'ASC');
         return $this->db->get()->result();
     }
@@ -50,8 +53,21 @@ class Usuarios_model extends CI_Model
     }
 
     public function updateUsuario($data_usuario,$usuario_id){
+        $this->db->trans_begin();
+
         $this->db->where('id',$usuario_id);
         $this->db->update('usuarios',$data_usuario);
+
+        // Condicional del Rollback 
+        if ($this->db->trans_status() === FALSE) {
+            //Hubo errores en la consulta, entonces se cancela la transacción.   
+            $this->db->trans_rollback();
+            return FALSE;
+        } else {
+            //Todas las consultas se hicieron correctamente.  
+            $this->db->trans_commit();
+            return TRUE;
+        } //If Rollback
     }
 
     public function getUsuarioById($usuario_id){
@@ -65,6 +81,7 @@ class Usuarios_model extends CI_Model
             ');
         $this->db->from('usuarios as u');
         $this->db->where('u.id', $usuario_id);
+        $this->db->where('u.estado_id !=', USR_DELETED);
         $this->db->join('roles as r', 'r.id = u.rol_id');
         return $this->db->get()->row();
     }

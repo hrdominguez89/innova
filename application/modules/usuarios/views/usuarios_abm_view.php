@@ -158,3 +158,4 @@
         </div>
     </div>
 </div>
+<?php $this->load->view('modals/usuarios/eliminar_usuario_modal_view');?>
