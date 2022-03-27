@@ -66,7 +66,7 @@
                         <a class="dropdown-item" href="<?php echo base_url() . 'cambiarpassword'; ?>">Cambiar contraseña</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="<?php echo base_url(); ?>auth/logout">Cerrar sesión</a>
-                        <?php echo ENVIRONMENT == 'testing'? '<a class="dropdown-item" href="<?php echo base_url(); ?>auth/logout/all">Cerrar completamente</a>':'';?>
+                        <?php echo ENVIRONMENT == 'testing'? '<a class="dropdown-item" href="'.base_url().'auth/logout/all">Cerrar completamente</a>':'';?>
                     </div>
                 </li>
             </ul>
