@@ -678,6 +678,12 @@ class Auth extends MX_Controller
 
     public function google_login()
     {
+        if (ENVIRONMENT == 'testing') {
+            if (!$this->session->userdata('prelogin')) {
+                redirect(base_url() . 'auth/prelogin');
+            }
+        }
+
         require APPPATH . '../vendor/autoload.php';
 
         $google_client =  new Google_Client();
@@ -743,6 +749,11 @@ class Auth extends MX_Controller
 
     public function linkedin_login()
     {
+        if (ENVIRONMENT == 'testing') {
+            if (!$this->session->userdata('prelogin')) {
+                redirect(base_url() . 'auth/prelogin');
+            }
+        }
         // si existe error imprimo el error que linkedin retrono
         if ($this->input->get('error')) {
             $mensaje_status_login = $this->input->get('error_description');
