@@ -16,7 +16,6 @@ const escucharBotonGuardarUsuario = () => {
 const escucharBotonCrearUsuario = () => {
   $("#botonCrearUsuario").on("click", () => {
     crearUsuario();
-    // $('#modalCrearUsuario').modal('hide');
   });
 };
 
@@ -37,7 +36,7 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
     info: false,
     ajax: {
       type: "post",
-      url: BASE_URL + "usuarios/cargarUsuarios/" + rol_id,
+      url: BASE_URL + "usuarios/cargarUsuarios",
     },
     columns: [
       {
@@ -58,6 +57,16 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
       {
         render: function (full, type, data, meta) {
           return data.rol_descripcion;
+        },
+      },
+      {
+        render: function (full, type, data, meta) {
+          return data.razon_social;
+        },
+      },
+      {
+        render: function (full, type, data, meta) {
+          return data.descripcion;
         },
       },
       {
@@ -93,6 +102,7 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
                 <a href='javascript:void(0)' onclick="eliminarUsuario(this)" id="eliminar_usuario_${data.id}" data-usuario-data='{"nombre":"${data.nombre}","apellido":"${data.apellido}","id":${data.id}}' title="Eliminar usuario" class='eliminarUsuario ml-2 text-danger'><i class='fas fa-trash-alt size-18' aria-hidden='true'></i></a>
                 `;
         },
+        orderable:false,
       },
     ],
     columnDefs: [
@@ -167,17 +177,25 @@ const crearUsuario = () => {
       //   );
     },
     success: function (resp) {
-      switch (resp.status_code) {
-        case 200:
-          if (resp.cargado) {
-            cargarTablaDeUsuarios();
-            $("#modalCrearUsuario").modal("hide");
-          } else {
-            $("#errorCrearUsuarioModal").css("display", "block");
-            $("#errorCrearUsuarioModal").html(resp.msg);
-          }
-          break;
+      let mensaje;
+      if (resp.status) {
+        cargarTablaDeUsuarios();
+        $("#modalCrearUsuario").modal("hide");
+        mensaje = {
+          title: "Usuario creado",
+          texto: "Se creo el usuario correctamente",
+          tipo: "success",
+        };
+      } else {
+        $("#errorCrearUsuarioModal").css("display", "block");
+        $("#errorCrearUsuarioModal").html(resp.msg);
+        mensaje = {
+          title: "Error",
+          texto: resp.msg,
+          tipo: "error",
+        };
       }
+      mensajeUsuarios(mensaje);
     },
     timeout: 5000,
   });
@@ -202,20 +220,21 @@ const rellenarFormularioEditarUsuario = (usuario_id) => {
     success: function (resp) {
       switch (resp.status_code) {
         case 200:
-          $(".filter-option-inner-inner")[1].innerHTML =
-            resp.data.rol_descripcion;
           $("#nombre_editar").val(resp.data.nombre);
           $("#apellido_editar").val(resp.data.apellido);
           $("#email_editar").val(resp.data.email);
           $("#edidarUsuarioId").val(resp.data.id);
           let options = $("#rol_id_editar").find("option");
-          options[1].removeAttribute("selected");
-          for (i = 0; i < options.length; i++) {
+          for (let i = 0; i < options.length; i++) {
+            options[i].removeAttribute("selected", "");
+          }
+          for (let i = 0; i < options.length; i++) {
             if (parseInt(options[i].value) == parseInt(resp.data.rol_id)) {
               options[i].setAttribute("selected", "");
               break;
             }
           }
+          $('#rol_id_editar').trigger("chosen:updated");
           break;
       }
     },
@@ -285,16 +304,12 @@ const guardarUsuario = () => {
       );
     },
     success: function (resp) {
-      switch (resp.status_code) {
-        case 200:
-          if (resp.editado) {
-            cargarTablaDeUsuarios();
-            $("#modalEditarUsuario").modal("hide");
-          } else {
-            $("#errorEditarUsuarioModal").html(resp.msg);
-            $("#errorEditarUsuarioModal").css("display", "block");
-          }
-          break;
+      if (resp.status) {
+        cargarTablaDeUsuarios();
+        $("#modalEditarUsuario").modal("hide");
+      } else {
+        $("#errorEditarUsuarioModal").html(resp.msg);
+        $("#errorEditarUsuarioModal").css("display", "block");
       }
     },
     timeout: 5000,
@@ -316,7 +331,7 @@ const eliminarUsuario = (data) => {
   $("#modalEliminarUsuario").modal("show");
 };
 
-const eliminarUsuarioModal = async() => {
+const eliminarUsuarioModal = async () => {
   let respuesta;
 
   await $.ajax({
@@ -350,6 +365,17 @@ const mensajeUsuarioEliminado = (msg = false) => {
     title: msg ? "No se pudo eliminar" : "Usuario eliminado",
     text: msg ? msg : "El usuario se eliminó correctamente",
     type: msg ? "error" : "success",
+    buttonsStyling: true,
+    timer: 5000,
+    confirmButtonClass: "btn btn-success",
+  });
+};
+
+const mensajeUsuarios = (dataMsg) => {
+  swal({
+    title: dataMsg.title,
+    text: dataMsg.texto,
+    type: dataMsg.tipo,
     buttonsStyling: true,
     timer: 5000,
     confirmButtonClass: "btn btn-success",

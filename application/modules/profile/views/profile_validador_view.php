@@ -4,7 +4,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <?php if ($this->session->flashdata('message')) : ?>
     <?php $this->load->view('modal_alertas_view'); ?>
 <?php endif; ?>
-<script src="https://www.linkedin.com/autofill/js/autofill.js" type="text/javascript" async></script><script type="IN/Form2"></script>
+<script src="https://www.linkedin.com/autofill/js/autofill.js" type="text/javascript" async></script>
+<script type="IN/Form2"></script>
 <div class="content">
     <div class="container-fluid">
         <div class="row">
@@ -45,6 +46,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <h4 class="pl-3 font-weight-bolder">Datos de contacto</h4>
                             </div>
                             <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group bmd-form-group">
+                                        <label class="bmd-label-floating" for="razon_social">Razón Social<small class="text-danger"> *</small></label>
+                                        <input type="text" class="form-control" maxlength="255" id="razon_social" name="razon_social" value="<?php echo set_value('razon_social', $data_perfil->razon_social); ?>" required>
+                                        <?php echo form_error('razon_social'); ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group bmd-form-group">
+                                        <label class="bmd-label-floating" for="descripcion">Descripción<small class="text-danger"> *</small></label>
+                                        <textarea class="form-control" rows="4" maxlength="2000" id="descripcion" name="descripcion" required><?php echo set_value('descripcion', $data_perfil->descripcion); ?></textarea>
+                                        <?php echo form_error('descripcion'); ?>
+                                    </div>
+                                </div>
+
 
                                 <div class="col-md-6">
                                     <div class="form-group bmd-form-group">

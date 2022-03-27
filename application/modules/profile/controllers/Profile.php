@@ -37,6 +37,7 @@ class Profile extends MX_Controller
                 $data['sections_view'] = 'profile_partner_view';
                 break;
             case ROL_VALIDADOR: // cambio de nombre ahora es validadores
+
                 $data['sections_view'] = 'profile_validador_view';
                 break;
             case ROL_ADMIN_PLATAFORMA:
@@ -327,6 +328,61 @@ class Profile extends MX_Controller
         );
     }
 
+    function rulesPerfilValidador($data_perfil)
+    {
+        $this->form_validation->set_error_delimiters('<div class="text-danger">', '</div>');
+        $this->form_validation->set_rules(
+            'razon_social',
+            'Razón Social',
+            'trim|required|max_length[255]',
+            array(
+                'required'  => 'El campo {field} es obligatorio',
+            )
+        );
+        $this->form_validation->set_rules(
+            'descripcion',
+            'Descripción',
+            'trim|required|max_length[255]',
+            array(
+                'required'  => 'El campo {field} es obligatorio',
+            )
+        );
+        $this->form_validation->set_rules(
+            'nombre',
+            'Nombre',
+            'trim|required|max_length[255]',
+            array(
+                'required'  => 'El campo {field} es obligatorio',
+            )
+        );
+        $this->form_validation->set_rules(
+            'nombre',
+            'Nombre',
+            'trim|required',
+            array(
+                'required'  => 'El campo {field} es obligatorio',
+            )
+        );
+        $this->form_validation->set_rules(
+            'apellido',
+            'Apellido',
+            'trim|required',
+            array(
+                'required'  => 'El campo {field} es obligatorio',
+            )
+        );
+        $this->form_validation->set_rules(
+            'email',
+            'E-mail',
+            'valid_email|required|callback_validar_email[' . $data_perfil->email . ']',
+            array(
+                'valid_email' => 'El campo {field} no es un e-mail válido',
+                'required'  => 'El campo {field} es obligatorio',
+                'validar_email' => 'El E-Mail indicado ya se encuentra en uso.'
+            )
+        );
+    }
+
     function rulesPerfilPartner($data_perfil)
     {
         $this->form_validation->set_error_delimiters('<div class="text-danger">', '</div>');
@@ -506,8 +562,10 @@ class Profile extends MX_Controller
 
     public function formularioPerfil($data)
     {
-        if ($this->session->userdata('user_data')->rol_id == ROL_VALIDADOR || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
+        if ($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
             $this->rulesPerfilAdmin($data['data_perfil']);
+        } else if ($this->session->userdata('user_data')->rol_id == ROL_VALIDADOR) {
+            $this->rulesPerfilValidador($data['data_perfil']);
         } else if ($this->session->userdata('user_data')->rol_id == ROL_PARTNER) {
             $this->rulesPerfilPartner($data['data_perfil']);
         } else {
@@ -678,6 +736,45 @@ class Profile extends MX_Controller
                     break;
 
                 case ROL_VALIDADOR:
+                    //Guardo datos del usuario
+                    $data_usuario['nombre'] = $this->input->post('nombre');
+                    $data_usuario['apellido'] = $this->input->post('apellido');
+                    $data_usuario['email'] = $this->input->post('email');
+                    $data_usuario['telefono'] = $this->input->post('telefono');
+                    $data_usuario['perfil_completo'] = true;
+                    $data_usuario['fecha_modifico'] = date('Y-m-d H:i:s', time());
+
+                    $data_validador['razon_social'] = $this->input->post('razon_social');
+                    $data_validador['descripcion'] = $this->input->post('descripcion');
+                    $data_validador['usuario_id'] = $this->session->userdata('user_data')->id;
+
+
+                    $this->Profile_model->updatePerfilValidador($data_usuario, $data_validador, $this->session->userdata('user_data')->id);
+
+                    $this->session->userdata('user_data')->perfil_completo = 1;
+                    if ($this->input->post('profile_img')) {
+                        $data_img = explode(',', $this->input->post('profile_img'));
+                        $data_img_decoded = base64_decode($data_img[1]);
+                        $fichero = './uploads/imagenes_de_usuarios/' . $this->session->userdata('user_data')->id . '.png';
+                        file_put_contents($fichero, $data_img_decoded);
+                        $this->session->userdata('user_data')->logo = true;
+                        $data_usuario_update_logo['logo'] = true;
+                        $this->Profile_model->updatePerfilValidador($data_usuario_update_logo, $data_validador, $this->session->userdata('user_data')->id);
+                    }
+                    if ($data['data_perfil']->email != $this->input->post('email')) {
+                        $this->session->userdata('user_data')->email = $this->input->post('email');
+                    }
+                    $message = '{
+                            "title":"Perfil cargado con éxito",
+                            "text": "Se modificó el perfil correctamente.",
+                            "type": "success",
+                            "buttonsStyling": true,
+                            "timer":5000,
+                            "confirmButtonClass": "btn btn-success"
+                        }';
+                    $this->session->set_flashdata('message', $message);
+                    redirect(base_url() . 'home');
+                    break;
                 case ROL_ADMIN_PLATAFORMA:
                     //Guardo datos del usuario
                     $data_usuario['nombre'] = $this->input->post('nombre');
@@ -716,7 +813,8 @@ class Profile extends MX_Controller
         }
     }
 
-    public function elegir_rol(){
+    public function elegir_rol()
+    {
         $this->form_validation->set_error_delimiters('<div class="text-danger">', '</div>');
 
         $this->form_validation->set_rules(
@@ -735,7 +833,7 @@ class Profile extends MX_Controller
             $this->Auth_model->updateUserById($this->session->userdata('user_data')->id, $user_data);
             $this->session->userdata('user_data')->rol_id = $this->input->post('rol');
             $user_data_rol['usuario_id'] = $this->session->userdata('user_data')->id;
-            $this->Auth_model->insertRolUsuarioApi($user_data['rol_id'],$user_data_rol);
+            $this->Auth_model->insertRolUsuarioApi($user_data['rol_id'], $user_data_rol);
             redirect(base_url() . 'profile');
         } else {
             return FALSE;

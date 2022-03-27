@@ -143,9 +143,11 @@
                                         <th>Apellido</th>
                                         <th>Email</th>
                                         <th>Tipo de usuario</th>
+                                        <th>Razón social</th>
+                                        <th>Descripción</th>
                                         <th>Fecha alta</th>
                                         <th>Estado</th>
-                                        <th class="text-center n">Acción</th>
+                                        <th class="text-center no-sort" width="80px">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>

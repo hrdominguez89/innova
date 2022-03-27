@@ -7,7 +7,9 @@ class Usuarios extends MX_Controller
     public function __construct()
     {
         parent::__construct();
-        if ($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA);
+        if ($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA) {
+            redirect(base_url() . 'auth/login');
+        }
         $this->load->library(array('my_form_validation'));
         if ($this->form_validation->run($this));
 
@@ -27,6 +29,9 @@ class Usuarios extends MX_Controller
 
     public function cargarUsuarios()
     {
+        if(!$this->input->is_ajax_request()){
+            redirect(base_url().'auth/login');
+        }
         $data['usuarios'] = $this->Usuarios_model->getUsuariosAdmin();
         echo json_encode(array(
             'status_code' => 200,
@@ -36,6 +41,9 @@ class Usuarios extends MX_Controller
 
     public function crearUsuario()
     {
+        if (!$this->input->is_ajax_request()) {
+            redirect(base_url() . 'auth/login');
+        }
         $this->crearUsuarioRules();
         if ($this->form_validation->run() != FALSE) {
             $password = $this->generarPassword();
@@ -47,38 +55,43 @@ class Usuarios extends MX_Controller
             $usuario['usuario_alta_id'] = $this->session->userdata('user_data')->id;
             $usuario['password'] = password_hash($password, PASSWORD_BCRYPT);
             $usuario['fecha_alta'] = date('Y-m-d H:i:s', time());
-            $this->Usuarios_model->insertarUsuario($usuario);
 
+            $id_usuario = $this->Usuarios_model->insertarUsuario($usuario);
+            if ($id_usuario) {
+                if ($this->input->post('rol_id') == ROL_VALIDADOR) {
+                    $usuario_id['id'] = $id_usuario;
+                    $this->Usuarios_model->insertarUsuarioValidador($usuario_id);
+                }
 
+                $buscar_y_reemplazar = array(
+                    array('buscar' => '{{EMAIL_USUARIO}}', 'reemplazar' => $usuario['email']),
+                    array('buscar' => '{{PASSWORD_USUARIO}}', 'reemplazar' => $password),
+                    array('buscar' => '{{NOMBRE_USUARIO}}', 'reemplazar' => $usuario['nombre']),
+                    array('buscar' => '{{APELLIDO_USUARIO}}', 'reemplazar' => $usuario['apellido']),
+                );
 
-            $buscar_y_reemplazar = array(
-                array('buscar' => '{{EMAIL_USUARIO}}', 'reemplazar' => $usuario['email']),
-                array('buscar' => '{{PASSWORD_USUARIO}}', 'reemplazar' => $password),
-                array('buscar' => '{{NOMBRE_USUARIO}}', 'reemplazar' => $usuario['nombre']),
-                array('buscar' => '{{APELLIDO_USUARIO}}', 'reemplazar' => $usuario['apellido']),
-            );
+                if ($usuario['rol_id'] == ROL_VALIDADOR) {
+                    $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_validador');
+                } else {
+                    $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_admin_plataforma');
+                }
 
-            if ($usuario['rol_id'] == ROL_VALIDADOR) {
-                $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_validador');
+                $email_id = $this->crearEmail($mensaje_de_plataforma, $usuario['email'], $buscar_y_reemplazar);
+
+                modules::run('cli/enviarcorreosencolados', $email_id);
+
+                echo json_encode(array(
+                    'status' => true,
+                ));
             } else {
-                $mensaje_de_plataforma = $this->Mensajes_model->getMensaje('mensaje_alta_usuario_admin_plataforma');
+                echo json_encode(array(
+                    'status' => false,
+                    'msg' => 'No fue posible generar el usuario',
+                ));
             }
-
-            $email_id = $this->crearEmail($mensaje_de_plataforma, $usuario['email'], $buscar_y_reemplazar);
-
-            modules::run('cli/enviarcorreosencolados', $email_id);
-
-
-
-            echo json_encode(array(
-                'status_code' => 200,
-                'cargado' => true,
-                'msg' => 'Usuario creado con éxito',
-            ));
         } else {
             echo json_encode(array(
-                'status_code' => 200,
-                'cargado' => false,
+                'status' => false,
                 'msg' => validation_errors(),
             ));
         }
@@ -167,9 +180,15 @@ class Usuarios extends MX_Controller
 
     public function editarUsuario()
     {
+        if (!$this->input->is_ajax_request()) {
+            redirect(base_url() . 'auth/login');
+        }
         $this->rulesEditarUsuario();
         if ($this->form_validation->run() != FALSE) {
             $usario_id = $this->input->post('usuario_id');
+
+            $usuariodata = $this->Usuarios_model->getUsuarioById($usario_id);
+
             $usuario['nombre'] = $this->input->post('nombre');
             $usuario['apellido'] = $this->input->post('apellido');
             $usuario['email'] = $this->input->post('email');
@@ -182,7 +201,16 @@ class Usuarios extends MX_Controller
                 $usuario['reiniciar_password_fecha'] = date('Y-m-d H:i:s', time());
                 $usuario['cambiar_password'] = TRUE;
             }
-            $this->Usuarios_model->updateUsuario($usuario, $usario_id);
+            if ($usuariodata->rol_id != $this->input->post('rol_id')) {
+                if ($usuariodata->rol_id == ROL_VALIDADOR) {
+                    $this->Usuarios_model->eliminarValidador($usario_id);
+                } else {
+                    $usuario_validador['usuario_id'] = $usario_id;
+                    $this->Usuarios_model->InsertarUsuarioValidador($usuario_validador);
+                    $usuario['perfil_completo'] = false;
+                }
+                $this->Usuarios_model->updateUsuario($usuario, $usario_id);
+            }
 
             if ($this->input->post('reset_password')) {
                 $buscar_y_reemplazar = array(
@@ -200,14 +228,11 @@ class Usuarios extends MX_Controller
             }
 
             echo json_encode(array(
-                'status_code' => 200,
-                'editado' => true,
-                'msg' => 'Usuario editado con éxito',
+                'status' => true,
             ));
         } else {
             echo json_encode(array(
-                'status_code' => 200,
-                'editado' => false,
+                'status' => false,
                 'msg' => validation_errors(),
             ));
         }
@@ -270,7 +295,6 @@ class Usuarios extends MX_Controller
 
     public function crearEmail($data_mensaje, $data_usuario_para, $buscar_y_reemplazar)
     {
-
         $mensaje = $data_mensaje->texto_mensaje;
         $asunto = $data_mensaje->asunto_mensaje;
 
@@ -287,7 +311,7 @@ class Usuarios extends MX_Controller
         $email_mensaje = $mensaje;
         $email_asunto =  $asunto;
 
-        encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+        return encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
     }
 
     public function eliminar()
@@ -297,12 +321,11 @@ class Usuarios extends MX_Controller
             $data_usuario['estado_id'] = USR_DELETED;
             $data_usuario['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
             $data_usuario['fecha_modifico'] = date('Y-m-d H:i:s', time());
-            if ($this->Usuarios_model->updateUsuario($data_usuario, $usuario_id)){
+            if ($this->Usuarios_model->updateUsuario($data_usuario, $usuario_id)) {
                 $data = array(
                     'status'  =>  true,
                 );
-
-            }else{
+            } else {
                 $data = array(
                     'status'  =>  false,
                     'msg'  =>  'Error al intentar eliminar el usuario',
