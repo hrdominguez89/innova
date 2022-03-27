@@ -43,7 +43,7 @@ class Auth extends MX_Controller
 
     public function prelogin()
     {
-        if (ENVIRONMENT != 'development') {
+        if (ENVIRONMENT != 'testing') {
             redirect(base_url() . URI_WP);
         }
         if ($this->input->post()) {
