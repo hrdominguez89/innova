@@ -98,7 +98,6 @@ class Auth extends MX_Controller
             $this->loginrules();
 
             if ($this->form_validation->run() != FALSE) {
-                var_dump('paso el post y las validaciones');die();
                 $email = $this->input->post('email');
                 $pw_post = $this->input->post('password');
                 $user_data = $this->Auth_model->getUserDataAndPasswordByEmail($email);
@@ -125,7 +124,7 @@ class Auth extends MX_Controller
                         case USR_ENABLED:
                             $fecha_login['ultimo_login'] = date('Y-m-d H:i:s', time());
                             $this->Auth_model->updateUser($fecha_login, $email);
-                            unset($user_data['password']);
+                            unset($user_data->password);
                             $this->session->set_userdata('user_data', $user_data);
                             redirect(base_url() . 'home');
                             break;
