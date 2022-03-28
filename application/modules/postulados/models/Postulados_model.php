@@ -122,13 +122,32 @@ class Postulados_model extends CI_Model
 
     public function getTodosLosPostulados()
     {
-        $this->db->select('*,p.id as postulacion_id,ep.estado as estado_postulacion_nombre');
+        $this->db->select('
+        *,
+        p.id as postulacion_id,
+        ep.estado as estado_postulacion_nombre,
+        IF(
+            (SELECT 
+                `va`.`validador_id`
+            FROM
+                `validaciones` as `va`
+            WHERE 
+                ' . $this->session->userdata('user_data')->id . ' = `va`.`validador_id` 
+                AND 
+                `p`.`id` = `va`.`postulacion_id`
+            ),
+            "Validado",
+            "Pendiente"
+        ) as `estado_validacion`
+        ');
         $this->db->from('postulaciones as p');
         $this->db->join('vi_desafios as vd', 'vd.desafio_id = p.desafio_id');
         $this->db->join('vi_startups_info as vsi', 'vsi.usuario_id = p.startup_id');
         $this->db->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion');
-        $this->db->where('vd.desafio_estado_id!=', DESAF_ELIMINADO);
+        $this->db->where('vd.desafio_estado_id =', DESAF_VIGENTE);
         $this->db->where('p.estado_postulacion!=', POST_ELIMINADO);
+        $this->db->where('p.estado_postulacion!=', POST_RECHAZADO);
+        $this->db->where('p.estado_postulacion!=', POST_CANCELADO);
         $this->db->group_start();
         $this->db->where('vd.estado_usuario_id', USR_ENABLED);
         $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);

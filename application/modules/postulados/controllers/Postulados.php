@@ -7,6 +7,9 @@ class Postulados extends MX_Controller
     public function __construct()
     {
         parent::__construct();
+        if(!$this->session->userdata('user_data')){
+            redirect(base_url().'auth/login');
+        }
         $this->load->model('Postulados_model');
         $this->load->library(array('my_form_validation'));
         $this->form_validation->run($this);

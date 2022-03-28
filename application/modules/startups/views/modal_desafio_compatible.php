@@ -1,4 +1,4 @@
-<div class="modal fade" id="desafioCompatible" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-labelledby="desafioCompatibleLabel" aria-hidden="true">
+<div class="modal fade" id="desafioCompatible" tabindex="-1" data-backdrop="true" data-keyboard="true" aria-labelledby="desafioCompatibleLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">

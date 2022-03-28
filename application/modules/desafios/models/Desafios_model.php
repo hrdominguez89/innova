@@ -405,7 +405,35 @@ class Desafios_model extends CI_Model
             vd.nombre_del_desafio,
             vd.fecha_fin_de_postulacion,
             vd.desafio_id,
-            IF(ISNULL((SELECT post.startup_id FROM postulaciones post where post.startup_id=' . $startup_id . ' and post.desafio_id=vd.desafio_id)), 0, 1) as postulado,IF(ISNULL((SELECT rec.startup_id FROM recomendaciones rec where rec.startup_id=' . $startup_id . ' and rec.partner_id=' . $partner_id . ' and rec.desafio_id=vd.desafio_id)), 0, 1) as compartido')
+            IF(
+                (SELECT 
+                    post.startup_id 
+                FROM 
+                    postulaciones post 
+                WHERE
+                    post.startup_id=' . $startup_id . ' 
+                    AND
+                    post.desafio_id=vd.desafio_id
+                    AND
+                    post.estado_postulacion != '.POST_ELIMINADO.'
+                    AND
+                    post.estado_postulacion != '.POST_RECHAZADO.'
+                    AND
+                    post.estado_postulacion != '.POST_CANCELADO.'
+                    )
+                , 1, 0) as postulado,
+            IF(
+                (SELECT
+                    rec.startup_id
+                FROM
+                    recomendaciones rec
+                WHERE 
+                    rec.startup_id=' . $startup_id . '
+                    AND 
+                    rec.partner_id=' . $partner_id . '
+                    AND
+                    rec.desafio_id=vd.desafio_id)
+                , 1, 0) as compartido')
             ->from('vi_desafios vd')
             ->join('categorias_desafios as cd', 'cd.desafio_id = vd.desafio_id')
             ->where_in('cd.categoria_id', $array_categorias)

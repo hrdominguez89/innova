@@ -714,7 +714,7 @@ class Desafios extends MX_Controller
             redirect(base_url() . 'auth/login');
         }
 
-        if (!$this->input->is_ajax_request() && $this->session->userdata('user_data')->rol_id != ROL_PARTNER) {
+        if (!$this->input->is_ajax_request()) {
             redirect(base_url() . 'home');
         }
 

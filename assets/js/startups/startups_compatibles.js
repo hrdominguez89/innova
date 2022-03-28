@@ -226,13 +226,13 @@ const mostrarDatosDesafio = async () => {
     if (resp.logo) {
       bodyDesafios.append(`
       <div class="text-center">
-        <img src="${BASE_URL}uploads/imagenes_de_usuarios/${resp.id_empresa}.png" class="rounded-circle" alt="Logo Startup">
+        <img src="${BASE_URL}uploads/imagenes_de_usuarios/${resp.id_empresa}.png" class="rounded-circle img-fluid" style="max-height:100px;" alt="Logo Startup">
       </div>
       `);
     } else {
       bodyDesafios.append(`
       <div class="text-center">
-        <img src="${BASE_URL}assets/img/usuario.jpeg" class="rounded-circle" alt="Logo Startup">
+        <img src="${BASE_URL}assets/img/usuario.jpeg" class="rounded-circle img-fluid" style="max-height:100px;" alt="Logo Startup">
       </div>
       `);
     }

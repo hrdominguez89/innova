@@ -91,20 +91,24 @@ class Startups_model extends CI_Model
                     AND
                     post.desafio_id=' . $desafio_id . '
                     AND
-                    post.estado_postulacion != '.POST_ELIMINADO.'
+                    post.estado_postulacion != ' . POST_ELIMINADO . '
                     AND
-                    post.estado_postulacion != '.POST_CANCELADO.'
+                    post.estado_postulacion != ' . POST_CANCELADO . '
                     AND
-                    post.estado_postulacion != '.POST_RECHAZADO.'
-                ), 1, 0) as postulado,
+                    post.estado_postulacion != ' . POST_RECHAZADO . ')
+                , 1, 0) as postulado,
             IF(
                 (SELECT
                     rec.startup_id
                 FROM 
                     recomendaciones rec 
                 WHERE 
-                    rec.startup_id=vs.usuario_id and rec.partner_id=' . $partner_id . ' and rec.desafio_id=' . $desafio_id . '
-                ), 1, 0) as compartido')
+                    rec.startup_id=vs.usuario_id
+                    AND
+                    rec.partner_id=' . $partner_id . '
+                    AND
+                    rec.desafio_id=' . $desafio_id . ')
+                , 1, 0) as compartido')
             ->from('vi_startups_info vs')
             ->join('categorias_startups as cs', 'cs.startup_id = vs.usuario_id')
             ->where_in('cs.categoria_id', $array_categorias)
@@ -125,8 +129,11 @@ class Startups_model extends CI_Model
         }
         $query = $this->db->select('vsi.*')
             ->from('vi_startups_info as vsi')
+            ->where('vsi.perfil_completo', 1)
+            ->group_start()
             ->where('vsi.estado_usuario_id', USR_ENABLED)
             ->or_where('vsi.estado_usuario_id', USR_VERIFIED)
+            ->group_end()
             ->order_by('vsi.usuario_id')
             ->get()->result();
         return $query;
