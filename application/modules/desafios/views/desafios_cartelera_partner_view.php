@@ -52,8 +52,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <p class="card-description text-left text-left">
                                 <b class="font-weight-bold text-primary">Información de la empresa:</b> <?php echo $desafio->descripcion_empresa; ?>
                             </p>
-                            <button type="button" class="btn btn-primary verStartupsCompatibles" data-empresa-id='<?php echo $desafio->id_empresa;?>' data-desafio-id='<?php echo $desafio->desafio_id;?>'>
+                            <button type="button" class="btn btn-primary verStartupsCompatibles" data-empresa-id='<?php echo $desafio->id_empresa; ?>' data-desafio-id='<?php echo $desafio->desafio_id; ?>'>
                                 Startups compatibles
+                            </button>
+
+                            <button type="button" class="btn btn-default compartirPorEmail" data-empresa-id='<?php echo $desafio->id_empresa; ?>' data-desafio-id='<?php echo $desafio->desafio_id; ?>'>
+                                Compartir <i class="fas fa-at"></i>
                             </button>
                         </div>
                     </div>
@@ -65,6 +69,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </div>
 
 <!-- Cargo los modals -->
-<?php $this->load->view('modal_ver_startups_compatibles');?>
+<?php $this->load->view('modal_ver_startups_compatibles'); ?>
 
-<?php $this->load->view('modal_startup_compatible');?>
+<?php $this->load->view('modal_startup_compatible'); ?>
+
+<?php $this->load->view('modal_compartir_desafio_por_email'); ?>

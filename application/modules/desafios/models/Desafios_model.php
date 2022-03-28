@@ -309,17 +309,43 @@ class Desafios_model extends CI_Model
 
     public function getPostuladosByDesafioId($desafio_id)
     {
-        $this->db->select('*,ep.estado as estado_postulacion_descripcion');
+        $this->db->select(
+            '
+                            *,
+                            ep.estado as estado_postulacion_descripcion,
+                            IF(
+                                (SELECT 
+                                    `va`.`validador_id`
+                                FROM
+                                    `validaciones` as `va`
+                                WHERE 
+                                    ' . $this->session->userdata('user_data')->id . ' = `va`.`validador_id` 
+                                    AND 
+                                    `p`.`id` = `va`.`postulacion_id`
+                                ),
+                                "Validado",
+                                "Pendiente"
+                            ) as `estado_validacion`'
+        );
         $this->db->from('postulaciones as p');
         $this->db->where('p.desafio_id', $desafio_id);
+
+        $this->db->group_start();
+        $this->db->where('p.estado_postulacion !=', POST_RECHAZADO);
+        $this->db->where('p.estado_postulacion !=', POST_CANCELADO);
+        $this->db->where('p.estado_postulacion !=', POST_ELIMINADO);
+        $this->db->group_end();
+
         $this->db->group_start();
         $this->db->where('vd.estado_usuario_id', USR_ENABLED);
         $this->db->or_where('vd.estado_usuario_id', USR_VERIFIED);
         $this->db->group_end();
+
         $this->db->join('vi_startups_info as vsi', 'vsi.usuario_id = p.startup_id', 'left');
         $this->db->join('vi_desafios as vd', 'vd.desafio_id = p.desafio_id', 'left');
         $this->db->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion');
-        return $this->db->get()->result();
+        $query = $this->db->get()->result();
+        return $query;
     }
 
     public function actualizarDesafio($data, $desafio_id)

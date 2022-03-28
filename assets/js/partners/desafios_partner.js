@@ -7,6 +7,7 @@ var listadoDeStartups;
 var botonDesafioCompartido;
 var botonCompartirDesafio;
 var botonDesafioPostulado;
+let desafioIdCompartirPorEmail;
 
 const dataTableOptions = {
   destroy: true,
@@ -52,6 +53,8 @@ const dataTableOptions = {
 };
 
 window.addEventListener("load", () => {
+  escucharBotonCompartirPorEmail();
+  escucharBotonCompartirPorEmailModal();
   escucharBotonVerStartupsCompatibles();
   escucharBotonCompartirDesafio();
   tablaStartupsCompatibles = $("#startupsCompatiblesTable").DataTable(
@@ -64,16 +67,13 @@ window.addEventListener("load", () => {
 
 const escucharBotonCompartirDesafio = () => {
   const botonCompartir = $("#compartirDesafioBoton");
-  botonCompartir.on("click", async () => {
-    const respCompartir = compartirDesafio();
-    await mostrarResultadoCompartir(respCompartir);
-    $("#compartirDesafio").modal("hide");
+  botonCompartir.on("click", () => {
+    compartirDesafio();
   });
 };
 
 const mostrarResultadoCompartir = (resultado) => {
-  resultado.then((res) => {
-    if (res.status) {
+    if (resultado.status) {
       swal({
         // title: "El desafio fue compartido",
         text: "El desafio fue compartido.",
@@ -94,7 +94,6 @@ const mostrarResultadoCompartir = (resultado) => {
         confirmButtonClass: "btn btn-danger",
       });
     }
-  });
 };
 
 const compartirDesafio = () => {
@@ -103,23 +102,22 @@ const compartirDesafio = () => {
     empresa_id: empresaId,
     startup_id: startupId,
   };
-  let respuesta = new Promise((resolve, reject) => {
-    $.ajax({
-      type: "POST",
-      url: BASE_URL + "desafios/compartirDesafio",
-      dataType: "JSON",
-      data: data,
-      // beforeSend: function () {
-      // },
-      // error: function () {
-      // },
-      success: function (resp) {
-        resolve(resp);
-      },
-      // timeout: 5000,
-    });
+  $.ajax({
+    type: "POST",
+    url: BASE_URL + "desafios/compartirDesafio",
+    dataType: "JSON",
+    data: data,
+    // beforeSend: function () {
+    // },
+    // error: function () {
+    // },
+    success: function (resp) {
+      mostrarResultadoCompartir(resp);
+      $("#compartirDesafio").modal("hide");
+    },
+    // timeout: 5000,
   });
-  return respuesta;
+  return;
 };
 
 const escucharBotonVerStartupsCompatibles = () => {
@@ -210,13 +208,13 @@ const mostrarDatosStartup = async () => {
     if (resp.logo) {
       bodyStartups.append(`
       <div class="text-center">
-        <img src="${BASE_URL}uploads/imagenes_de_usuarios/${startupId}.png" class="rounded-circle" alt="Logo Startup">
+        <img src="${BASE_URL}uploads/imagenes_de_usuarios/${startupId}.png" class="rounded-circle img-fluid" style="max-height:100px;" alt="Logo Startup">
       </div>
       `);
     } else {
       bodyStartups.append(`
       <div class="text-center">
-        <img src="${BASE_URL}assets/img/usuario.jpeg" class="rounded-circle" alt="Logo Startup">
+        <img src="${BASE_URL}assets/img/usuario.jpeg" class="rounded-circle img-fluid" style="max-height:100px;" alt="Logo Startup">
       </div>
       `);
     }
@@ -294,4 +292,49 @@ const cerrarModal = (data) => {
   const modalId = data.dataset.modalId;
   $(`#${modalId}`).modal("hide");
   switchLoadingGif(modalId);
+};
+
+const escucharBotonCompartirPorEmail = () => {
+  $(".compartirPorEmail").on("click", (elemento) => {
+    desafioIdCompartirPorEmail = elemento.target.dataset.desafioId;
+    $("#emails").val("");
+    $("#error").html("");
+    $("#compartirPorEmailModal").modal("show");
+  });
+};
+
+const escucharBotonCompartirPorEmailModal = () => {
+  $("#compartirDesafioPorEmailModal").on("click", () => {
+    let emails = $("#emails").val();
+    $.ajax({
+      type: "POST",
+      url: BASE_URL + "desafios/compartirDesafioPorEmail",
+      dataType: "JSON",
+      data: {
+        emails: emails,
+        desafio_id: desafioIdCompartirPorEmail,
+      },
+      beforeSend: function () {
+        $("#error").html("");
+      },
+      // error: function () {
+      // },
+      success: function (resp) {
+        if (resp.status) {
+          $("#compartirPorEmailModal").modal("hide");
+          swal({
+            title: "Desafío compartido",
+            text: "Se compartió el desafío correctamente.",
+            type: "success",
+            buttonsStyling: true,
+            timer: 5000,
+            confirmButtonClass: "btn btn-danger",
+          });
+        } else {
+          $("#error").html(resp.msg);
+        }
+      },
+      // timeout: 5000,
+    });
+  });
 };

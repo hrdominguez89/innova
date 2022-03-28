@@ -9,6 +9,32 @@ class Usuarios_model extends CI_Model
         $this->load->database();
     }
 
+
+    public function getDataComplementaria($rol_id, $usuario_id)
+    {
+        //trae los datos de la tabla correspondientes, admin plataforma no tiene otra tabla
+        switch ($rol_id) {
+            case ROL_STARTUP:
+                $tabla = 'startups';
+                break;
+            case ROL_EMPRESA:
+                $tabla = 'empresas';
+                break;
+            case ROL_PARTNER:
+                $tabla = 'partners';
+                break;
+            case ROL_VALIDADOR:
+                $tabla = 'validadores';
+                break;
+        }
+        $query = $this->db->select('*')
+            ->from($tabla)
+            ->where('usuario_id', $usuario_id)
+            ->get()
+            ->row();
+        return $query;
+    }
+
     public function getUsuariosAdmin()
     {
         $this->db->select('
@@ -28,7 +54,7 @@ class Usuarios_model extends CI_Model
         $this->db->from('usuarios as u');
         $this->db->join('roles as r', 'r.id = u.rol_id');
         $this->db->join('estados_usuarios as es', 'es.id = u.estado_id');
-        $this->db->join('validadores as va', 'va.usuario_id = u.id','left');
+        $this->db->join('validadores as va', 'va.usuario_id = u.id', 'left');
         $this->db->where('u.estado_id !=', USR_DELETED);
         $this->db->group_start();
         $this->db->where('u.rol_id', ROL_VALIDADOR);
@@ -38,7 +64,8 @@ class Usuarios_model extends CI_Model
         return $this->db->get()->result();
     }
 
-    public function insertarUsuario($data_usuario){
+    public function insertarUsuario($data_usuario)
+    {
         $this->db->trans_begin();
 
         $this->db->insert('usuarios', $data_usuario);
@@ -56,7 +83,8 @@ class Usuarios_model extends CI_Model
         } //If Rollback
     }
 
-    public function insertarUsuarioValidador($data_usuario){
+    public function insertarUsuarioValidador($data_usuario)
+    {
         $this->db->trans_begin();
 
         $this->db->insert('validadores', $data_usuario);
@@ -74,11 +102,12 @@ class Usuarios_model extends CI_Model
         } //If Rollback
     }
 
-    public function updateUsuario($data_usuario,$usuario_id){
+    public function updateUsuario($data_usuario, $usuario_id)
+    {
         $this->db->trans_begin();
 
-        $this->db->where('id',$usuario_id);
-        $this->db->update('usuarios',$data_usuario);
+        $this->db->where('id', $usuario_id);
+        $this->db->update('usuarios', $data_usuario);
 
         // Condicional del Rollback 
         if ($this->db->trans_status() === FALSE) {
@@ -92,7 +121,8 @@ class Usuarios_model extends CI_Model
         } //If Rollback
     }
 
-    public function getUsuarioById($usuario_id){
+    public function getUsuarioById($usuario_id)
+    {
         $this->db->select('
             u.id,
             u.nombre,
@@ -108,10 +138,11 @@ class Usuarios_model extends CI_Model
         return $this->db->get()->row();
     }
 
-    public function eliminarValidador($usuario_id){
+    public function eliminarValidador($usuario_id)
+    {
         $this->db->trans_begin();
 
-        $this->db->where('usuario_id',$usuario_id);
+        $this->db->where('usuario_id', $usuario_id);
         $this->db->delete('validadores');
 
         // Condicional del Rollback 

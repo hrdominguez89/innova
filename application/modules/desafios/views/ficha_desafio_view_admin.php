@@ -79,7 +79,7 @@
                                         <td><?php echo $postulado->nombre . ' ' . $postulado->apellido; ?></td>
                                         <td><?php echo $postulado->email_contacto; ?></td>
                                         <td><?php echo $postulado->telefono_contacto; ?></td>
-                                        <td><?php echo $postulado->estado_postulacion_descripcion; ?></td>
+                                        <td><?php echo $postulado->estado_validacion; ?></td>
                                         <td class="text-center"><a href="<?php echo base_url().'postulados/startup/'.$postulado->startup_id.'/'.$desafio->desafio_id;?>" ><i class="far fa-eye"></i>
                                     </tr>
                                 <?php endforeach; ?>
