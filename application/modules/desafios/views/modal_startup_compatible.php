@@ -1,4 +1,4 @@
-<div class="modal fade" id="startupCompatible" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-labelledby="startupCompatibleLabel" aria-hidden="true">
+<div class="modal fade" id="startupCompatible" tabindex="-1" data-backdrop="true" data-keyboard="true" aria-labelledby="startupCompatibleLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">

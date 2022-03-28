@@ -25,7 +25,7 @@ const dataTableOptions = {
       searchable: false,
       render: function (data, type, full, meta) {
         const postulado = parseInt(full.postulado)
-          ? '<i class="text-success far fa-check-circle"></i>'
+          ? '<i class="text-success fas fa-check-circle"></i>'
           : "";
         return postulado;
       },
@@ -35,7 +35,7 @@ const dataTableOptions = {
       searchable: false,
       render: function (data, type, full, meta) {
         const compartido = parseInt(full.compartido)
-          ? '<i class="text-success far fa-check-circle"></i>'
+          ? '<i class="text-success fas fa-check-circle"></i>'
           : "";
         return compartido;
       },
@@ -114,6 +114,7 @@ const compartirDesafio = () => {
     success: function (resp) {
       mostrarResultadoCompartir(resp);
       $("#compartirDesafio").modal("hide");
+      cargarDatatable();
     },
     // timeout: 5000,
   });

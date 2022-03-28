@@ -78,7 +78,33 @@ class Startups_model extends CI_Model
     }
     public function getStartupsCompatiblesPorDesafioId($array_categorias, $partner_id, $desafio_id)
     {
-        $query = $this->db->select('vs.razon_social, vs.usuario_id as startup_id,IF(ISNULL((SELECT post.startup_id FROM postulaciones post where post.startup_id=vs.usuario_id and post.desafio_id=' . $desafio_id . ')), 0, 1) as postulado,IF(ISNULL((SELECT rec.startup_id FROM recomendaciones rec where rec.startup_id=vs.usuario_id and rec.partner_id=' . $partner_id . ' and rec.desafio_id=' . $desafio_id . ')), 0, 1) as compartido')
+        $query = $this->db->select('
+            vs.razon_social,
+            vs.usuario_id as startup_id,
+            IF(
+                (SELECT 
+                    post.startup_id 
+                FROM 
+                    postulaciones post 
+                WHERE 
+                    post.startup_id=vs.usuario_id
+                    AND
+                    post.desafio_id=' . $desafio_id . '
+                    AND
+                    post.estado_postulacion != '.POST_ELIMINADO.'
+                    AND
+                    post.estado_postulacion != '.POST_CANCELADO.'
+                    AND
+                    post.estado_postulacion != '.POST_RECHAZADO.'
+                ), 1, 0) as postulado,
+            IF(
+                (SELECT
+                    rec.startup_id
+                FROM 
+                    recomendaciones rec 
+                WHERE 
+                    rec.startup_id=vs.usuario_id and rec.partner_id=' . $partner_id . ' and rec.desafio_id=' . $desafio_id . '
+                ), 1, 0) as compartido')
             ->from('vi_startups_info vs')
             ->join('categorias_startups as cs', 'cs.startup_id = vs.usuario_id')
             ->where_in('cs.categoria_id', $array_categorias)
