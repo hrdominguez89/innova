@@ -52,26 +52,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     switch ($postulaciones[$desafio->desafio_id]->estado_postulacion) {
                                         case POST_PENDIENTE:
                                             echo '
-                                                <small class="badge badge-info">Postulcion pendiente de validación</small>
-                                            ';
-                                            break;
-                                        case POST_VALIDADO:
-                                            echo '
-                                                <small class="badge badge-success">Validado</small>
-                                            ';
-                                            break;
-                                        case POST_ACEPTADO:echo '
-                                        <small class="badge badge-success">Aceptado</small>
-                                    ';
-                                            break;
-                                        case POST_RECHAZADO:
-                                            echo '
-                                                <small class="badge badge-danger">Rechazado</small>
-                                            ';
-                                            break;
-                                        case POST_CANCELADO:
-                                            echo '
-                                                <small class="badge badge-warning">Cancelado</small>
+                                                <small class="badge badge-success">Ya se encuentra postulado a este desafío</small>
                                             ';
                                             break;
                                     }
@@ -93,7 +74,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <p class="card-description text-left text-left">
                                         <b class="font-weight-bold text-primary">Información de la empresa:</b> <?php echo $desafio->descripcion_empresa; ?>
                                     </p>
-                                    <button class="btn btn-primary" data-toggle="modal" data-target="#desafio-modal-<?php echo $desafio->desafio_id; ?>">Postularme</button>
+                                    <?php
+                                    if (!(isset($postulaciones[$desafio->desafio_id]->estado_postulacion) && $postulaciones[$desafio->desafio_id]->estado_postulacion == POST_PENDIENTE)) :; ?>
+                                        <button class="btn btn-primary" data-toggle="modal" data-target="#desafio-modal-<?php echo $desafio->desafio_id; ?>">Postularme</button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

@@ -14,7 +14,7 @@ class Postulados_model extends CI_Model
         if ($limit !== false && $start !== false) {
             $this->db->limit($limit, $start);
         }
-        $query = $this->db->select('vd.*,ep.id as estado_postulacion')
+        $query = $this->db->select('vd.*,ep.id as estado_postulacion,p.id as postulacion_id')
             ->from('vi_desafios vd')
             ->join('postulaciones as p', 'p.desafio_id = vd.desafio_id')
             ->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion')

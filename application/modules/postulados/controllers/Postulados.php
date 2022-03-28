@@ -7,8 +7,8 @@ class Postulados extends MX_Controller
     public function __construct()
     {
         parent::__construct();
-        if(!$this->session->userdata('user_data')){
-            redirect(base_url().'auth/login');
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
         }
         $this->load->model('Postulados_model');
         $this->load->library(array('my_form_validation'));
@@ -60,6 +60,7 @@ class Postulados extends MX_Controller
 
                 $data['desafios'] = $this->Postulados_model->getDesafiosPostuladosByUserId($this->session->userdata('user_data')->id, $this->start, $this->limit);
                 $data['sections_view'] = 'postulaciones_startup_view';
+                $data['files_js'] = array('postulaciones/cancelar_postulacion.js?v=' . rand());
                 $data['title'] = 'Mis postulaciones';
 
 
@@ -82,7 +83,7 @@ class Postulados extends MX_Controller
                 break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['postulados'] = $this->Postulados_model->getTodosLosPostulados();
-                $data['files_js'] = array('activar_tabla_comun.js','postulaciones/eliminar_postulacion.js');
+                $data['files_js'] = array('activar_tabla_comun.js', 'postulaciones/eliminar_postulacion.js');
                 $data['sections_view'] = 'postulados_admin_list_view';
                 $data['title'] = 'Postulados';
                 break;
@@ -158,8 +159,8 @@ class Postulados extends MX_Controller
                                 $validacion_data['fecha_alta_validacion'] = date('Y-m-d H:i:s', time());
                                 $validacion_data['validador_id'] = $this->session->userdata('user_data')->id;
                                 $validacion_data['postulacion_id'] = $this->input->post('postulacion_id');
-                                
-                                if(!$this->Postulados_model->getEstadoValidacionByValidadorId($this->session->userdata('user_data')->id,$validacion_data['postulacion_id'])){
+
+                                if (!$this->Postulados_model->getEstadoValidacionByValidadorId($this->session->userdata('user_data')->id, $validacion_data['postulacion_id'])) {
                                     $this->Postulados_model->insertarValidacion($validacion_data);
                                 }
                                 $message = '{
@@ -171,11 +172,11 @@ class Postulados extends MX_Controller
                                     "confirmButtonClass": "btn btn-success"
                                 }';
                                 $this->session->set_flashdata('message_alert', $message);
-                                redirect(base_url().'postulados');
+                                redirect(base_url() . 'postulados');
                             }
                         }
                         $data['startup'] = $this->Postulados_model->getStartupDataByIdAndDesafioId($desafio_id, $startup_id);
-                        $data['validacion'] = $this->Postulados_model->getEstadoValidacionByValidadorId($this->session->userdata('user_data')->id,$data['startup']->postulacion_id);
+                        $data['validacion'] = $this->Postulados_model->getEstadoValidacionByValidadorId($this->session->userdata('user_data')->id, $data['startup']->postulacion_id);
                         if ($data['startup']) {
                             $data['files_js'] = array('postulaciones/ficha_startup_postulado_admin.js');
                             $data['sections_view'] = 'ficha_startup_postulado_validar_view';
@@ -209,7 +210,7 @@ class Postulados extends MX_Controller
             $this->Postulados_model->insertarContacto($contactar);
             $postulacion['estado_postulacion'] = POST_ACEPTADO;
             $postulacion['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
-            $postulacion['fecha_modifico'] = date('Y-m-d H:i:s',time());
+            $postulacion['fecha_modifico'] = date('Y-m-d H:i:s', time());
             $this->Postulados_model->updatePostulado($postulacion, $this->input->post('startup_id'), $this->input->post('desafio_id'));
 
             $startup_data = $this->Postulados_model->getStartupDataByIdAndDesafioId($contactar['desafio_id'], $contactar['startup_id'],);
@@ -278,7 +279,7 @@ class Postulados extends MX_Controller
         if (!$data_usuario_para) {
             $data_usuario_para_id = 0;
             $data_usuario_rol_id = ROL_VALIDADOR;
-        }else{
+        } else {
             $data_usuario_para_id = $data_usuario_para->usuario_id;
             $data_usuario_rol_id = ROL_STARTUP;
         }
@@ -337,5 +338,22 @@ class Postulados extends MX_Controller
             }
         }
         echo json_encode($data);
+    }
+
+    public function cancelarpostulacion()
+    {
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
+        }
+        if (!$this->input->post()) {
+            redirect(base_url() . 'home');
+        }
+        $postulacion_id = $this->input->post('postulacion_id');
+        $data_postulacion['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
+        $data_postulacion['detalle_rechazo_cancelado'] = 'Cancelado por el usuario startup';
+        $data_postulacion['estado_postulacion'] = POST_CANCELADO;
+        $data_postulacion['fecha_modifico'] = date('Y-m-d H:i:s', time());
+        $this->Postulados_model->updatePostulacion($data_postulacion,$postulacion_id);
+        redirect(base_url().'postulados');
     }
 }
