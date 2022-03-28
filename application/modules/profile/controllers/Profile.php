@@ -634,7 +634,7 @@ class Profile extends MX_Controller
                             "timer":5000,
                             "confirmButtonClass": "btn btn-success"
                         }';
-                        $this->session->set_flashdata('message', $message);
+                        $this->session->set_flashdata('message_alert', $message);
                         redirect(base_url() . 'home');
                     }
                     break;
@@ -690,7 +690,7 @@ class Profile extends MX_Controller
                             "timer":5000,
                             "confirmButtonClass": "btn btn-success"
                         }';
-                        $this->session->set_flashdata('message', $message);
+                        $this->session->set_flashdata('message_alert', $message);
                         redirect(base_url() . 'home');
                     }
                     break;
@@ -731,7 +731,7 @@ class Profile extends MX_Controller
                             "timer":5000,
                             "confirmButtonClass": "btn btn-success"
                         }';
-                    $this->session->set_flashdata('message', $message);
+                    $this->session->set_flashdata('message_alert', $message);
                     redirect(base_url() . 'home');
                     break;
 
@@ -772,7 +772,7 @@ class Profile extends MX_Controller
                             "timer":5000,
                             "confirmButtonClass": "btn btn-success"
                         }';
-                    $this->session->set_flashdata('message', $message);
+                    $this->session->set_flashdata('message_alert', $message);
                     redirect(base_url() . 'home');
                     break;
                 case ROL_ADMIN_PLATAFORMA:
@@ -806,7 +806,7 @@ class Profile extends MX_Controller
                             "timer":5000,
                             "confirmButtonClass": "btn btn-success"
                         }';
-                    $this->session->set_flashdata('message', $message);
+                    $this->session->set_flashdata('message_alert', $message);
                     redirect(base_url() . 'home');
                     break;
             }

@@ -330,6 +330,9 @@
       if (messageError[0]) {
         swal(JSON.parse(messageError[0].dataset.message));
       }
+      <?php if ($this->session->flashdata('message_alert')) :; ?>
+        swal(<?php echo $this->session->flashdata('message_alert'); ?>);
+      <?php endif; ?>
     });
   </script>
   <script src="<?php echo base_url(); ?>assets/js/notificaciones/notificaciones.js?v=<?php echo rand(); ?>"></script>

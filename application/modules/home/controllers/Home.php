@@ -27,8 +27,7 @@ class Home extends MX_Controller
                 $data['sections_view'] = 'home_partner_view';
                 break;
             case ROL_VALIDADOR:
-                $data['sections_view'] = 'home_admin_gcba_view';
-                $data['files_js'] = array('graficos/graficos.js');
+                $data['sections_view'] = 'home_validador_view';
                 break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['sections_view'] = 'home_admin_plataforma_view';

@@ -20,7 +20,11 @@ class Postulados_model extends CI_Model
             ->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion')
             ->where('p.startup_id', $usuario_id)
             ->where('vd.desafio_estado_id !=', DESAF_ELIMINADO)
+            ->where('vd.desafio_estado_id !=', DESAF_RECHAZADO)
+            ->where('vd.desafio_estado_id !=', DESAF_CERRADO)
             ->where('p.estado_postulacion !=', POST_ELIMINADO)
+            ->where('p.estado_postulacion !=', POST_CANCELADO)
+            ->where('p.estado_postulacion !=', POST_RECHAZADO)
             ->group_start()
             ->where('vd.estado_usuario_id', USR_ENABLED)
             ->or_where('vd.estado_usuario_id', USR_VERIFIED)
@@ -84,21 +88,57 @@ class Postulados_model extends CI_Model
 
     public function getStartupDataByIdAndDesafioId($desafio_id, $startup_id)
     {
-        $query =  $this->db->select('vsi.*,vd.*,p.id as postulacion_id, p.estado_postulacion,ep.estado as nombre_estado_postulacion, p.detalle_rechazo_cancelado as detalle_rechazo_cancelado,cs.id as contacto_id')
+        $query =  $this->db->select('
+            vsi.*,
+            vd.*,
+            p.id as postulacion_id,
+            p.estado_postulacion,
+            ep.estado as nombre_estado_postulacion,
+            p.detalle_rechazo_cancelado as detalle_rechazo_cancelado,
+            cs.id as contacto_id')
             ->from('vi_startups_info as vsi')
             ->join('postulaciones as p', 'p.startup_id = vsi.usuario_id')
             ->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion')
             ->join('vi_desafios as vd', 'vd.desafio_id = p.desafio_id')
             ->join('contacto_startups as cs', 'cs.desafio_id = vd.desafio_id', 'left')
             ->where('vsi.usuario_id', $startup_id)
-            ->where('vd.desafio_estado_id !=', DESAF_ELIMINADO)
+            ->where('vd.desafio_estado_id =', DESAF_VIGENTE)
             ->where('p.estado_postulacion !=', POST_ELIMINADO)
+            ->where('p.estado_postulacion !=', POST_CANCELADO)
+            ->where('p.estado_postulacion !=', POST_RECHAZADO)
             ->where('p.desafio_id', $desafio_id)
             ->group_start()
             ->where('vd.estado_usuario_id', USR_ENABLED)
             ->or_where('vd.estado_usuario_id', USR_VERIFIED)
             ->group_end()
             ->get()->row();
+        return $query;
+    }
+
+    public function insertarValidacion ($validacion_data){
+        $this->db->trans_begin();
+
+        $this->db->insert('validaciones', $validacion_data);
+
+        // Condicional del Rollback 
+        if ($this->db->trans_status() === FALSE) {
+            //Hubo errores en la consulta, entonces se cancela la transacción.   
+            $this->db->trans_rollback();
+            return FALSE;
+        } else {
+            //Todas las consultas se hicieron correctamente.  
+            $this->db->trans_commit();
+            return TRUE;
+        } //If Rollback
+    }
+
+    public function getEstadoValidacionByValidadorId($validador_id,$postulacion_id){
+        $query = $this->db->select('*')
+        ->from('validaciones as va')
+        ->where('va.validador_id',$validador_id)
+        ->where('va.postulacion_id',$postulacion_id)
+        ->get()
+        ->row();
         return $query;
     }
 

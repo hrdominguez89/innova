@@ -121,7 +121,6 @@ class Postulados extends MX_Controller
         if ($this->session->userdata('user_data')) {
 
             if ((int)$desafio_id && (int)$startup_id) {
-                $this->load->helper(array('send_email_helper'));
                 switch ($this->session->userdata('user_data')->rol_id) {
                     case ROL_EMPRESA:
                         $data['startup'] = $this->Postulados_model->getStartupDataByIdAndDesafioId($desafio_id, $startup_id);
@@ -137,8 +136,6 @@ class Postulados extends MX_Controller
                         break;
                     case ROL_VALIDADOR:
                     case ROL_ADMIN_PLATAFORMA:
-                        $this->load->model('mensajes/Mensajes_model');
-                        $data['mensaje_de_plataforma_rechazado'] = $this->Mensajes_model->getMensaje('mensaje_rechazo_postulacion');
                         if ($this->input->post()) {
                             $this->form_validation->set_error_delimiters('<div class="text-danger">', '</div>');
                             $this->form_validation->set_rules(
@@ -157,65 +154,31 @@ class Postulados extends MX_Controller
                                     'required' => 'El campo {field} es obligatorio.'
                                 )
                             );
-                            if ($this->input->post('validar_postulacion') == POST_RECHAZADO) {
-                                $this->form_validation->set_rules(
-                                    'detalle_rechazo_cancelado',
-                                    'Detalle rechazado',
-                                    'trim|required',
-                                    array(
-                                        'required' => 'El campo {field} es obligatorio.'
-                                    )
-                                );
-                            }
                             if ($this->form_validation->run() != FALSE) {
-                                $postulacion_id = $this->input->post('postulacion_id');
-                                $estado_validacion['fecha_modifico'] = date('Y-m-d H:i:s', time());
-                                $estado_validacion['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
-                                $estado_validacion['estado_postulacion'] = $this->input->post('validar_postulacion');
-                                if ($this->input->post('validar_postulacion') == POST_RECHAZADO) {
-                                    $estado_validacion['detalle_rechazo_cancelado'] = $this->input->post('detalle_rechazo_cancelado');
-                                    $data['mensaje_de_plataforma'] = $this->Mensajes_model->getMensaje('mensaje_rechazo_postulacion');
-                                    $data['mensaje_de_plataforma']->texto_mensaje .= ' ' . $estado_validacion['detalle_rechazo_cancelado'];
-                                } else {
-                                    $estado_validacion['detalle_rechazo_cancelado'] = NULL;
-                                    $data['mensaje_de_plataforma'] = $this->Mensajes_model->getMensaje('mensaje_postulacion_validada');
+                                $validacion_data['fecha_alta_validacion'] = date('Y-m-d H:i:s', time());
+                                $validacion_data['validador_id'] = $this->session->userdata('user_data')->id;
+                                $validacion_data['postulacion_id'] = $this->input->post('postulacion_id');
+                                
+                                if(!$this->Postulados_model->getEstadoValidacionByValidadorId($this->session->userdata('user_data')->id,$validacion_data['postulacion_id'])){
+                                    $this->Postulados_model->insertarValidacion($validacion_data);
                                 }
-                                $this->Postulados_model->updatePostulacion($estado_validacion, $postulacion_id);
-
-                                $startup_data = $this->Postulados_model->getStartupData($startup_id);
-                                $desafio_data = $this->Postulados_model->getDesafioData($desafio_id);
-
-
-                                $buscar_y_reemplazar = array(
-                                    array('buscar' => '{{NOMBRE_RAZON_SOCIAL}}', 'reemplazar' => $startup_data->razon_social),
-                                    array('buscar' => '{{NOMBRE_USUARIO}}', 'reemplazar' => $startup_data->nombre),
-                                    array('buscar' => '{{APELLIDO_USUARIO}}', 'reemplazar' => $startup_data->apellido),
-                                    array('buscar' => '{{DESAFIO_NOMBRE}}', 'reemplazar' => $desafio_data->nombre_del_desafio),
-                                    array('buscar' => '{{NOMBRE_EMPRESA}}', 'reemplazar' => $desafio_data->nombre_empresa),
-                                );
-
-
-                                switch ($data['mensaje_de_plataforma']->tipo_de_envio_id) {
-                                    case ENVIO_NOTIFICACION:
-                                        $mensaje_de_notificacion = $this->Mensajes_model->getMensaje('mensaje_nueva_notificacion');
-                                        $this->crearNotificacion($data['mensaje_de_plataforma'], $startup_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
-                                        $this->crearEmail($mensaje_de_notificacion, $startup_data, $buscar_y_reemplazar);
-                                        break;
-                                    case ENVIO_EMAIL:
-                                        $this->crearEmail($data['mensaje_de_plataforma'], $startup_data, $buscar_y_reemplazar);
-                                        break;
-                                    case ENVIO_NOTIF_EMAIL:
-                                        $this->crearNotificacion($data['mensaje_de_plataforma'], $startup_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
-                                        $this->crearEmail($data['mensaje_de_plataforma'], $startup_data, $buscar_y_reemplazar);
-                                        break;
-                                }
+                                $message = '{
+                                    "title":"Validado",
+                                    "text": "Se validó a la startup correctamente.",
+                                    "type": "success",
+                                    "buttonsStyling": true,
+                                    "timer":5000,
+                                    "confirmButtonClass": "btn btn-success"
+                                }';
+                                $this->session->set_flashdata('message_alert', $message);
+                                redirect(base_url().'postulados');
                             }
                         }
                         $data['startup'] = $this->Postulados_model->getStartupDataByIdAndDesafioId($desafio_id, $startup_id);
+                        $data['validacion'] = $this->Postulados_model->getEstadoValidacionByValidadorId($this->session->userdata('user_data')->id,$data['startup']->postulacion_id);
                         if ($data['startup']) {
-                            $data['mensaje_de_plataforma_rechazado'] = $this->Mensajes_model->getMensaje('mensaje_rechazo_postulacion');
                             $data['files_js'] = array('postulaciones/ficha_startup_postulado_admin.js');
-                            $data['sections_view'] = 'ficha_startup_postulado_admin_view';
+                            $data['sections_view'] = 'ficha_startup_postulado_validar_view';
                             $data['title'] = 'Ficha startup';
                             $this->load->view('layout_back_view', $data);
                         } else {

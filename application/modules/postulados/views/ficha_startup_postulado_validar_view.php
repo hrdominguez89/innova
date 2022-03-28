@@ -18,31 +18,18 @@
             <?php endif; ?>
             <div class="col-md-12 mb-5">
             </div>
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header card-header-icon card-header-primary">
                         <div class="card-icon">
                             <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo $startup->usuario_id; ?>.png">
                         </div>
                         <h3 class="card-title font-weight-bold"><?php echo $startup->razon_social; ?></h3>
-                        <?php switch ($startup->estado_postulacion) {
-                            case POST_PENDIENTE:
-                                $color_badge = 'warning';
-                                break;
-                            case POST_VALIDADO:
-                                $color_badge = 'info';
-                                break;
-                            case POST_ACEPTADO:
-                                $color_badge = 'success';
-                                break;
-                            case POST_RECHAZADO:
-                                $color_badge = 'danger';
-                                break;
-                            case POST_CANCELADO:
-                                $color_badge = 'danger';
-                                break;
-                        }; ?>
-                        <span class="badge badge-<?php echo $color_badge; ?>">verificación:</b> <?php echo $startup->nombre_estado_postulacion; ?></span>
+                        <?php if ($validacion) :; ?>
+                            <span class="badge badge-success">Validado</span>
+                        <?php else :; ?>
+                            <span class="badge badge-warning">Validación pendiente</span>
+                        <?php endif; ?>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -144,50 +131,40 @@
                             </div>
                         </div>
                         <hr>
-                        <?php if ($startup->estado_postulacion == POST_CANCELADO || $startup->estado_postulacion == POST_ACEPTADO) : ?>
-                            <div class="row">
-                                <div class="col-12">
-                                    <?php if ($startup->estado_postulacion == POST_CANCELADO) :; ?>
-                                        <h3 class="card-title font-weight-bold">Cancelada por la Startup</h3>
-                                        <p><?php echo $startup->detalle_rechazo_cancelado; ?></p>
-                                    <?php else : ?>
-                                        <h3 class="card-title font-weight-bold">Postulación ACEPTADA</h3>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        <?php else :; ?>
+                        <?php if (!$validacion) :; ?>
                             <form method="post">
                                 <input type="hidden" value="<?php echo $startup->postulacion_id; ?>" name="postulacion_id">
                                 <div class="row">
                                     <div class="col-12">
                                         <h3 class="card-title font-weight-bold">Validar postulación</h3>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12 mt-3">
                                         <div class="dropdown bootstrap-select show-tick">
                                             <select class="select_chosen" id="selectValidarPostulacion" name="validar_postulacion" data-style="select-with-transition" title="Seleccione un estado" data-size="7" tabindex="-98" required>
                                                 <option hidden selected disabled <?php echo set_select('validar_postulacion', '', true); ?>> Seleccione un estado</option>
-                                                <option value="<?php echo POST_VALIDADO; ?>" <?php echo set_select('validar_postulacion', POST_VALIDADO); ?> <?php echo $startup->estado_postulacion == POST_VALIDADO ? 'selected' : ''; ?>> Validado</option>
-                                                <option value="<?php echo POST_RECHAZADO; ?>" <?php echo set_select('validar_postulacion', POST_RECHAZADO); ?> <?php echo $startup->estado_postulacion == POST_RECHAZADO ? 'selected' : ''; ?>> Rechazado</option>
+                                                <option value="<?php echo POST_VALIDADO; ?>" <?php echo set_select('validar_postulacion', POST_VALIDADO); ?> <?php echo @$validacion ? 'selected' : ''; ?>> Validado</option>
                                             </select>
                                             <?php echo form_error('validar_postulacion'); ?>
                                         </div>
-                                    </div>
-                                    <div class="col-12 mt-5" style="display:<?php echo $startup->estado_postulacion == POST_RECHAZADO || @$this->input->post('validar_postulacion') == POST_RECHAZADO ? 'block' : 'none'; ?>;" id="divDetalleRechazado">
-                                        <label><span class="font-weight-bold text-primary">Mensaje de la plataforma: </span><?php echo $mensaje_de_plataforma_rechazado->texto_mensaje; ?></label>
-                                        <label for="detalle_rechazo_cancelado"><span class="font-weight-bold text-primary">Añadir al mensaje</label>
-                                        <textarea name="detalle_rechazo_cancelado" id="detalle_rechazo_cancelado" class="form-control" cols="30" rows="10"><?php echo set_value('detalle_rechazo_cancelado', $startup->detalle_rechazo_cancelado); ?></textarea>
-                                        <?php echo form_error('detalle_rechazo_cancelado'); ?>
                                     </div>
                                     <div class="col-12 text-right">
                                         <button type="submit" class="btn btn-primary">Validar</button>
                                     </div>
                                 </div>
                             </form>
+                        <?php else :; ?>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h3 class="card-title font-weight-bold">Postulación validada el <?php echo date('d-m-Y', strtotime($validacion->fecha_alta_validacion)); ?></h3>
+                                </div>
+                            </div>
                         <?php endif; ?>
-
                         <div class="clearfix"></div>
                     </div>
                 </div>
+            </div>
+            <div class="col-sm-12 text-right">
+                <a href="<?php echo base_url().'postulados';?>" class="btn btn-dafault">Volver</a>
             </div>
         </div>
     </div>
