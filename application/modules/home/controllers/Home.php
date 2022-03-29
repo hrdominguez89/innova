@@ -31,7 +31,7 @@ class Home extends MX_Controller
                 break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['sections_view'] = 'home_admin_plataforma_view';
-                $data['files_js'] = array('excellentexport.js', 'html2canvas.js', 'canvas2image.js', 'apexcharts.js', 'graficos/graficos.js');
+                $data['files_js'] = array('excellentexport.js', 'html2canvas.js', 'canvas2image.js', 'apexcharts.js', 'graficos/graficos_home.js');
                 break;
         }
         $data['title'] = 'Home';

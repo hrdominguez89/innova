@@ -250,7 +250,7 @@ const cargarGraficoBar = (categoriasTotales) => {
     ],
     chart: {
       type: "bar",
-      height: 250,
+      height: 350,
       toolbar: {
         show: true,
         offsetX: 0,
