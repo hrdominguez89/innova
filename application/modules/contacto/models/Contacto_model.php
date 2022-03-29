@@ -70,6 +70,8 @@ class Contacto_model extends CI_Model
             uem.telefono as telefono_contacto_empresa,
             uem.email as email_contacto_empresa,
             uem.id as empresa_id,
+            uem.logo,
+
 
             st.razon_social as nombre_startup,
             st.titular as titular_startup,
@@ -94,6 +96,7 @@ class Contacto_model extends CI_Model
             ust.telefono as telefono_contacto_startup,
             ust.email as email_contacto_startup,
             ust.id as startup_id,
+            ust.logo,
 
             vd.desafio_id,
             vd.fecha_fin_de_postulacion,

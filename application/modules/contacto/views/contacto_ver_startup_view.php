@@ -15,11 +15,11 @@
             </div>
             <div class="col-md-12 mb-5">
             </div>
-            <div class="col-md-8">
+            <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header card-header-icon card-header-primary">
                         <div class="card-icon">
-                            <?php if ($contacto_data->logo) :; ?>
+                            <?php if (@$contacto_data->logo) :; ?>
                                 <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo @$contacto_data->empresa_id; ?>.png?ver=<?php echo rand(); ?>">
                             <?php else :; ?>
                                 <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>assets/img/usuario.jpeg?ver=<?php echo rand(); ?>">

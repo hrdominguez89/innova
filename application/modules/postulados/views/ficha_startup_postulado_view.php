@@ -17,7 +17,7 @@
       <?php endif; ?>
       <div class="col-md-12 mb-5">
       </div>
-      <div class="col-md-8">
+      <div class="col-sm-12">
         <div class="card">
           <div class="card-header card-header-icon card-header-primary">
             <div class="card-icon">
