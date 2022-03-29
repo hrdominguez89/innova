@@ -7,11 +7,6 @@ class Notificaciones extends MX_Controller
     public function __construct()
     {
         parent::__construct();
-        if (ENVIRONMENT == 'testing') {
-            if (!$this->session->userdata('prelogin')) {
-                redirect(base_url() . 'auth/prelogin');
-            }
-        }
         $this->load->model('notificaciones/Notificaciones_model');
         $this->load->model('configuraciones/Configuraciones_model');
         // $this->load->model('startups/Startups_model');
