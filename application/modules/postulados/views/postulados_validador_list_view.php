@@ -22,8 +22,8 @@
                     <div class="card-body">
                         <div class="toolbar mb-3 border-bottom pb-2">
                             <a href="?filtrar=pendiente" class="btn btn-primary mx-2 <?php echo strtolower(@$this->input->get('filtrar')) != 'todos' && strtolower(@$this->input->get('filtrar')) == 'pendiente' && strtolower(@$this->input->get('filtrar')) != 'validado' || !$this->input->get('filtrar') ? 'active' : ''; ?>">Pendientes</a>
-                            <a href="?filtrar=validado" class="btn btn-primary mx-2 <?php echo strtolower(@$this->input->get('filtrar') == 'validado') ? 'active' : '' ;?>">Validados</a>
-                                <a href="?filtrar=todos" class="btn btn-primary mx-2 <?php echo strtolower(@$this->input->get('filtrar') == 'todos') ? 'active' : '' ;?>">Todos</a>
+                            <a href="?filtrar=validado" class="btn btn-primary mx-2 <?php echo strtolower(@$this->input->get('filtrar') == 'validado') ? 'active' : ''; ?>">Validados</a>
+                            <a href="?filtrar=todos" class="btn btn-primary mx-2 <?php echo strtolower(@$this->input->get('filtrar') == 'todos') ? 'active' : ''; ?>">Todos</a>
                         </div>
                         <div class="material-datatables">
                             <table id="dataTableComun" data-fix-header="true" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
@@ -54,16 +54,15 @@
                                 <tbody>
                                     <?php foreach ($postulados as $postulado) :; ?>
                                         <?php if (
-                                                    $this->input->get('filtrar')
-                                                    && 
-                                                    (
-                                                        strtolower(@$this->input->get('filtrar')) == 'pendiente'
-                                                        ||
-                                                        strtolower(@$this->input->get('filtrar')) == 'validado'
-                                                        ||
-                                                        strtolower(@$this->input->get('filtrar')) == 'todos'
-                                                    )
-                                                ):; ?>
+                                            $this->input->get('filtrar')
+                                            &&
+                                            (strtolower(@$this->input->get('filtrar')) == 'pendiente'
+                                                ||
+                                                strtolower(@$this->input->get('filtrar')) == 'validado'
+                                                ||
+                                                strtolower(@$this->input->get('filtrar')) == 'todos'
+                                            )
+                                        ) :; ?>
                                             <?php if (strtolower($postulado->estado_validacion) == strtolower(@$this->input->get('filtrar'))) :; ?>
                                                 <tr id="row_postulacion_id_<?php echo $postulado->postulacion_id; ?>">
                                                     <td><?php echo $postulado->razon_social; ?></td>
