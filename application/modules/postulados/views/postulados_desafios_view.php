@@ -34,7 +34,7 @@
                                     <th>Nombre Startup</th>
                                     <th>Nombre titular</th>
                                     <th>Antecedentes</th>
-                                    <th>Validación</th>
+                                    <th class="text-center">Cant. de validaciones</th>
                                     <th class="text-center">Acción</th>
                                 </tr>
                             </thead>
@@ -46,7 +46,7 @@
                                     <td><?php echo $postulado->razon_social;?></td>
                                     <td><?php echo $postulado->titular;?></td>
                                     <td><?php echo $postulado->antecedentes;?></td>
-                                    <td><?php echo $postulado->estado_postulacion;?></td>
+                                    <td class="text-center"><?php echo $postulado->cantidad_validadores;?></td>
                                     <td class="text-center"><a href="<?php echo base_url();?>postulados/startup/<?php echo $postulado->startup_id;?>/<?php echo $desafio->desafio_id;?>" title="Ver startup"><i class="fas fa-address-card"></i></td>
                                 </tr>
                                 <?php $i++;?>

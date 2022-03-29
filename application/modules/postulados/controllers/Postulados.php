@@ -125,6 +125,7 @@ class Postulados extends MX_Controller
                 switch ($this->session->userdata('user_data')->rol_id) {
                     case ROL_EMPRESA:
                         $data['startup'] = $this->Postulados_model->getStartupDataByIdAndDesafioId($desafio_id, $startup_id);
+                        $data['validadores'] = $this->Postulados_model->getValidadores($data['startup']->postulacion_id);
                         if ($data['startup']) {
                             $data['files_js'] = array('postulaciones/contactar.js');
                             $data['sections_view'] = 'ficha_startup_postulado_view';

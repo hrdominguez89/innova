@@ -22,7 +22,11 @@
                 <div class="card">
                     <div class="card-header card-header-icon card-header-primary">
                         <div class="card-icon">
-                            <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo $startup->usuario_id; ?>.png">
+                            <?php if ($startup->logo) :; ?>
+                                <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo @$contacto_data->empresa_id; ?>.png?ver=<?php echo rand(); ?>">
+                            <?php else :; ?>
+                                <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>assets/img/usuario.jpeg?ver=<?php echo rand(); ?>">
+                            <?php endif; ?>
                         </div>
                         <h3 class="card-title font-weight-bold"><?php echo $startup->razon_social; ?></h3>
                         <?php if ($validacion) :; ?>
@@ -164,7 +168,7 @@
                 </div>
             </div>
             <div class="col-sm-12 text-right">
-                <a href="<?php echo base_url().'postulados';?>" class="btn btn-dafault">Volver</a>
+                <a href="<?php echo base_url() . 'postulados'; ?>" class="btn btn-dafault">Volver</a>
             </div>
         </div>
     </div>

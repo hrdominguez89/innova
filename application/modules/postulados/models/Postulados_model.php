@@ -45,7 +45,11 @@ class Postulados_model extends CI_Model
             ->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion', 'left')
             ->where('vd.id_empresa', $usuario_id)
             ->where('vd.desafio_estado_id !=', DESAF_ELIMINADO)
+            ->where('vd.desafio_estado_id !=', DESAF_RECHAZADO)
+            ->where('vd.desafio_estado_id !=', DESAF_CANCELADO)
             ->where('p.estado_postulacion !=', POST_ELIMINADO)
+            ->where('p.estado_postulacion !=', POST_CANCELADO)
+            ->where('p.estado_postulacion !=', POST_RECHAZADO)
             ->group_start()
             ->where('vd.estado_usuario_id', USR_ENABLED)
             ->or_where('vd.estado_usuario_id', USR_VERIFIED)
@@ -60,7 +64,21 @@ class Postulados_model extends CI_Model
         if ($limit !== false && $start !== false) {
             $this->db->limit($limit, $start);
         }
-        $query = $this->db->select('st.razon_social,st.titular,st.antecedentes,u.id as startup_id,CONCAT(u.nombre," ",u.apellido) as contacto_startup,ep.estado as estado_postulacion')
+        $query = $this->db->select('
+            st.razon_social,
+            st.titular,
+            st.antecedentes,
+            u.id as startup_id,
+            CONCAT(u.nombre," ",u.apellido) as contacto_startup,
+            ep.estado as estado_postulacion,
+            (SELECT 
+                COUNT(va.postulacion_id)
+            FROM
+                validaciones as va
+            WHERE
+                va.postulacion_id = p.id
+            ) as cantidad_validadores
+            ')
             ->from('postulaciones as p')
             ->join('usuarios as u', 'u.id = p.startup_id')
             ->join('startups as st', 'st.usuario_id = u.id')
@@ -130,6 +148,17 @@ class Postulados_model extends CI_Model
             $this->db->trans_commit();
             return TRUE;
         } //If Rollback
+    }
+
+    public function getValidadores($postulacion_id){
+        $query = $this->db->select('IFNULL(vaL.razon_social,"Administrador") as razon_social_validador')
+        ->from('validaciones as va')
+        ->where('postulacion_id',$postulacion_id)
+        ->join('usuarios as u','u.id = va.validador_id','left')
+        ->join('validadores as val','val.usuario_id = u.id','left')
+        ->get()
+        ->result();
+        return $query;
     }
 
     public function getEstadoValidacionByValidadorId($validador_id,$postulacion_id){

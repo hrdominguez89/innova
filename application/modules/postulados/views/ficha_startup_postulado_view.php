@@ -21,36 +21,24 @@
         <div class="card">
           <div class="card-header card-header-icon card-header-primary">
             <div class="card-icon">
-              <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo $startup->usuario_id; ?>.png">
+              <?php if ($startup->logo) :; ?>
+                <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo $startup->usuario_id; ?>.png?ver=<?php echo rand(); ?>">
+              <?php else :; ?>
+                <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>assets/img/usuario.jpeg?ver<?php echo rand(); ?>">
+              <?php endif; ?>
             </div>
-            
+
             <h3 class="card-title font-weight-bold"><?php echo $startup->razon_social; ?></h3>
-            <?php switch ($startup->estado_postulacion) {
-              case POST_PENDIENTE:
-                $color_badge = 'warning';
-                break;
-              case POST_VALIDADO:
-                $color_badge = 'success';
-                break;
-              case POST_ACEPTADO:
-                $color_badge = 'success';
-                break;
-              case POST_RECHAZADO:
-                $color_badge = 'danger';
-                break;
-              case POST_CANCELADO:
-                $color_badge = 'danger';
-                break;
-            }; ?>
-            
-            <?php if($startup->estado_postulacion == POST_VALIDADO):;?>
-            <span class="badge badge-<?php echo $color_badge; ?> mb-2">Startup validada por la organización </b></span><i class="fas fa-medal medalla-gold-color"></i>
-            <?php elseif($startup->estado_postulacion == POST_ACEPTADO):;?>
-            <span class="badge badge-<?php echo $color_badge; ?> mb-2">Startup validada por la organización </b></span><i class="fas fa-medal medalla-gold-color"></i>
-            <span class="badge badge-<?php echo $color_badge; ?> mt-2">Startup contactada </b></span> <i class="material-icons contacto-color">connect_without_contact</i>
-            <?php else:;?>
-            <span class="badge badge-<?php echo $color_badge; ?>">Validación:</b> <?php echo $startup->nombre_estado_postulacion; ?></span>
-            <?php endif;?>
+
+            <?php if ($validadores) :; ?>
+              <h5 class="card-title font-weight-bold" style="display:inline-block">Validador por: </h5>
+              <?php foreach ($validadores as $validador) :; ?>
+                <span class="badge badge-success"><?php echo $validador->razon_social_validador; ?></span>
+              <?php endforeach; ?>
+            <?php else :; ?>
+              <span class="badge badge-warning">Pendiente de validación</span>
+            <?php endif; ?>
+
           </div>
           <div class="card-body">
             <div class="row">
@@ -126,7 +114,7 @@
               </div>
             </div>
 
-            <?php if ($startup->desafio_estado_id == DESAF_FINALIZADO && $startup->estado_postulacion == POST_VALIDADO && $startup->contacto_id == NULL) :; ?>
+            <?php if ($startup->desafio_estado_id == DESAF_FINALIZADO && $startup->contacto_id == NULL) :; ?>
               <div class="row text-right">
                 <div class="col-md-12 mt-5 mb-2" id="botonContactar" style="display: block;">
                   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalContactar">Contactar</button>
@@ -204,6 +192,13 @@
                     <p class=""><b class="text-primary font-weight-bold">Telefono:</b> <?php echo $startup->telefono_contacto; ?></p>
                   </div>
                 </div>
+              </div>
+            <?php else :; ?>
+              <hr>
+              <div class="col-sm-12">
+                <h5 class="card-title font-weight-bold">
+                  <i style="font-size: 25px;" class="fas fa-info-circle text-info"></i> Para contactar a la startup, debe esperar a que finalice la fecha de postulación: <?php echo date('d-m-Y', strtotime($startup->fecha_fin_de_postulacion)); ?>
+                </h5>
               </div>
             <?php endif; ?>
             <div class="clearfix"></div>

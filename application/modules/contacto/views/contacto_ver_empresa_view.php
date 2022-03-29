@@ -19,7 +19,11 @@
                 <div class="card">
                     <div class="card-header card-header-icon card-header-primary">
                         <div class="card-icon">
-                            <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo @$contacto_data->empresa_id; ?>.png">
+                            <?php if($contacto_data->logo):;?>
+                            <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo @$contacto_data->empresa_id; ?>.png?ver=<?php echo rand();?>">
+                            <?php else:;?>
+                            <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>assets/img/usuario.jpeg?ver=<?php echo rand();?>">
+                            <?php endif;?>
                         </div>
                         <h3 class="card-title font-weight-bold"><?php echo @$contacto_data->nombre_empresa; ?></h3>
                     </div>
