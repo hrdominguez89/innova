@@ -9,16 +9,19 @@ class Estadisticas_model extends CI_Model
         $this->load->database();
     }
 
-    public function getDesafiosPorMes()
+    public function getDesafiosPorMes($fecha_desde = false, $fecha_hasta = false)
     {
-        $query = $this->db->select('COUNT(id) as cantidad, EXTRACT(YEAR_MONTH FROM fecha_alta) as anio_mes')
+        $this->db->select('COUNT(id) as cantidad, EXTRACT(YEAR_MONTH FROM fecha_alta) as anio_mes')
             ->from('desafios')
             ->where('estado_id !=', DESAF_CANCELADO)
             ->where('estado_id !=', DESAF_ELIMINADO)
             ->where('estado_id !=', DESAF_RECHAZADO)
             ->group_by('anio_mes')
-            ->order_by('anio_mes', 'ASC')
-            ->get()
+            ->order_by('anio_mes', 'ASC');
+        if ($fecha_desde && $fecha_hasta) {
+            $this->db->where('fechaDeFirma BETWEEN ' . $fecha_desde . ' AND ' . $fecha_hasta);
+        }
+        $query = $this->db->get()
             ->result();
         return $query;
     }

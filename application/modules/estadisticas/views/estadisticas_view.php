@@ -22,16 +22,8 @@
                         </h4>
                     </div>
                     <div class="card-body">
-                        <div class="ct-chart ct-double-octave" id="categoriasSeleccionadas"></div>
+                        <div class="ct-chart ct-double-octave" id="graficosDesafiosPorMes"></div>
                     </div>
-                    <!-- <div class="card-footer">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <i class="fa fa-circle ct-series-a"></i> Desafíos <br>
-                                <i class="fa fa-circle ct-series-b"></i> Categorias Startups <br>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
 
             </div>
