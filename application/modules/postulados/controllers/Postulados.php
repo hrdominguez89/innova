@@ -98,7 +98,7 @@ class Postulados extends MX_Controller
 
                 $data['desafio'] = $this->Postulados_model->getDesafiosById($desafio_id, $this->session->userdata('user_data')->id);
                 if ($data['desafio']) {
-                    $this->config_pagination['base_url'] = base_url() . 'postulados';
+                    $this->config_pagination['base_url'] = base_url() .  'postulados/desafio/'.$desafio_id;
                     $this->config_pagination['total_rows'] = count($this->Postulados_model->getPostuladosByDesafioId($desafio_id));
                     $this->pagination->initialize($this->config_pagination);
 
