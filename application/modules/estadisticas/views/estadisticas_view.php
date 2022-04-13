@@ -17,9 +17,21 @@
                     <div class="card-header">
                         <h4 class="card-title text-left">
                             <span class="font-weight-bold">
-                                Gráficos Desafíos por mes
+                                Desafíos por mes
                             </span>
                         </h4>
+                        <hr>
+                        <div class="row">
+                            <div class="col-4">
+                                <input type="date" id="fechaDesdeDesafiosPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d',time());?>">
+                            </div>
+                            <div class="col-4">
+                                <input type="date" id="fechaHastaDesafiosPorMes" class="form-control form-control-sm inputFechaHasta">
+                            </div>
+                            <div class="col-4 text-center">
+                                <button class="btn btn-sm btn-primary botonCargarGrafico" data-grafico="DesafiosPorMes">Cargar</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="ct-chart ct-double-octave" id="graficosDesafiosPorMes"></div>
@@ -33,21 +45,25 @@
                     <div class="card-header">
                         <h4 class="card-title text-left">
                             <span class="font-weight-bold">
-                                Gráficos Desafíos por mes
+                                Postulaciones por mes
                             </span>
                         </h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="ct-chart ct-double-octave" id="categoriasSeleccionadas"></div>
-                    </div>
-                    <!-- <div class="card-footer">
+                        <hr>
                         <div class="row">
-                            <div class="col-md-12">
-                                <i class="fa fa-circle ct-series-a"></i> Desafíos <br>
-                                <i class="fa fa-circle ct-series-b"></i> Categorias Startups <br>
+                            <div class="col-4">
+                                <input type="date" id="fechaDesdePostulacionesPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d',time());?>">
+                            </div>
+                            <div class="col-4">
+                                <input type="date" id="fechaHastaPostulacionesPorMes" class="form-control form-control-sm inputFechaHasta">
+                            </div>
+                            <div class="col-4 text-center">
+                                <button class="btn btn-sm btn-primary botonCargarGrafico" data-grafico="PostulacionesPorMes">Cargar</button>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
+                    <div class="card-body">
+                        <div class="ct-chart ct-double-octave" id="graficoPostulacionesPorMes"></div>
+                    </div>
                 </div>
 
             </div>
@@ -57,72 +73,56 @@
                     <div class="card-header">
                         <h4 class="card-title text-left">
                             <span class="font-weight-bold">
-                                Gráficos Postulaciones por mes
+                                Matcheos por mes
                             </span>
                         </h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="ct-chart ct-double-octave" id="categoriasSeleccionadas"></div>
-                    </div>
-                    <!-- <div class="card-footer">
+                        <hr>
                         <div class="row">
-                            <div class="col-md-12">
-                                <i class="fa fa-circle ct-series-a"></i> Desafíos <br>
-                                <i class="fa fa-circle ct-series-b"></i> Categorias Startups <br>
+                            <div class="col-4">
+                                <input type="date" id="fechaDesdeMatchPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d',time());?>">
+                            </div>
+                            <div class="col-4">
+                                <input type="date" id="fechaHastaMatchPorMes" class="form-control form-control-sm inputFechaHasta">
+                            </div>
+                            <div class="col-4 text-center">
+                                <button class="btn btn-sm btn-primary botonCargarGrafico" data-grafico="MatchPorMes">Cargar</button>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
+                    <div class="card-body">
+                        <div class="ct-chart ct-double-octave" id="graficoMatchPorMes"></div>
+                    </div>
                 </div>
 
             </div>
-            <div class="col-md-6 d-flex align-items-stretch">
+            <!-- <div class="col-md-6 d-flex align-items-stretch">
 
                 <div class="card card-stats">
                     <div class="card-header">
                         <h4 class="card-title text-left">
                             <span class="font-weight-bold">
-                                Gráficos Matcheos por mes
+                                Registros por rol por mes
                             </span>
                         </h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="ct-chart ct-double-octave" id="categoriasSeleccionadas"></div>
-                    </div>
-                    <!-- <div class="card-footer">
+                        <hr>
                         <div class="row">
-                            <div class="col-md-12">
-                                <i class="fa fa-circle ct-series-a"></i> Desafíos <br>
-                                <i class="fa fa-circle ct-series-b"></i> Categorias Startups <br>
+                            <div class="col-4">
+                                <input type="date" id="fechaDesdeRegistrosPorRolPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d',time());?>">
+                            </div>
+                            <div class="col-4">
+                                <input type="date" id="fechaHastaRegistrosPorRolPorMes" class="form-control form-control-sm inputFechaHasta">
+                            </div>
+                            <div class="col-4 text-center">
+                                <button class="btn btn-sm btn-primary botonCargarGrafico" data-grafico="RegistrosPorRolPorMes">Cargar</button>
                             </div>
                         </div>
-                    </div> -->
-                </div>
-
-            </div>
-            <div class="col-md-6 d-flex align-items-stretch">
-
-                <div class="card card-stats">
-                    <div class="card-header">
-                        <h4 class="card-title text-left">
-                            <span class="font-weight-bold">
-                                Gráficos registros por rol por mes
-                            </span>
-                        </h4>
                     </div>
                     <div class="card-body">
-                        <div class="ct-chart ct-double-octave" id="categoriasSeleccionadas"></div>
+                        <div class="ct-chart ct-double-octave" id="graficoRegistrosPorRolPorMes"></div>
                     </div>
-                    <!-- <div class="card-footer">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <i class="fa fa-circle ct-series-a"></i> Desafíos <br>
-                                <i class="fa fa-circle ct-series-b"></i> Categorias Startups <br>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
 
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
