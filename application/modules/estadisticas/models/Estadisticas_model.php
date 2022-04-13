@@ -30,9 +30,11 @@ class Estadisticas_model extends CI_Model
     {
         $this->db->select('COUNT(id) as cantidad, EXTRACT(YEAR_MONTH FROM fecha_postulacion) as anio_mes')
             ->from('postulaciones')
+            ->group_start()
             ->where('estado_postulacion =', POST_PENDIENTE)
             ->or_where('estado_postulacion =', POST_VALIDADO)
             ->or_where('estado_postulacion =', POST_ACEPTADO)
+            ->group_end()
             ->group_by('anio_mes')
             ->order_by('anio_mes', 'ASC');
         if ($fecha_desde && $fecha_hasta) {

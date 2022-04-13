@@ -681,6 +681,8 @@ const escucharBotonesCargarGrafico = () => {
     fechaHasta = $(`#fechaHasta${element.target.dataset.grafico}`).val()
       ? $(`#fechaHasta${element.target.dataset.grafico}`).val()
       : false;
+console.log(fechaDesde);
+console.log(fechaHasta);
 
     eval("cargarGrafico" + element.target.dataset.grafico + "()");
   });
