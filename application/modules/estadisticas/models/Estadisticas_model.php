@@ -61,13 +61,20 @@ class Estadisticas_model extends CI_Model
 
     public function getRegistrosPorRolPorMes($fecha_desde = false, $fecha_hasta = false)
     {
-        $this->db->select('COUNT(id) as cantidad, EXTRACT(YEAR_MONTH FROM fecha_alta) as anio_mes')
-            ->from('desafios')
-            ->where('estado_id !=', DESAF_CANCELADO)
-            ->where('estado_id !=', DESAF_ELIMINADO)
-            ->where('estado_id !=', DESAF_RECHAZADO)
-            ->group_by('anio_mes')
-            ->order_by('anio_mes', 'ASC');
+        $this->db->select('r.rol as rol_descripcion, r.id as rol_id, COUNT(u.id) as cantidad,EXTRACT(YEAR_MONTH FROM u.fecha_alta) as anio_mes')
+            ->from('usuarios as u')
+            ->join('roles as r', 'u.rol_id = r.id', 'left')
+            ->group_start()
+            ->where('r.id =', ROL_STARTUP)
+            ->or_where('r.id =', ROL_EMPRESA)
+            ->or_where('r.id =', ROL_PARTNER)
+            ->group_end()
+            ->group_start()
+            ->where('u.estado_id =', USR_ENABLED)
+            ->or_where('u.estado_id =', USR_VERIFIED)
+            ->group_end()
+            ->group_by('anio_mes,rol_id')
+            ->order_by('anio_mes,rol_id', 'ASC');
         if ($fecha_desde && $fecha_hasta) {
             $this->db->where("fecha_alta BETWEEN '{$fecha_desde}' AND '{$fecha_hasta}'");
         }

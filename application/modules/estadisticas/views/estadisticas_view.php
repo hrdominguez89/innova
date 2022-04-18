@@ -22,13 +22,20 @@
                         </h4>
                         <hr>
                         <div class="row">
-                            <div class="col-4">
-                                <input type="date" id="fechaDesdeDesafiosPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d',time());?>">
+                            <div class="col-3">
+                                <input type="date" id="fechaDesdeDesafiosPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d', time()); ?>">
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
                                 <input type="date" id="fechaHastaDesafiosPorMes" class="form-control form-control-sm inputFechaHasta">
                             </div>
-                            <div class="col-4 text-center">
+                            <div class="col-3">
+                                <select name="exporta" id="tipoDeGraficoDesafiosPorMes" class="form-control form-control-sm inputTipoDeGrafico" required>
+                                    <option selected value="area">Área</option>
+                                    <option value="line">Línea</option>
+                                    <option value="bar">Barras</option>
+                                </select>
+                            </div>
+                            <div class="col-3 text-center">
                                 <button class="btn btn-sm btn-primary botonCargarGrafico" data-grafico="DesafiosPorMes">Cargar</button>
                             </div>
                         </div>
@@ -50,13 +57,20 @@
                         </h4>
                         <hr>
                         <div class="row">
-                            <div class="col-4">
-                                <input type="date" id="fechaDesdePostulacionesPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d',time());?>">
+                            <div class="col-3">
+                                <input type="date" id="fechaDesdePostulacionesPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d', time()); ?>">
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
                                 <input type="date" id="fechaHastaPostulacionesPorMes" class="form-control form-control-sm inputFechaHasta">
                             </div>
-                            <div class="col-4 text-center">
+                            <div class="col-3">
+                                <select name="exporta" id="tipoDeGraficoPostulacionesPorMes" class="form-control form-control-sm inputTipoDeGrafico" required>
+                                    <option selected value="area">Área</option>
+                                    <option value="line">Línea</option>
+                                    <option value="bar">Barras</option>
+                                </select>
+                            </div>
+                            <div class="col-3 text-center">
                                 <button class="btn btn-sm btn-primary botonCargarGrafico" data-grafico="PostulacionesPorMes">Cargar</button>
                             </div>
                         </div>
@@ -78,13 +92,20 @@
                         </h4>
                         <hr>
                         <div class="row">
-                            <div class="col-4">
-                                <input type="date" id="fechaDesdeMatchPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d',time());?>">
+                            <div class="col-3">
+                                <input type="date" id="fechaDesdeMatchPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d', time()); ?>">
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
                                 <input type="date" id="fechaHastaMatchPorMes" class="form-control form-control-sm inputFechaHasta">
                             </div>
-                            <div class="col-4 text-center">
+                            <div class="col-3">
+                                <select name="exporta" id="tipoDeGraficoMatchPorMes" class="form-control form-control-sm inputTipoDeGrafico" required>
+                                    <option selected value="area">Área</option>
+                                    <option value="line">Línea</option>
+                                    <option value="bar">Barras</option>
+                                </select>
+                            </div>
+                            <div class="col-3 text-center">
                                 <button class="btn btn-sm btn-primary botonCargarGrafico" data-grafico="MatchPorMes">Cargar</button>
                             </div>
                         </div>
@@ -95,7 +116,7 @@
                 </div>
 
             </div>
-            <!-- <div class="col-md-6 d-flex align-items-stretch">
+            <div class="col-md-6 d-flex align-items-stretch">
 
                 <div class="card card-stats">
                     <div class="card-header">
@@ -106,13 +127,20 @@
                         </h4>
                         <hr>
                         <div class="row">
-                            <div class="col-4">
-                                <input type="date" id="fechaDesdeRegistrosPorRolPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d',time());?>">
+                            <div class="col-3">
+                                <input type="date" id="fechaDesdeRegistrosPorRolPorMes" class="form-control form-control-sm inputFechaDesde" max="<?php echo date('Y-m-d', time()); ?>">
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
                                 <input type="date" id="fechaHastaRegistrosPorRolPorMes" class="form-control form-control-sm inputFechaHasta">
                             </div>
-                            <div class="col-4 text-center">
+                            <div class="col-3">
+                                <select name="exporta" id="tipoDeGraficoRegistrosPorRolPorMes" class="form-control form-control-sm inputTipoDeGrafico" required>
+                                    <option selected value="bar">Barras</option>
+                                    <option value="line">Línea</option>
+                                    <option value="area">Área</option>
+                                </select>
+                            </div>
+                            <div class="col-3 text-center">
                                 <button class="btn btn-sm btn-primary botonCargarGrafico" data-grafico="RegistrosPorRolPorMes">Cargar</button>
                             </div>
                         </div>
@@ -122,7 +150,7 @@
                     </div>
                 </div>
 
-            </div> -->
+            </div>
         </div>
     </div>
 </div>
