@@ -20,7 +20,7 @@
                     <div class="card-header card-header-icon card-header-primary">
                         <div class="card-icon">
                             <?php if (@$contacto_data->logo) :; ?>
-                                <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo @$contacto_data->empresa_id; ?>.png?ver=<?php echo rand(); ?>">
+                                <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo @$contacto_data->startup_id; ?>.png?ver=<?php echo rand(); ?>">
                             <?php else :; ?>
                                 <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>assets/img/usuario.jpeg?ver=<?php echo rand(); ?>">
                             <?php endif; ?>
