@@ -271,15 +271,17 @@ const cleanCheckboxCategorias = () => {
 
 const cargarDatosEnInputsEditarDesafio = (data) => {
   cleanCheckboxCategorias();
-  const categoriasDesafio = data.id_de_categorias.split(",");
-  const categorias = document.getElementsByClassName("editar-categorias");
-  for (i = 0; i < categorias.length; i++) {
-    const categoria = categorias[i];
-    for (j = 0; j < categoriasDesafio.length; j++) {
-      const categoriaDesafio = parseInt(categoriasDesafio[j]);
-      if (categoria.value == categoriaDesafio) {
-        categoria.setAttribute("checked", "");
-        break;
+  if(data.id_de_categorias){
+    const categoriasDesafio = data.id_de_categorias.split(",");
+    const categorias = document.getElementsByClassName("editar-categorias");
+    for (i = 0; i < categorias.length; i++) {
+      const categoria = categorias[i];
+      for (j = 0; j < categoriasDesafio.length; j++) {
+        const categoriaDesafio = parseInt(categoriasDesafio[j]);
+        if (categoria.value == categoriaDesafio) {
+          categoria.setAttribute("checked", "");
+          break;
+        }
       }
     }
   }
