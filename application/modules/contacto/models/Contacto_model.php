@@ -25,7 +25,7 @@ class Contacto_model extends CI_Model
             vd.nombre_del_desafio
             ');
         $this->db->from('contacto_startups as cs');
-        $this->db->where('vd.desafio_estado_id', DESAF_FINALIZADO);
+        $this->db->where('vd.desafio_estado_id!=', DESAF_ELIMINADO);
         if ($tipo_de_empresa == ROL_STARTUP) {
             $this->db->where('cs.startup_id', $usuario_id);
         } else if ($tipo_de_empresa == ROL_EMPRESA) {
