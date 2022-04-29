@@ -16,7 +16,6 @@ class Home extends MX_Controller
 
     public function index()
     {
-
         switch ($this->session->userdata('user_data')->rol_id) {
             case ROL_STARTUP:
                 $data['sections_view'] = 'home_startup_view';
@@ -24,13 +23,15 @@ class Home extends MX_Controller
             case ROL_EMPRESA:
                 $data['sections_view'] = 'home_empresas_view';
                 break;
-            case ROL_ADMIN_ORGANIZACION:
-                $data['sections_view'] = 'home_admin_gcba_view';
-                $data['files_js'] = array('graficos/graficos.js');
+            case ROL_PARTNER:
+                $data['sections_view'] = 'home_partner_view';
+                break;
+            case ROL_VALIDADOR:
+                $data['sections_view'] = 'home_validador_view';
                 break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['sections_view'] = 'home_admin_plataforma_view';
-                $data['files_js'] = array('graficos/graficos.js');
+                $data['files_js'] = array('excellentexport.js', 'html2canvas.js', 'canvas2image.js', 'apexcharts.js', 'graficos/graficos_home.js');
                 break;
         }
         $data['title'] = 'Home';
@@ -42,11 +43,10 @@ class Home extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
-        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_ORGANIZACION)) {
+        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_VALIDADOR)) {
             redirect(base_url() . 'home');
         }
         $total_de_usuarios_por_rol = $this->Home_model->getTotalesPorRoles();
-        // var_dump($total_de_usuarios_por_rol);
         echo json_encode($total_de_usuarios_por_rol);
     }
 
@@ -55,13 +55,12 @@ class Home extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
-        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_ADMIN_ORGANIZACION)) {
+        if (!($this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA || $this->session->userdata('user_data')->rol_id == ROL_VALIDADOR)) {
             redirect(base_url() . 'home');
         }
         $categorias['categorias'] = $this->Home_model->getCategoriasActivas();
         $categorias['categorias_desafios'] = $this->Home_model->getTotalCategoriasPorDesafio();
         $categorias['categorias_startups'] = $this->Home_model->getTotalCategoriasPorStartup();
-        // var_dump($total_de_usuarios_por_rol);
         echo json_encode($categorias);
     }
 }

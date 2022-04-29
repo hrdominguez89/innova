@@ -2,7 +2,7 @@
 <style>
   
   </style>
-  <div class="sidebar" data-color="purple" data-background-color="black" data-image="<?php echo base_url(); ?>assets/img/sidebar-3.jpg">
+  <div class="sidebar" data-color="purple" data-background-color="white" data-image="<?php echo base_url(); ?>assets/img/sidebar-3.jpg">
     <!--
           Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
   
@@ -48,7 +48,7 @@
         <!-- menu Startups -->
         <li class="nav-item <?php echo $this->uri->segment(URI_SEGMENT) == 'startups' ? 'active' : ''; ?>">
           <a class="nav-link" href="<?php echo base_url(); ?>startups">
-            <i class="material-icons">store</i>
+            <i class="material-icons">rocket_launch</i>
             <p>
               Startups
             </p>
@@ -61,6 +61,26 @@
             <i class="material-icons">apartment</i>
             <p>
               Empresas
+            </p>
+          </a>
+        </li>
+
+        <!-- menu partners -->
+        <li class="nav-item <?php echo $this->uri->segment(URI_SEGMENT) == 'partners' ? 'active' : ''; ?>">
+          <a class="nav-link" href="<?php echo base_url(); ?>partners">
+            <i class="material-icons">groups</i>
+            <p>
+              Partners
+            </p>
+          </a>
+        </li>
+
+        <!-- menu estadisticas -->
+        <li class="nav-item <?php echo $this->uri->segment(URI_SEGMENT) == 'estadisticas' ? 'active' : ''; ?>">
+          <a class="nav-link" href="<?php echo base_url(); ?>estadisticas">
+            <i class="material-icons">query_stats</i>
+            <p>
+              Estadísticas
             </p>
           </a>
         </li>

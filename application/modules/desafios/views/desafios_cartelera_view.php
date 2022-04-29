@@ -20,8 +20,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
             </div>
             <?php if (!$desafios) : ?>
                 <div class="col-12 text-center">
-                <h3 class="font-weight-bold">No se encontraron desafíos disponibles.</h3>
-                <a href="<?php echo base_url().'home';?>" class="btn btn-primary m-5">Volver al inicio</a>
+                    <h3 class="font-weight-bold">No se encontraron desafíos disponibles.</h3>
+                    <a href="<?php echo base_url() . 'home'; ?>" class="btn btn-primary m-5">Volver al inicio</a>
                 </div>
             <?php endif; ?>
             <?php foreach ($desafios as $desafio) :; ?>
@@ -32,6 +32,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <img class="img bg-white" src="<?php echo $desafio->logo ? base_url() . 'uploads/imagenes_de_usuarios/' . $desafio->id_empresa . '.png?v=' . rand() : base_url() . 'assets/img/usuario.jpeg?v=' . rand(); ?>">
                             </div>
                             <div class="card-body">
+
                                 <h2 class="card-category text-gray"><?php echo $desafio->nombre_empresa; ?> </h2>
                                 <h3 class="card-category text-gray"><?php echo $desafio->nombre_del_desafio; ?></h3>
                                 <p class="card-description text-left">
@@ -43,6 +44,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <p class="card-description text-left">
                                     <b class="font-weight-bold text-primary"><i class="fas fa-calendar-day"></i> Fin de postulación:</b> <?php echo date('d-m-Y', strtotime($desafio->fecha_fin_de_postulacion)); ?>
                                 </p>
+                                <?php
+                                if (isset($postulaciones[$desafio->desafio_id]->estado_postulacion)) {
+                                    echo '<p class="card-description text-left">
+                                            <b class="font-weight-bold text-primary">Estado postulación:</b>';
+
+                                    switch ($postulaciones[$desafio->desafio_id]->estado_postulacion) {
+                                        case POST_PENDIENTE:
+                                            echo '
+                                                <small class="badge badge-success">Ya se encuentra postulado a este desafío</small>
+                                            ';
+                                            break;
+                                    }
+                                    echo '</p>';
+                                }; ?>
                                 <p class="text-right">
                                     <a class="botonVerMas" id="botonVerMas<?php echo $desafio->desafio_id; ?>" data-value="false" data-desafio-id="<?php echo $desafio->desafio_id; ?>" href="javascript: void(0)">
                                         Ver más... <i class="fas fa-chevron-circle-down"></i>
@@ -59,13 +74,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <p class="card-description text-left text-left">
                                         <b class="font-weight-bold text-primary">Información de la empresa:</b> <?php echo $desafio->descripcion_empresa; ?>
                                     </p>
-                                    <button class="btn btn-primary" data-toggle="modal" data-target="#desafio-modal-<?php echo $desafio->desafio_id; ?>">Postularme</button>
-                                </div>
-                                <div class="row text-center">
-                                    <!-- <div class="col-6">
-                                        <b class="font-weight-bold text-primary">Inicio de postulación:</b> <?php echo date('d-m-Y', strtotime($desafio->fecha_inicio_de_postulacion)); ?>
-                                    </div> -->
-
+                                    <?php
+                                    if (!(isset($postulaciones[$desafio->desafio_id]->estado_postulacion) && $postulaciones[$desafio->desafio_id]->estado_postulacion == POST_PENDIENTE)) :; ?>
+                                        <button class="btn btn-primary" data-toggle="modal" data-target="#desafio-modal-<?php echo $desafio->desafio_id; ?>">Postularme</button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

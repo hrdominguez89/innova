@@ -21,7 +21,7 @@ class Configuraciones extends MX_Controller
         if (!$this->session->userdata('user_data')) {
             redirect(base_url() . 'auth/login');
         }
-        if (!$this->session->userdata('user_data')->rol_id == ROL_ADMIN_PLATAFORMA) {
+        if ($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA) {
             redirect(base_url() . 'home');
         }
         if ($this->input->post()) {
@@ -31,8 +31,8 @@ class Configuraciones extends MX_Controller
                     $config_plataforma['postulaciones_maximas'] = $this->input->post('postulaciones_maximas');
                     $config_plataforma['notificaciones_maximas_header'] = $this->input->post('notificaciones_maximas_header');
                     $config_plataforma['notificaciones_maximas_menu_lateral'] = $this->input->post('notificaciones_maximas_menu_lateral');
-                    $config_plataforma['nombre_notificacion_admin_organizacion'] = $this->input->post('nombre_notificacion_admin_organizacion');
-                    $config_plataforma['correo_notificacion_admin_organizacion'] = $this->input->post('correo_notificacion_admin_organizacion');
+                    $config_plataforma['nombre_notificacion_validador'] = $this->input->post('nombre_notificacion_validador');
+                    $config_plataforma['correo_notificacion_validador'] = $this->input->post('correo_notificacion_validador');
                     $config_plataforma['nombre_notificacion_admin_plataforma'] = $this->input->post('nombre_notificacion_admin_plataforma');
                     $config_plataforma['correo_notificacion_admin_plataforma'] = $this->input->post('correo_notificacion_admin_plataforma');
                     $config_plataforma['nombre_notificacion_no_responder'] = $this->input->post('nombre_notificacion_no_responder');
@@ -66,7 +66,7 @@ class Configuraciones extends MX_Controller
                 if ($status) {
                     $data['message_sweat_alert'] = array(
                         'status' => true,
-                        'msg' => 'Configuración gardada exitosamente.',
+                        'msg' => 'Configuración guardada exitosamente.',
                     );
                 } else {
                     $data['message_sweat_alert'] = array(
@@ -76,6 +76,7 @@ class Configuraciones extends MX_Controller
                 }
             }
         }
+        $data['files_js'] = array('configuraciones/configuraciones.js');
         $data['tipos_de_envio'] = $this->Configuraciones_model->getTiposDeEnvio();
         $data['notificadores'] = $this->Configuraciones_model->getNotificadores();
         $data['mensajes_de_la_plataforma'] = $this->Configuraciones_model->getMensajesDeLaPlataforma();
@@ -112,16 +113,16 @@ class Configuraciones extends MX_Controller
             )
         );
         $this->form_validation->set_rules(
-            'nombre_notificacion_admin_organizacion',
-            'Nombre "Admin Organización',
+            'nombre_notificacion_validador',
+            'Nombre "Validador',
             'trim|required',
             array(
                 'required' => 'El campo {field} es obligatorio.'
             )
         );
         $this->form_validation->set_rules(
-            'correo_notificacion_admin_organizacion',
-            'Correo "Admin Organización',
+            'correo_notificacion_validador',
+            'Correo "Validador',
             'trim|valid_email|required',
             array(
                 'required' => 'El campo {field} es obligatorio.'
@@ -215,7 +216,7 @@ class Configuraciones extends MX_Controller
         $this->form_validation->set_rules(
             'texto_mensaje[]',
             'Mensaje',
-            'trim|max_length[2500]|required',
+            'trim|max_length[5000]|required',
             array(
                 'required' => 'El campo {field} es obligatorio'
             )

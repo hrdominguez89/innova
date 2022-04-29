@@ -15,11 +15,15 @@
             </div>
             <div class="col-md-12 mb-5">
             </div>
-            <div class="col-md-8">
+            <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header card-header-icon card-header-primary">
                         <div class="card-icon">
-                            <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo @$contacto_data->startup_id; ?>.png">
+                            <?php if (@$contacto_data->logo) :; ?>
+                                <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>uploads/imagenes_de_usuarios/<?php echo @$contacto_data->empresa_id; ?>.png?ver=<?php echo rand(); ?>">
+                            <?php else :; ?>
+                                <img class="img-fluid" style="max-width:100px" src="<?php echo base_url(); ?>assets/img/usuario.jpeg?ver=<?php echo rand(); ?>">
+                            <?php endif; ?>
                         </div>
                         <h3 class="card-title font-weight-bold"><?php echo @$contacto_data->nombre_startup; ?></h3>
                     </div>
@@ -46,7 +50,7 @@
                                     <p class=""><b class="text-primary font-weight-bold">¿Exporta?:</b> <?php echo @$contacto_data->exporta_startup; ?></p>
                                 </div>
                             </div>
-                            
+
                             <div class="col-12">
                                 <div class="mb-3">
                                     <p class=""><b class="text-primary font-weight-bold">Rubro:</b> <?php echo @$contacto_data->rubro_startup; ?></p>

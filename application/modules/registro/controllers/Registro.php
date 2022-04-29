@@ -26,7 +26,7 @@ class Registro extends MX_Controller
     {
         if ($this->input->post()) {
             $this->rulesRegistro();
-            if (!$this->form_validation->run() == FALSE) {
+            if ($this->form_validation->run() != FALSE) {
 
                 $user_data['nombre'] = ucwords(mb_strtolower($this->input->post('name'), 'UTF-8'));
                 $user_data['apellido'] = ucwords(mb_strtolower($this->input->post('lastname'), 'UTF-8'));
@@ -34,10 +34,14 @@ class Registro extends MX_Controller
                 $user_data['telefono'] = $this->input->post('phone');
                 $user_data['password'] = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
 
-                //SI es partner agrego tipo de partner que es.
+                //SI tipo de empresa es mayor o igual a rol_partner (ROL_PARTNER  = 5 los valores superiores a 5 tmb son partner, por ahora....) seteo rol_id partner.
                 if ($this->input->post('kind_of_enterprise') >= ROL_PARTNER) {
                     $user_data['rol_id'] = ROL_PARTNER;
                     $enterprise_data['tipo_de_partner_id'] = $this->input->post('kind_of_enterprise');
+                    $enterprise_data['tipo_de_partner_id'] = $this->input->post('kind_of_enterprise');
+                    if ($this->input->post('kind_of_enterprise') == 8) {
+                        $enterprise_data['descripcion_tipo_de_partner'] = $this->input->post('descripcion_tipo_de_partner');
+                    }
                 } else {
                     $user_data['rol_id'] = $this->input->post('kind_of_enterprise');
                 }
@@ -86,24 +90,39 @@ class Registro extends MX_Controller
 
                 $email_id = encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
 
-                exec('php index.php cli enviarcorreosencolados ' . $email_id);
+                modules::run('cli/enviarcorreosencolados', $email_id);
 
                 $mensaje_registro_gral = $this->Registro_model->getMensajeRegistroGral();
 
-                $_SESSION['mensaje_back'] = $mensaje_registro_gral->texto_mensaje;
-                redirect(base_url() . URI_WP . '/mensajes');
+                switch (ENVIRONMENT) {
+                    case 'development':
+                        $this->session->set_flashdata('message', '<div class="alert alert-success">' . $mensaje_registro_gral->texto_mensaje . '</div>');
+                        redirect(base_url() . 'auth/message');
+                        break;
+                    case 'testing':
+                    case 'production':
+                        $_SESSION['mensaje_back'] = $mensaje_registro_gral->texto_mensaje;
+                        redirect(base_url() . URI_WP . '/mensajes');
+                        break;
+                }
             } else {
-                $_SESSION['error_registro'] = validation_errors();
-                redirect(base_url() . URI_WP . '#registrate');
+                if (ENVIRONMENT !== 'development') {
+                    $_SESSION['error_registro'] = validation_errors();
+                }
             }
         }
-        redirect(base_url() . URI_WP . '#registrate');
-
-        // $data['files_js'] = array('grecaptcha.js');
-        // $data['recaptcha'] = true;
-
-        // $data['sections_view'] = 'registro_view';
-        // $this->load->view('layout_front_view', $data);
+        switch (ENVIRONMENT) { //EN MODO DESARROLLO USO MI PROPIA PLANTILLA DE REGISTRO
+            case 'development':
+                $data['files_js'] = array('grecaptcha.js');
+                $data['recaptcha'] = true;
+                $data['sections_view'] = 'registro_view';
+                $this->load->view('layout_front_view', $data);
+                break;
+            case 'testing': //TANTO EN TESTING COMO EN PRODUCCION REDIRECCIONO AL FORMULARIO DE REGISTRO.
+            case 'production':
+                redirect(base_url() . URI_WP . '#registrate');
+                break;
+        }
     }
 
     protected function rulesRegistro()
@@ -170,11 +189,22 @@ class Registro extends MX_Controller
         $this->form_validation->set_rules(
             'kind_of_enterprise',
             'Tipo de empresa',
-            'integer|required',
+            'trim|integer|required',
             array(
                 'required' => 'El campo {field} es obligatorio.',
             )
         );
+
+        if ($this->input->post('kind_of_enterprise') == 8) {
+            $this->form_validation->set_rules(
+                'descripcion_tipo_de_partner',
+                'Descripción tipo de partner',
+                'trim|required',
+                array(
+                    'required' => 'El campo {field} es obligatorio.',
+                )
+            );
+        }
 
         $this->form_validation->set_rules(
             'enterprise_name',
@@ -198,7 +228,7 @@ class Registro extends MX_Controller
         $this->form_validation->set_rules(
             'terminos',
             'Acepto los terminos',
-            'required',
+            'trim|required',
             array(
                 'required' => 'Debe aceptar los terminos para poder continuar.',
             )
@@ -206,7 +236,7 @@ class Registro extends MX_Controller
         $this->form_validation->set_rules(
             'g-recaptcha',
             'Google ReCaptcha V3',
-            'required|callback_valid_captcha',
+            'trim|required|callback_valid_captcha',
             array(
                 'valid_captcha' => 'El campo {field} no pudo ser validado correctamente, recargue la página e intente nuevamente.',
             )

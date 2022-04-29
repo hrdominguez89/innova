@@ -42,49 +42,17 @@
                                         <b class="font-weight-bold text-primary"><i class="fas fa-calendar-day"></i> Fin de postulación:</b> <?php echo date('d-m-Y', strtotime($desafio->fecha_fin_de_postulacion)); ?>
                                     </p>
                                 </div>
+                                <div class="row text-center">
+                                    <div class="col-12">
+                                        <?php if ($desafio->desafio_estado_id == DESAF_VIGENTE) :; ?>
+                                            <button class="m-3 btn btn-primary botonPostularme" data-desafio-id="<?php echo $desafio->desafio_id; ?>">Postularme</button>
+                                        <?php else :; ?>
+                                            <div class="m-3 badge badge-danger">Fecha de postulación</div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-12 card">
-                    <div class="toolbar mb-3 border-bottom pb-2">
-                        <h3>Postulados</h3>
-                    </div>
-                    <div class="material-datatables">
-                        <table id="dataTableComun" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Razón social</th>
-                                    <th>Nombre de contacto</th>
-                                    <th>Email</th>
-                                    <th>Teléfono</th>
-                                    <th>Estado</th>
-                                    <th class="disabled-sorting ">Acción</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th>Razón social</th>
-                                    <th>Nombre de contacto</th>
-                                    <th>Email</th>
-                                    <th>Teléfono</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                <?php foreach ($postulados as $postulado) :; ?>
-                                    <tr>
-                                        <td><?php echo $postulado->razon_social; ?></td>
-                                        <td><?php echo $postulado->nombre . ' ' . $postulado->apellido; ?></td>
-                                        <td><?php echo $postulado->email_contacto; ?></td>
-                                        <td><?php echo $postulado->telefono_contacto; ?></td>
-                                        <td><?php echo $postulado->estado_postulacion_descripcion; ?></td>
-                                        <td class="text-center"><a href="<?php echo base_url().'postulados/startup/'.$postulado->startup_id.'/'.$desafio->desafio_id;?>" ><i class="far fa-eye"></i>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
                 <!--  end card  -->

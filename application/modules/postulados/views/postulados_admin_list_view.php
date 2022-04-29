@@ -1,4 +1,3 @@
-<?php //echo '<pre>';var_dump($postulados);die();?>
 <div class="content">
     <div class="container-fluid">
         <div class="row">
@@ -22,9 +21,12 @@
                     </div>
                     <div class="card-body">
                         <div class="toolbar mb-3 border-bottom pb-2">
+                            <a href="?filtrar=pendiente" class="btn btn-primary mx-2 <?php echo strtolower(@$this->input->get('filtrar')) != 'todos' && strtolower(@$this->input->get('filtrar')) == 'pendiente' && strtolower(@$this->input->get('filtrar')) != 'validado' || !$this->input->get('filtrar') ? 'active' : ''; ?>">Pendientes</a>
+                            <a href="?filtrar=validado" class="btn btn-primary mx-2 <?php echo strtolower(@$this->input->get('filtrar') == 'validado') ? 'active' : ''; ?>">Validados</a>
+                            <a href="?filtrar=todos" class="btn btn-primary mx-2 <?php echo strtolower(@$this->input->get('filtrar') == 'todos') ? 'active' : ''; ?>">Todos</a>
                         </div>
                         <div class="material-datatables">
-                            <table id="dataTableComun" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <table id="dataTableComun" data-fix-header="true" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th style="width:20%">Razón social</th>
@@ -51,16 +53,65 @@
                                 </tfoot>
                                 <tbody>
                                     <?php foreach ($postulados as $postulado) :; ?>
-                                        <tr>
-                                            <td><?php echo $postulado->razon_social; ?></td>
-                                            <td><?php echo $postulado->nombre.' '.$postulado->apellido; ?></td>
-                                            <td><?php echo $postulado->nombre_del_desafio; ?></td>
-                                            <td><?php echo $postulado->descripcion_del_desafio; ?></td>
-                                            <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_postulacion)); ?></td>
-                                            <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_fin_de_postulacion)); ?></td>
-                                            <td class="text-center"><?php echo $postulado->estado_postulacion_nombre; ?></td>
-                                            <td class="text-center"><a title="ver startup" href="<?php echo base_url(); ?>postulados/startup/<?php echo $postulado->startup_id.'/'.$postulado->desafio_id;?>"><i class="far fa-eye"></i></a></td>
-                                        </tr>
+                                        <?php if (
+                                            $this->input->get('filtrar')
+                                            &&
+                                            (strtolower(@$this->input->get('filtrar')) == 'pendiente'
+                                                ||
+                                                strtolower(@$this->input->get('filtrar')) == 'validado'
+                                                ||
+                                                strtolower(@$this->input->get('filtrar')) == 'todos'
+                                            )
+                                        ) :; ?>
+                                            <?php if (strtolower($postulado->estado_validacion) == strtolower(@$this->input->get('filtrar'))) :; ?>
+                                                <tr id="row_postulacion_id_<?php echo $postulado->postulacion_id; ?>">
+                                                    <td><?php echo $postulado->razon_social; ?></td>
+                                                    <td><?php echo $postulado->nombre . ' ' . $postulado->apellido; ?></td>
+                                                    <td><?php echo $postulado->nombre_del_desafio; ?></td>
+                                                    <td><?php echo $postulado->descripcion_del_desafio; ?></td>
+                                                    <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_postulacion)); ?></td>
+                                                    <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_fin_de_postulacion)); ?></td>
+                                                    <td class="text-center"><?php echo $postulado->estado_validacion; ?></td>
+                                                    <td class="text-center">
+                                                        <a title="Ver startup" href="<?php echo base_url(); ?>postulados/startup/<?php echo $postulado->startup_id . '/' . $postulado->desafio_id; ?>"><i class="far fa-eye"></i></a>
+                                                        <a class="m-2 text-danger" onclick="eliminarPostulacionModal(this)" data-postulacion-id="<?php echo $postulado->postulacion_id; ?>" title="Eliminar postulación" href="javascript:void(0);"><i class="fas fa-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            <?php elseif (strtolower(@$this->input->get('filtrar')) == 'todos') :; ?>
+                                                <tr id="row_postulacion_id_<?php echo $postulado->postulacion_id; ?>">
+                                                    <td><?php echo $postulado->razon_social; ?></td>
+                                                    <td><?php echo $postulado->nombre . ' ' . $postulado->apellido; ?></td>
+                                                    <td><?php echo $postulado->nombre_del_desafio; ?></td>
+                                                    <td><?php echo $postulado->descripcion_del_desafio; ?></td>
+                                                    <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_postulacion)); ?></td>
+                                                    <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_fin_de_postulacion)); ?></td>
+                                                    <td class="text-center"><?php echo $postulado->estado_validacion; ?></td>
+                                                    <td class="text-center">
+                                                        <a title="Ver startup" href="<?php echo base_url(); ?>postulados/startup/<?php echo $postulado->startup_id . '/' . $postulado->desafio_id; ?>"><i class="far fa-eye"></i></a>
+                                                        <a class="m-2 text-danger" onclick="eliminarPostulacionModal(this)" data-postulacion-id="<?php echo $postulado->postulacion_id; ?>" title="Eliminar postulación" href="javascript:void(0);"><i class="fas fa-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            <?php endif; ?>
+                                        <?php else :; ?>
+                                            <?php if (strtolower($postulado->estado_validacion) == 'pendiente') :; ?>
+
+                                                <tr id="row_postulacion_id_<?php echo $postulado->postulacion_id; ?>">
+                                                    <td><?php echo $postulado->razon_social; ?></td>
+                                                    <td><?php echo $postulado->nombre . ' ' . $postulado->apellido; ?></td>
+                                                    <td><?php echo $postulado->nombre_del_desafio; ?></td>
+                                                    <td><?php echo $postulado->descripcion_del_desafio; ?></td>
+                                                    <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_postulacion)); ?></td>
+                                                    <td class="text-center"><?php echo date('d-m-Y', strtotime($postulado->fecha_fin_de_postulacion)); ?></td>
+                                                    <td class="text-center"><?php echo $postulado->estado_validacion; ?></td>
+                                                    <td class="text-center">
+                                                        <a title="Ver startup" href="<?php echo base_url(); ?>postulados/startup/<?php echo $postulado->startup_id . '/' . $postulado->desafio_id; ?>"><i class="far fa-eye"></i></a>
+                                                        <a class="m-2 text-danger" onclick="eliminarPostulacionModal(this)" data-postulacion-id="<?php echo $postulado->postulacion_id; ?>" title="Eliminar postulación" href="javascript:void(0);"><i class="fas fa-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                            <?php endif; ?>
+
+                                        <?php endif; ?>
+
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
@@ -73,3 +124,4 @@
         </div>
     </div>
 </div>
+<?php echo $this->load->view('modals/postulaciones/eliminar_postulacion_modal_view'); ?>

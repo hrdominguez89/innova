@@ -16,10 +16,10 @@ class Notificaciones extends MX_Controller
     public function index()
     {
         if (!$this->session->userdata('user_data')) {
-            redirect('/auth/login');
+            redirect(base_url() . 'auth/login');
         }
         switch ($this->session->userdata('user_data')->rol_id) {
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
                 $data['total_notificaciones'] = $this->Notificaciones_model->getNotificacionesAdminOrganizacion($this->session->userdata('user_data')->id);
                 break;
             case ROL_ADMIN_PLATAFORMA:
@@ -66,7 +66,7 @@ class Notificaciones extends MX_Controller
         if ($this->session->userdata('user_data')) {
             $configuraciones = $this->Configuraciones_model->getConfiguracionesDeLaPlataforma();
             switch ($this->session->userdata('user_data')->rol_id) {
-                case ROL_ADMIN_ORGANIZACION:
+                case ROL_VALIDADOR:
                     $this->session->notificaciones = $this->Notificaciones_model->getNotificacionesAdminOrganizacion($this->session->userdata('user_data')->id);
                     break;
                 case ROL_ADMIN_PLATAFORMA:
@@ -82,7 +82,7 @@ class Notificaciones extends MX_Controller
     }
 
     public function verificar_perfil_completo()
-    {   //ESTO ES UN HOOK, carga notificaciones antes de cargar cualquier controlador.
+    {   //ESTO ES UN HOOK, verifica que el perfil este completo antes de poder navegar en cada seccion del sitio.
         if ($this->session->userdata('user_data') && !(int)$this->session->userdata('user_data')->perfil_completo && !$this->input->post() && $this->uri->segment(URI_SEGMENT) != "auth") {
             $titulo = "Complete su perfil.";
             $mensaje_cuerpo = $this->Notificaciones_model->getTextoCargarPerfil()->texto_mensaje;
@@ -101,6 +101,32 @@ class Notificaciones extends MX_Controller
                 'mensaje_cuerpo' => $mensaje_cuerpo,
             ];
             $this->session->set_flashdata('message', $message);
+            if ($this->uri->segment(URI_SEGMENT) != "profile") {
+                redirect(base_url() . 'profile');
+            }
+        }
+    }
+
+    public function verificar_rol()
+    {   //ESTO ES UN HOOK, verifica que el perfil este completo antes de poder navegar en cada seccion del sitio.
+        if ($this->session->userdata('user_data') && !(int)$this->session->userdata('user_data')->rol_id && !$this->input->post() && $this->uri->segment(URI_SEGMENT) != "auth") {
+            $titulo = "Seleccione un rol.";
+            $mensaje_cuerpo = $this->Notificaciones_model->getTextoCargarRol()->texto_mensaje;
+
+            $buscar_y_reemplazar = array(
+                array('buscar' => '{{NOMBRE_USUARIO}}', 'reemplazar' => $this->session->userdata('user_data')->nombre),
+                array('buscar' => '{{APELLIDO_USUARIO}}', 'reemplazar' => $this->session->userdata('user_data')->apellido),
+            );
+
+            for ($i = 0; $i < count($buscar_y_reemplazar); $i++) {
+                $mensaje_cuerpo = str_replace($buscar_y_reemplazar[$i]['buscar'], $buscar_y_reemplazar[$i]['reemplazar'], $mensaje_cuerpo);
+            }
+
+            $message = (object)[
+                'titulo' => $titulo,
+                'mensaje_cuerpo' => $mensaje_cuerpo,
+            ];
+            $this->session->set_flashdata('message_elegir_rol', $message);
             if ($this->uri->segment(URI_SEGMENT) != "profile") {
                 redirect(base_url() . 'profile');
             }

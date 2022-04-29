@@ -22,9 +22,6 @@ class Notificaciones_model extends CI_Model
         $this->db->where('para_usuario_id', $usuario_id);
         $this->db->order_by('fecha_alta', 'DESC');
         return $this->db->get('notificaciones')->result();
-
-        //$this->db->get('notificaciones')->result();
-        //var_dump($this->db->last_query());die();
     }
 
 
@@ -40,6 +37,14 @@ class Notificaciones_model extends CI_Model
     {
         return $this->db->select('texto_mensaje')
             ->where('nombre_mensaje', 'mensaje_completar_perfil')
+            ->get('mensajes_de_la_plataforma')
+            ->row();
+    }
+
+    public function getTextoCargarRol()
+    {
+        return $this->db->select('texto_mensaje')
+            ->where('nombre_mensaje', 'mensaje_cargar_rol')
             ->get('mensajes_de_la_plataforma')
             ->row();
     }
@@ -68,14 +73,11 @@ class Notificaciones_model extends CI_Model
                 ->where('para_usuario_id', $usuario_id)
                 ->or_group_start()
                 ->where('para_usuario_id', 0)
-                ->where('para_rol_id', ROL_ADMIN_ORGANIZACION)
+                ->where('para_rol_id', ROL_VALIDADOR)
                 ->group_end()
                 ->group_end();
             $this->db->order_by('fecha_alta', 'DESC');
             return $this->db->get('notificaciones')->result();
-
-            //$this->db->get('notificaciones')->result();
-            //var_dump($this->db->last_query());die();
         }
     }
 
@@ -86,7 +88,7 @@ class Notificaciones_model extends CI_Model
             ->where('para_usuario_id', $usuario_id)
             ->or_group_start()
             ->where('para_usuario_id', 0)
-            ->where('para_rol_id', ROL_ADMIN_ORGANIZACION)
+            ->where('para_rol_id', ROL_VALIDADOR)
             ->group_end()
             ->or_group_start()
             ->where('para_usuario_id', 0)
@@ -95,8 +97,5 @@ class Notificaciones_model extends CI_Model
             ->group_end();
         $this->db->order_by('fecha_alta', 'DESC');
         return $this->db->get('notificaciones')->result();
-
-        //$this->db->get('notificaciones')->result();
-        //var_dump($this->db->last_query());die();
     }
 }

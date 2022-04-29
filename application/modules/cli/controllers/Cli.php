@@ -24,9 +24,6 @@ class Cli extends MX_Controller
     public function __construct()
     {
         parent::__construct();
-        // if(!is_cli()){
-        //     redirect(base_url().'home');
-        // }
         $this->load->helper(array('send_email_helper'));
         $this->load->model('Cli_model');
     }
@@ -39,6 +36,9 @@ class Cli extends MX_Controller
                 $this->prepararYEnviar($correo_a_enviar);
             }
         } else {
+            if(!is_cli()){
+                redirect(base_url().'home');
+            }
             $correos_a_enviar = $this->Cli_model->getEmailsNuevosYPendientes();
             if ($correos_a_enviar) {
                 foreach ($correos_a_enviar as $correo_a_enviar) {
@@ -67,13 +67,16 @@ class Cli extends MX_Controller
             $email_enviado['errores_de_envio'] = $resultado;
         } else {
             $email_enviado['email_estado_id'] = EMAIL_ENVIADO;
-            $email_enviado['errores_de_envio'] = NULL;
+            //$email_enviado['errores_de_envio'] = NULL;
         }
         $this->Cli_model->updateEmail($email_enviado, $email_id);
     }
 
     public function finalizarDesafios()
     {
+        if(!is_cli()){
+            redirect(base_url().'home');
+        }
         $this->load->model('mensajes/Mensajes_model');
         $this->load->helper(array('send_email_helper'));
 

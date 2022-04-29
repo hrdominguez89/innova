@@ -5,15 +5,16 @@ $(document).ready(function () {
 
 const cargarDataTable = () => {
   $("#datatablesNotificaciones").DataTable({
-    columnDefs: [{ type: "num", targets: 0 }],
+    columnDefs: [
+      {type: "num", targets: 1 },
+    ],
     pagingType: "full_numbers",
     lengthMenu: [
       [10, 25, 50, -1],
-      [10, 25, 50, "All"],
+      [10, 25, 50, "total"],
     ],
     order: [
       [2, "desc"],
-      [1, "desc"],
     ],
     responsive: true,
     language: {

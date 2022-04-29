@@ -16,15 +16,62 @@
                 <div class="card card-stats">
                     <div class="card-header">
                         <h4 class="card-title text-left">
-                            <span class="font-weight-bold">
-                                Tipos de usuarios registrados
-                            </span>
+                            <div class="row">
+                                <div class="col-10 text-left">
+                                    <span class="font-weight-bold">
+                                        Tipos de usuarios registrados
+                                    </span>
+                                </div>
+                            </div>
                         </h4>
+                        <div style="display:none;">
+                            <table id="tabla_usuarios_registrados">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo de usuario</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>
+                                            Total de usuarios registrados
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div>
+
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="ct-chart ct-minor-sixth" id="tiposDeUsuarios"></div>
+                        <div class="row">
+                            <div class="col-10"></div>
+                            <div class="col-2 text-right">
+                                <div class="dropdown">
+                                    <a class="bg-white" href="javascript:;" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <div class="apexcharts-menu-icon" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                <path fill="none" d="M0 0h24v24H0V0z"></path>
+                                                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+                                            </svg>
+                                        </div>
+                                    </a>
+
+                                    <div class="dropdown-menu apexcharts-toolbar dropdown-graficos text-center" aria-labelledby="dropdownMenuLink">
+                                        <a id="export" class="apexcharts-menu-item exportSVG dropdown-item-hamburguesa" href="javascript:void(0);" title="Descargar grafico en Imagen">Descargar imagen</a>
+                                        <a class="apexcharts-menu-item exportSVG dropdown-item-hamburguesa" href="javascript:void(0);" download="usuarios_registrados.xls" href="javascript:void(0);" onclick="return ExcellentExport.excel(this, 'tabla_usuarios_registrados', 'Usuarios Registrados');" title="Descargar datos a tabla excel">Descargar excel</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center">
+                                <div class="ct-chart ct-minor-sixth" id="tiposDeUsuarios"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer">
+                    <!-- <div class="card-footer">
                         <div class="row">
                             <div class="col-md-12">
                                 <i class="fa fa-circle ct-series-a"></i> Startups <span id="porcentaje0"></span> <br>
@@ -32,7 +79,7 @@
                                 <i class="fa fa-circle ct-series-c"></i> Partners <span id="porcentaje2"></span>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="col-md-8 d-flex align-items-stretch">
@@ -48,14 +95,14 @@
                     <div class="card-body">
                         <div class="ct-chart ct-double-octave" id="categoriasSeleccionadas"></div>
                     </div>
-                    <div class="card-footer">
+                    <!-- <div class="card-footer">
                         <div class="row">
                             <div class="col-md-12">
                                 <i class="fa fa-circle ct-series-a"></i> Desafíos <br>
                                 <i class="fa fa-circle ct-series-b"></i> Categorias Startups <br>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
             </div>
@@ -105,7 +152,7 @@
                     <div class="card card-stats">
                         <div class="card-header card-header-info card-header-icon">
                             <div class="card-icon">
-                                <i class="material-icons">store</i>
+                                <i class="material-icons">rocket_launch</i>
                             </div>
                             <h4 class="card-title text-left">
                                 <span class="font-weight-bold">
@@ -131,6 +178,48 @@
                             <h4 class="card-title text-left">
                                 <span class="font-weight-bold">
                                     Empresas
+                                </span>
+                            </h4>
+                        </div>
+                        <div class="card-footer">
+                            <div class="stats">
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <a href="<?php echo base_url(); ?>partners">
+                    <div class="card card-stats">
+                        <div class="card-header card-header-warning card-header-icon">
+                            <div class="card-icon">
+                                <i class="material-icons">groups</i>
+
+                            </div>
+                            <h4 class="card-title text-left">
+                                <span class="font-weight-bold">
+                                    Partners
+                                </span>
+                            </h4>
+                        </div>
+                        <div class="card-footer">
+                            <div class="stats">
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <a href="<?php echo base_url(); ?>estadisticas">
+                    <div class="card card-stats">
+                        <div class="card-header card-header-primary card-header-icon">
+                            <div class="card-icon">
+                                <i class="material-icons">query_stats</i>
+                            </div>
+                            <h4 class="card-title text-left">
+                                <span class="font-weight-bold">
+                                    Estadísticas
                                 </span>
                             </h4>
                         </div>

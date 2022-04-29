@@ -26,7 +26,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <?php endif; ?>
             <?php foreach ($desafios as $desafio) :; ?>
                 <?php if ($desafio->desafio_id) :; ?>
-                    <div class="col-md-6 mb-5 d-flex align-items-stretch">
+                    <div class="col-md-6 mb-5">
                         <div class="card card-profile">
                             <div class="card-avatar">
                                 <img class="img bg-white" src="<?php echo $desafio->logo ? base_url() . 'uploads/imagenes_de_usuarios/' . $desafio->id_empresa . '.png?v=' . rand() : base_url() . 'assets/img/usuario.jpeg?v=' . rand(); ?>">
@@ -58,52 +58,43 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <?php
-                                switch ($desafio->estado_postulacion) {
-                                    case POST_PENDIENTE:
-                                        $badge_color_postulacion = 'badge-warning';
-                                        $badge_estado_postulacion = 'Pendiente de validación';
-                                        break;
-                                    case POST_VALIDADO:
-                                        $badge_color_postulacion = 'badge-info';
-                                        $badge_estado_postulacion = 'Validado';
-                                        break;
-                                    case POST_ACEPTADO:
-                                        $badge_color_postulacion = 'badge-success';
-                                        $badge_estado_postulacion = 'Aceptado';
-                                        break;
-                                    case POST_RECHAZADO:
-                                        $badge_color_postulacion = 'badge-danger';
-                                        $badge_estado_postulacion = 'Rechazado';
-                                        break;
-                                }
-                                ?>
-                                <span class="badge <?php echo $badge_color_postulacion; ?>"><?php echo $badge_estado_postulacion; ?></span>
+                                <div class="col-sm-12 text-center">
+                                    <button class="btn btn-primary botonCancelarPostulacion" data-postulacion-id="<?php echo $desafio->postulacion_id; ?>">Cancelar postulación</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="modal fade" id="desafio-modal-<?php echo $desafio->desafio_id; ?>" tabindex="-1" role="dialog" aria-labelledby="desafio-modal-<?php echo $desafio->desafio_id; ?>Label" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="" id="desafio-modal-<?php echo $desafio->desafio_id; ?>Label"><?php echo $desafio->nombre_del_desafio; ?></h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    Está por postularse a este desafío, ¿Está seguro?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default m-2" data-dismiss="modal">Cerrar</button>
-                                    <button type="button" class="btn btn-primary m-2 botonPostularme" data-desafio-id="<?php echo $desafio->desafio_id; ?>">Si, postularme</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
         <?php echo $this->pagination->create_links(); ?>
+    </div>
+</div>
+
+<div class="modal fade" id="cancelarPostulacionModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="cancelarPostulacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelarPostulacionModalLabel">Cancelar postulación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+            <div class="modal-body">
+                <div id="cancelarPostulacionModalDiv">
+                    ¿Está seguro que desea cancelar su postulación a este desafío?
+                </div>
+            </div>
+            <div class="modal-footer mt-2">
+                <form method="POST" action="<?php echo base_url() . 'postulados/cancelarpostulacion'; ?>">
+                    <input type="hidden" name="postulacion_id" value="" id="inputHiddenPostulacionId">
+
+                    <button type="button" class="btn btn-default m-2" data-dismiss="modal" aria-label="Close">Cerrar</button>
+                    <button type="submit" class="btn btn-danger m-2">Si, cancelar postulación</button>
+
+                </form>
+            </div>
+        </div>
     </div>
 </div>

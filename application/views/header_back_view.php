@@ -6,8 +6,8 @@
         </div>
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">
-                <?php if ($this->session->userdata('user_data')->estado_id != USR_ENABLED && $this->session->userdata('user_data')->perfil_completo) :; ?>
-                    <span class="badge badge-danger">Cuenta pendiente de habilitación</span>
+                <?php if (ENVIRONMENT == 'testing'): ?>
+                    <span class="badge badge-danger">SITIO DE TESTING</span>
                 <?php endif; ?>
                 <li class="nav-item dropdown">
                     <?php
@@ -19,6 +19,7 @@
                         }
                     }; ?>
 
+                    <?php if(!($this->session->userdata('user_data')->rol_id == ROL_PARTNER || $this->session->userdata('user_data')->rol_id == null)):;?>
                     <a class="nav-link <?php echo $notificaciones_sin_leer ? 'text-primary notificacion-color-header' : ''; ?>" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="material-icons notificacion-icono-header"><?php echo $notificaciones_sin_leer ? 'notifications_active' : 'notifications'; ?></i>
                         Notificaciones
@@ -26,6 +27,7 @@
                             &nbsp;&nbsp;<span class="badge badge-pill badge-primary notificacion-total-header"><?php echo $notificaciones_sin_leer; ?></span>
                         <?php endif; ?>
                     </a>
+                    <?php endif;?>
                     <div style="width:300px;max-height:250px;overflow-y:auto;" class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
                         <?php
                         $notificaciones_maximas_header = $this->session->userdata('notificaciones_maximas_header');
@@ -64,6 +66,7 @@
                         <a class="dropdown-item" href="<?php echo base_url() . 'cambiarpassword'; ?>">Cambiar contraseña</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="<?php echo base_url(); ?>auth/logout">Cerrar sesión</a>
+                        <?php echo ENVIRONMENT == 'testing'? '<a class="dropdown-item" href="'.base_url().'auth/logout/all">Cerrar completamente</a>':'';?>
                     </div>
                 </li>
             </ul>

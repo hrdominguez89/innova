@@ -7,6 +7,9 @@ class Postulados extends MX_Controller
     public function __construct()
     {
         parent::__construct();
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
+        }
         $this->load->model('Postulados_model');
         $this->load->library(array('my_form_validation'));
         $this->form_validation->run($this);
@@ -57,6 +60,7 @@ class Postulados extends MX_Controller
 
                 $data['desafios'] = $this->Postulados_model->getDesafiosPostuladosByUserId($this->session->userdata('user_data')->id, $this->start, $this->limit);
                 $data['sections_view'] = 'postulaciones_startup_view';
+                $data['files_js'] = array('postulaciones/cancelar_postulacion.js?v=' . rand());
                 $data['title'] = 'Mis postulaciones';
 
 
@@ -71,10 +75,15 @@ class Postulados extends MX_Controller
                 $data['title'] = 'Postulados a mis desafíos';
 
                 break;
-            case ROL_ADMIN_ORGANIZACION:
+            case ROL_VALIDADOR:
+                $data['files_js'] = array('activar_tabla_comun.js');
+                $data['postulados'] = $this->Postulados_model->getTodosLosPostulados();
+                $data['sections_view'] = 'postulados_validador_list_view';
+                $data['title'] = 'Postulados';
+                break;
             case ROL_ADMIN_PLATAFORMA:
                 $data['postulados'] = $this->Postulados_model->getTodosLosPostulados();
-                $data['files_js'] = array('activar_tabla_comun.js');
+                $data['files_js'] = array('activar_tabla_comun.js', 'postulaciones/eliminar_postulacion.js');
                 $data['sections_view'] = 'postulados_admin_list_view';
                 $data['title'] = 'Postulados';
                 break;
@@ -89,7 +98,7 @@ class Postulados extends MX_Controller
 
                 $data['desafio'] = $this->Postulados_model->getDesafiosById($desafio_id, $this->session->userdata('user_data')->id);
                 if ($data['desafio']) {
-                    $this->config_pagination['base_url'] = base_url() . 'postulados';
+                    $this->config_pagination['base_url'] = base_url() .  'postulados/desafio/'.$desafio_id;
                     $this->config_pagination['total_rows'] = count($this->Postulados_model->getPostuladosByDesafioId($desafio_id));
                     $this->pagination->initialize($this->config_pagination);
 
@@ -113,10 +122,10 @@ class Postulados extends MX_Controller
         if ($this->session->userdata('user_data')) {
 
             if ((int)$desafio_id && (int)$startup_id) {
-                $this->load->helper(array('send_email_helper'));
                 switch ($this->session->userdata('user_data')->rol_id) {
                     case ROL_EMPRESA:
                         $data['startup'] = $this->Postulados_model->getStartupDataByIdAndDesafioId($desafio_id, $startup_id);
+                        $data['validadores'] = $this->Postulados_model->getValidadores($data['startup']->postulacion_id);
                         if ($data['startup']) {
                             $data['files_js'] = array('postulaciones/contactar.js');
                             $data['sections_view'] = 'ficha_startup_postulado_view';
@@ -127,10 +136,8 @@ class Postulados extends MX_Controller
                         }
 
                         break;
-                    case ROL_ADMIN_ORGANIZACION:
+                    case ROL_VALIDADOR:
                     case ROL_ADMIN_PLATAFORMA:
-                        $this->load->model('mensajes/Mensajes_model');
-                        $data['mensaje_de_plataforma_rechazado'] = $this->Mensajes_model->getMensaje('mensaje_rechazo_postulacion');
                         if ($this->input->post()) {
                             $this->form_validation->set_error_delimiters('<div class="text-danger">', '</div>');
                             $this->form_validation->set_rules(
@@ -149,65 +156,31 @@ class Postulados extends MX_Controller
                                     'required' => 'El campo {field} es obligatorio.'
                                 )
                             );
-                            if ($this->input->post('validar_postulacion') == POST_RECHAZADO) {
-                                $this->form_validation->set_rules(
-                                    'detalle_rechazo_cancelado',
-                                    'Detalle rechazado',
-                                    'trim|required',
-                                    array(
-                                        'required' => 'El campo {field} es obligatorio.'
-                                    )
-                                );
-                            }
                             if ($this->form_validation->run() != FALSE) {
-                                $postulacion_id = $this->input->post('postulacion_id');
-                                $estado_validacion['fecha_modifico'] = date('Y-m-d H:i:s', time());
-                                $estado_validacion['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
-                                $estado_validacion['estado_postulacion'] = $this->input->post('validar_postulacion');
-                                if ($this->input->post('validar_postulacion') == POST_RECHAZADO) {
-                                    $estado_validacion['detalle_rechazo_cancelado'] = $this->input->post('detalle_rechazo_cancelado');
-                                    $data['mensaje_de_plataforma'] = $this->Mensajes_model->getMensaje('mensaje_rechazo_postulacion');
-                                    $data['mensaje_de_plataforma']->texto_mensaje .= ' ' . $estado_validacion['detalle_rechazo_cancelado'];
-                                } else {
-                                    $estado_validacion['detalle_rechazo_cancelado'] = NULL;
-                                    $data['mensaje_de_plataforma'] = $this->Mensajes_model->getMensaje('mensaje_postulacion_validada');
+                                $validacion_data['fecha_alta_validacion'] = date('Y-m-d H:i:s', time());
+                                $validacion_data['validador_id'] = $this->session->userdata('user_data')->id;
+                                $validacion_data['postulacion_id'] = $this->input->post('postulacion_id');
+
+                                if (!$this->Postulados_model->getEstadoValidacionByValidadorId($this->session->userdata('user_data')->id, $validacion_data['postulacion_id'])) {
+                                    $this->Postulados_model->insertarValidacion($validacion_data);
                                 }
-                                $this->Postulados_model->updatePostulacion($estado_validacion, $postulacion_id);
-
-                                $startup_data = $this->Postulados_model->getStartupData($startup_id);
-                                $desafio_data = $this->Postulados_model->getDesafioData($desafio_id);
-
-
-                                $buscar_y_reemplazar = array(
-                                    array('buscar' => '{{NOMBRE_RAZON_SOCIAL}}', 'reemplazar' => $startup_data->razon_social),
-                                    array('buscar' => '{{NOMBRE_USUARIO}}', 'reemplazar' => $startup_data->nombre),
-                                    array('buscar' => '{{APELLIDO_USUARIO}}', 'reemplazar' => $startup_data->apellido),
-                                    array('buscar' => '{{DESAFIO_NOMBRE}}', 'reemplazar' => $desafio_data->nombre_del_desafio),
-                                    array('buscar' => '{{NOMBRE_EMPRESA}}', 'reemplazar' => $desafio_data->nombre_empresa),
-                                );
-
-
-                                switch ($data['mensaje_de_plataforma']->tipo_de_envio_id) {
-                                    case ENVIO_NOTIFICACION:
-                                        $mensaje_de_notificacion = $this->Mensajes_model->getMensaje('mensaje_nueva_notificacion');
-                                        $this->crearNotificacion($data['mensaje_de_plataforma'], $startup_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
-                                        $this->crearEmail($mensaje_de_notificacion, $startup_data, $buscar_y_reemplazar);
-                                        break;
-                                    case ENVIO_EMAIL:
-                                        $this->crearEmail($data['mensaje_de_plataforma'], $startup_data, $buscar_y_reemplazar);
-                                        break;
-                                    case ENVIO_NOTIF_EMAIL:
-                                        $this->crearNotificacion($data['mensaje_de_plataforma'], $startup_data, $this->session->userdata('user_data'), $buscar_y_reemplazar);
-                                        $this->crearEmail($data['mensaje_de_plataforma'], $startup_data, $buscar_y_reemplazar);
-                                        break;
-                                }
+                                $message = '{
+                                    "title":"Validado",
+                                    "text": "Se validó a la startup correctamente.",
+                                    "type": "success",
+                                    "buttonsStyling": true,
+                                    "timer":5000,
+                                    "confirmButtonClass": "btn btn-success"
+                                }';
+                                $this->session->set_flashdata('message_alert', $message);
+                                redirect(base_url() . 'postulados');
                             }
                         }
                         $data['startup'] = $this->Postulados_model->getStartupDataByIdAndDesafioId($desafio_id, $startup_id);
+                        $data['validacion'] = $this->Postulados_model->getEstadoValidacionByValidadorId($this->session->userdata('user_data')->id, $data['startup']->postulacion_id);
                         if ($data['startup']) {
-                            $data['mensaje_de_plataforma_rechazado'] = $this->Mensajes_model->getMensaje('mensaje_rechazo_postulacion');
                             $data['files_js'] = array('postulaciones/ficha_startup_postulado_admin.js');
-                            $data['sections_view'] = 'ficha_startup_postulado_admin_view';
+                            $data['sections_view'] = 'ficha_startup_postulado_validar_view';
                             $data['title'] = 'Ficha startup';
                             $this->load->view('layout_back_view', $data);
                         } else {
@@ -238,7 +211,7 @@ class Postulados extends MX_Controller
             $this->Postulados_model->insertarContacto($contactar);
             $postulacion['estado_postulacion'] = POST_ACEPTADO;
             $postulacion['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
-            $postulacion['fecha_modifico'] = date('Y-m-d H:i:s',time());
+            $postulacion['fecha_modifico'] = date('Y-m-d H:i:s', time());
             $this->Postulados_model->updatePostulado($postulacion, $this->input->post('startup_id'), $this->input->post('desafio_id'));
 
             $startup_data = $this->Postulados_model->getStartupDataByIdAndDesafioId($contactar['desafio_id'], $contactar['startup_id'],);
@@ -306,8 +279,8 @@ class Postulados extends MX_Controller
     {
         if (!$data_usuario_para) {
             $data_usuario_para_id = 0;
-            $data_usuario_rol_id = ROL_ADMIN_ORGANIZACION;
-        }else{
+            $data_usuario_rol_id = ROL_VALIDADOR;
+        } else {
             $data_usuario_para_id = $data_usuario_para->usuario_id;
             $data_usuario_rol_id = ROL_STARTUP;
         }
@@ -337,5 +310,51 @@ class Postulados extends MX_Controller
         $email_asunto =  $asunto;
 
         encolar_email($email_de, $nombre_de, $email_para, $email_mensaje, $email_asunto);
+    }
+
+    public function eliminar()
+    {
+        if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+        }
+        if ($this->session->userdata('user_data')->rol_id != ROL_ADMIN_PLATAFORMA) {
+            $data = array(
+                'status'    => false,
+                'msg'       => 'No tiene permisos para realizar esta modificación'
+            );
+        } else {
+            $postulado_id = $this->input->post('postulado_id');
+            $data_postulado['estado_postulacion'] = POST_ELIMINADO;
+            $data_postulado['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
+            $data_postulado['fecha_modifico'] = date('Y-m-d H:i:s', time());
+            if ($this->Postulados_model->updatePostulacion($data_postulado, $postulado_id)) {
+                $data = array(
+                    'status'    => true,
+                );
+            } else {
+                $data = array(
+                    'status'    => false,
+                    'msg'       => 'No fue posible eliminar la postulación.'
+                );
+            }
+        }
+        echo json_encode($data);
+    }
+
+    public function cancelarpostulacion()
+    {
+        if (!$this->session->userdata('user_data')) {
+            redirect(base_url() . 'auth/login');
+        }
+        if (!$this->input->post()) {
+            redirect(base_url() . 'home');
+        }
+        $postulacion_id = $this->input->post('postulacion_id');
+        $data_postulacion['usuario_id_modifico'] = $this->session->userdata('user_data')->id;
+        $data_postulacion['detalle_rechazo_cancelado'] = 'Cancelado por el usuario startup';
+        $data_postulacion['estado_postulacion'] = POST_CANCELADO;
+        $data_postulacion['fecha_modifico'] = date('Y-m-d H:i:s', time());
+        $this->Postulados_model->updatePostulacion($data_postulacion,$postulacion_id);
+        redirect(base_url().'postulados');
     }
 }

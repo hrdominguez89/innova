@@ -15,6 +15,7 @@ class Registro_model extends CI_Model
     {
         $this->db->select('email,id');
         $this->db->where('email', $email);
+        $this->db->where('estado_id!=', USR_DELETED);
         return $this->db->get('usuarios')->row();
     }
 
@@ -23,10 +24,16 @@ class Registro_model extends CI_Model
         $this->db->select('razon_social');
         if ($kind_of_enterprise == ROL_STARTUP) {
             $this->db->from('startups');
-        } else {
+            $this->db->join('usuarios', 'usuarios.id = startups.usuario_id');
+        } else if ($kind_of_enterprise == ROL_EMPRESA){
             $this->db->from('empresas');
+            $this->db->join('usuarios', 'usuarios.id = empresas.usuario_id');
+        } else{
+            $this->db->from('partners');
+            $this->db->join('usuarios', 'usuarios.id = partners.usuario_id');
         }
         $this->db->where('razon_social', $enterprise_name);
+        $this->db->where('usuarios.estado_id!=', USR_DELETED);
         return $this->db->get()->row();
     }
 
@@ -51,26 +58,28 @@ class Registro_model extends CI_Model
         } //If Rollback
     }
 
-    public function getMensajeRegistro($rol_id){
+    public function getMensajeRegistro($rol_id)
+    {
         $this->db->select('*');
-        switch ($rol_id){
+        switch ($rol_id) {
             case ROL_STARTUP:
-                $this->db->where('nombre_mensaje','mensaje_alta_registro_startup');
+                $this->db->where('nombre_mensaje', 'mensaje_alta_registro_startup');
                 break;
             case ROL_EMPRESA:
-                $this->db->where('nombre_mensaje','mensaje_alta_registro_empresa');
+                $this->db->where('nombre_mensaje', 'mensaje_alta_registro_empresa');
                 break;
             case ROL_PARTNER:
-                $this->db->where('nombre_mensaje','mensaje_alta_registro_partner');
+                $this->db->where('nombre_mensaje', 'mensaje_alta_registro_partner');
                 break;
         }
         $this->db->from('vi_mensajes_de_la_plataforma');
         return $this->db->get()->row();
     }
 
-    public function getMensajeRegistroGral(){
+    public function getMensajeRegistroGral()
+    {
         $this->db->select('*');
-        $this->db->where('nombre_mensaje','mensaje_registro_general');
+        $this->db->where('nombre_mensaje', 'mensaje_registro_general');
         $this->db->from('vi_mensajes_de_la_plataforma');
         return $this->db->get()->row();
     }

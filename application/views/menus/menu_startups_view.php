@@ -1,7 +1,7 @@
 <style>
 
 </style>
-<div class="sidebar" data-color="purple" data-background-color="black" data-image="<?php echo base_url(); ?>assets/img/sidebar-3.jpg">
+<div class="sidebar" data-color="purple" data-background-color="white" data-image="<?php echo base_url(); ?>assets/img/sidebar-3.jpg">
   <!--
           Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
   
@@ -27,7 +27,7 @@
         <a class="nav-link" href="<?php echo base_url(); ?>desafios">
           <i class="material-icons">ballot</i>
           <p>
-            Desafios
+            Desafíos
           </p>
         </a>
       </li>
@@ -41,7 +41,7 @@
           </p>
         </a>
       </li>
-      <!-- menu postulaciones -->
+      <!-- menu solicitudes de contacto -->
       <li class="nav-item <?php echo $this->uri->segment(URI_SEGMENT) == 'contacto' ? 'active' : ''; ?>">
         <a class="nav-link" href="<?php echo base_url(); ?>contacto">
           <i class="material-icons">connect_without_contact</i>

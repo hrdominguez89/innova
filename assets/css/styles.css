@@ -23,17 +23,17 @@
   line-height: 3;
   background: #2c3e50;
   overflow: hidden;
-  border-radius: .25em;
+  border-radius: 0.25em;
 }
 .select-reparado {
   flex: 1;
-  padding: 0 .5em;
+  padding: 0 0.5em;
   color: #fff;
   cursor: pointer;
 }
 /* Arrow */
 .select::after {
-  content: '\25BC';
+  content: "\25BC";
   position: absolute;
   top: 0;
   right: 0;
@@ -41,48 +41,99 @@
   background: #34495e;
   cursor: pointer;
   pointer-events: none;
-  -webkit-transition: .25s all ease;
-  -o-transition: .25s all ease;
-  transition: .25s all ease;
+  -webkit-transition: 0.25s all ease;
+  -o-transition: 0.25s all ease;
+  transition: 0.25s all ease;
 }
 /* Transition */
 .select:hover::after {
   color: #f39c12;
 }
-.img-profile{
+.img-profile {
   display: block;
   max-width: 100%;
 }
-.preview-img-profile{
+.preview-img-profile {
   overflow: hidden;
-  width: 160px; 
+  width: 160px;
   height: 160px;
   margin: 10px;
   border: 1px solid red;
 }
-.youtube-iframe{
+.youtube-iframe {
   width: 100%;
   height: 300px;
 }
-.cursor{
+.cursor {
   cursor: pointer;
 }
-.cursor-not-allowed{
-  cursor:not-allowed;
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 .ct-label {
   fill: #000000 !important;
-  font-size: 15px!important;
+  font-size: 15px !important;
 }
 
 .ct-series-a {
-  color: #00bcd4!important;
+  color: #00bcd4 !important;
 }
 
 .ct-series-b {
-  color: #f44336!important;
+  color: #f44336 !important;
 }
 
 .ct-series-c {
-  color: #ff9800!important;
+  color: #ff9800 !important;
+}
+.medalla-gold-color {
+  color: #ffd700;
+  font-size: 50px;
+}
+.contacto-color {
+  color: #8e24aa;
+  font-size: 50px;
+}
+td.dt-nowrap {
+  white-space: nowrap;
+}
+
+.sidebar .nav li a,
+.sidebar .nav li .dropdown-menu a,
+.sidebar .nav li i,
+.user-info a p {
+  color: #9c27b0;
+}
+.sidebar .nav li a:hover,
+.sidebar .nav li .dropdown-menu a:hover,
+.sidebar .nav li i:hover {
+  background-color: #9c27b0;
+  color: white;
+}
+.sidebar .nav .nav-item .nav-link:hover .material-icons {
+  color: white;
+}
+
+.sidebar > div {
+  background-color: #ffffff !important;
+}
+.dropdown-graficos {
+  padding: 3px!important;
+  border: 1px!important;
+  width: 102px!important;
+}
+.dropdown-item-hamburguesa {
+  color: #333333 !important;
+  padding: 6px 7px 6px 7px !important;
+  display: inline-block !important;
+  width: 100%!important;
+}
+
+.dropdown-item-hamburguesa:hover {
+  background-color: #eee !important;
+  box-shadow: initial !important;
+}
+.apexcharts-menu-open{
+  width: 154px!important;
+  text-align: center!important;
 }

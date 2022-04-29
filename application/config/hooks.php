@@ -20,6 +20,14 @@ $hook['pre_controller'][] = array(
     'filepath' => 'modules/notificaciones/controllers'
 );
 
+//VERIFICA QUE EL USUARIO TENGA UN ROL.
+$hook['pre_controller'][] = array(
+    'class'    => 'notificaciones',
+    'function' => 'verificar_rol',
+    'filename' => 'Notificaciones.php',
+    'filepath' => 'modules/notificaciones/controllers'
+);
+
 //VERIFICA QUE EL USUARIO HAYA CARGADO SU PERFIL.
 $hook['pre_controller'][] = array(
     'class'    => 'notificaciones',

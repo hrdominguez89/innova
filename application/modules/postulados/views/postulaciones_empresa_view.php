@@ -18,6 +18,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <?php endif; ?>
             <div class="col-md-12 mb-5">
             </div>
+            <?php if($desafios):;?>
             <?php foreach ($desafios as $desafio) :; ?>
                 <?php if ($desafio->desafio_id) :; ?>
                     <div class="col-md-6 mb-5 d-flex align-items-stretch">
@@ -74,6 +75,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div> -->
                 <?php endif; ?>
             <?php endforeach; ?>
+            <?php else:;?>
+            <div class="col-md-12 mb-5 text-center">
+                <h3>No se encontraron postulaciones</h3>
+            </div>
+            <?php endif;?>
         </div>
         <?php echo $this->pagination->create_links(); ?>
     </div>

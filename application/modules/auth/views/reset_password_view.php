@@ -18,9 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <div class="card-body">
                                 <?php echo validation_errors();?>
                                 <?php if(@$error_message):;?>
-                                    <div class="alert alert-danger">
-                                        <?php echo $error_message;?>
-                                    </div>
+                                    <?php echo $error_message;?>
                                 <?php endif;?>
                                 Escriba el correo con el que se registró y le enviaremos un enlace temporal para que pueda reiniciar su contraseña.
 

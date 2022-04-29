@@ -67,7 +67,7 @@ const enviarPostulacion = (desafioId) => {
             });
           } else {
             swal({
-              title: "Limite alcanzado",
+              title: resp.title,
               text: resp.mensaje,
               type: "error",
               buttonsStyling: true,

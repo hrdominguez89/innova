@@ -55,8 +55,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label text-left pl-3" for="logo_imagen">Logo de la empresa<small class="text-danger"> <?php echo $this->session->userdata('user_data')->logo ? '' : '*'; ?></small></label>
-                                <input class="form-control pl-3" type="file" id="logo_imagen" name="logo_imagen" accept="image/png, image/jpeg" <?php echo $this->session->userdata('user_data')->logo ? '' : 'required'; ?>>
+                                <label class="col-sm-3 col-form-label text-left pl-3" for="logo_imagen">Logo de la empresa</label>
+                                <input class="form-control pl-3" type="file" id="logo_imagen" name="logo_imagen" accept="image/png, image/jpeg">
                                 <?php echo form_error('profile_img'); ?>
                             </div>
                             <div class="row">
@@ -154,6 +154,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         <?php echo form_error('url_twitter'); ?>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group bmd-form-group">
+                                        <label class="bmd-label-floating" for="url_linkedin">URL Linkedin <i class="fab fa-linkedin"></i></label>
+                                        <input type="url" class="form-control" id="url_linkedin" name="url_linkedin" value="<?php echo set_value('url_linkedin', $data_perfil->url_linkedin); ?>">
+                                        <?php echo form_error('url_linkedin'); ?>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
@@ -182,16 +189,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mb-4">
-                                <label class="col-sm-3 col-form-label text-left pl-3" for="exporta">¿Exporta? <small class="text-danger"> *</small></label>
-                                <div class="col-sm-9">
-                                    <div class="form-group bmd-form-group">
-                                        <select name="exporta" id="exporta" class="form-control" required>
-                                            <option selected disabled hidden>Seleccione una opción</option>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <label class="bmd-label-floating" for="exporta">¿Exporta? <small class="text-danger"> *</small></label>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <select class="select_chosen" id="exporta" data-style="select-with-transition" name="exporta" title="¿Exporta?" data-size="9" tabindex="-98" required>
                                             <option value="Si" <?php echo $data_perfil->exporta == 'Si' ? 'selected' : ''; ?><?php echo set_select('exporta', $data_perfil->exporta); ?>>Si</option>
                                             <option value="No" <?php echo $data_perfil->exporta == 'No' ? 'selected' : ''; ?><?php echo set_select('exporta', $data_perfil->exporta); ?>>No</option>
                                         </select>
-                                        <?php echo form_error('exporta'); ?>
                                     </div>
                                 </div>
                             </div>
@@ -280,6 +287,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 </div>
             </div>
 
+            <?php echo $this->load->view('perfil_avanzado_view'); ?>
 
         </div>
     </div>

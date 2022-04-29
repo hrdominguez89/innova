@@ -109,7 +109,11 @@ if (!function_exists('encolar_emails')) {
 
         $email['email_de'] = $email_de;
         $email['nombre_de'] = $nombre_de;
-        $email['email_para'] = $email_para;
+        if(ENVIRONMENT != 'production'){
+            $email['email_para'] = 'test-redia@redia.com.ar';
+        }else{
+            $email['email_para'] = $email_para;
+        }
         $email['email_mensaje'] = $email_mensaje;
         $email['email_asunto'] = $email_asunto;
         $email['email_estado_id'] = EMAIL_NUEVO;

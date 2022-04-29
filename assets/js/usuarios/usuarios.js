@@ -5,6 +5,8 @@ $(document).ready(() => {
   escucharBotonGuardarUsuario();
 });
 
+let usuarioAEliminar;
+
 const escucharBotonGuardarUsuario = () => {
   $("#botonGuardarUsuario").on("click", () => {
     guardarUsuario();
@@ -14,7 +16,6 @@ const escucharBotonGuardarUsuario = () => {
 const escucharBotonCrearUsuario = () => {
   $("#botonCrearUsuario").on("click", () => {
     crearUsuario();
-    // $('#modalCrearUsuario').modal('hide');
   });
 };
 
@@ -27,11 +28,15 @@ const escucharBotonCrearUsuarioModal = () => {
 
 const cargarTablaDeUsuarios = (rol_id = false) => {
   var tableUsuarios = $("#dataTableUsuarios").DataTable({
+    fixedHeader: {
+      header: true,
+    },
     destroy: true,
+    responsive: false,
     info: false,
     ajax: {
       type: "post",
-      url: BASE_URL + "usuarios/cargarUsuarios/" + rol_id,
+      url: BASE_URL + "usuarios/cargarUsuarios",
     },
     columns: [
       {
@@ -52,6 +57,16 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
       {
         render: function (full, type, data, meta) {
           return data.rol_descripcion;
+        },
+      },
+      {
+        render: function (full, type, data, meta) {
+          return data.razon_social;
+        },
+      },
+      {
+        render: function (full, type, data, meta) {
+          return data.descripcion;
         },
       },
       {
@@ -82,10 +97,12 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
             title = "Habilitar";
           }
           return `
-                <a href='javascript:void(0)' onclick="activarUsuario(${data.id})" id="activar_usuario_${data.id}" data-activar-value=${activarUsuario} title="${title} usuario" class='activarUsuario mx-2 text-${colorToggle}'><i class="fas fa-toggle-${toggle}"></i></a>
-                <a href='javascript:void(0)' onclick="editarUsuario(${data.id})" id="editar_usuario_${data.id}" title="Editar usuario" class='editarUsuario mx-2 text-warning'><i class='fas fa-edit size-18' aria-hidden='true'></i></a>
+                <a href='javascript:void(0)' onclick="activarUsuario(${data.id})" id="activar_usuario_${data.id}" data-activar-value=${activarUsuario} title="${title} usuario" class='activarUsuario text-${colorToggle}'><i class="fas fa-toggle-${toggle}"></i></a>
+                <a href='javascript:void(0)' onclick="editarUsuario(${data.id})" id="editar_usuario_${data.id}" title="Editar usuario" class='editarUsuario ml-2 text-warning'><i class='fas fa-edit size-18' aria-hidden='true'></i></a>
+                <a href='javascript:void(0)' onclick="eliminarUsuario(this)" id="eliminar_usuario_${data.id}" data-usuario-data='{"nombre":"${data.nombre}","apellido":"${data.apellido}","id":${data.id}}' title="Eliminar usuario" class='eliminarUsuario ml-2 text-danger'><i class='fas fa-trash-alt size-18' aria-hidden='true'></i></a>
                 `;
         },
+        orderable:false,
       },
     ],
     columnDefs: [
@@ -95,7 +112,7 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
         orderable: true,
       },
       {
-        targets: 1, // your case first column
+        targets: 1,
         className: "text-left",
         orderable: true,
       },
@@ -128,6 +145,8 @@ const cargarTablaDeUsuarios = (rol_id = false) => {
     language: {
       url: "./assets/js/datatables/es_es.json",
     },
+    dom: "Bfrtip",
+    buttons: ["excel", "pdf", "print"],
   });
 };
 
@@ -135,7 +154,11 @@ const reiniciarModalCrearUsuario = () => {
   $("#errorCrearUsuarioModal").html("");
   $("#errorCrearUsuarioModal").css("display", "none");
   $("#crearUsuarioForm")[0].reset();
-  $(".filter-option-inner-inner")[0].innerHTML = "Seleccione un rol";
+  $("#rol_id")
+    .find("option:first-child")
+    .prop("selected", true)
+    .end()
+    .trigger("chosen:updated");
 };
 
 const crearUsuario = () => {
@@ -154,17 +177,25 @@ const crearUsuario = () => {
       //   );
     },
     success: function (resp) {
-      switch (resp.status_code) {
-        case 200:
-          if (resp.cargado) {
-            cargarTablaDeUsuarios();
-            $("#modalCrearUsuario").modal("hide");
-          } else {
-            $("#errorCrearUsuarioModal").css("display", "block");
-            $("#errorCrearUsuarioModal").html(resp.msg);
-          }
-          break;
+      let mensaje;
+      if (resp.status) {
+        cargarTablaDeUsuarios();
+        $("#modalCrearUsuario").modal("hide");
+        mensaje = {
+          title: "Usuario creado",
+          texto: "Se creo el usuario correctamente",
+          tipo: "success",
+        };
+      } else {
+        $("#errorCrearUsuarioModal").css("display", "block");
+        $("#errorCrearUsuarioModal").html(resp.msg);
+        mensaje = {
+          title: "Error",
+          texto: resp.msg,
+          tipo: "error",
+        };
       }
+      mensajeUsuarios(mensaje);
     },
     timeout: 5000,
   });
@@ -189,20 +220,21 @@ const rellenarFormularioEditarUsuario = (usuario_id) => {
     success: function (resp) {
       switch (resp.status_code) {
         case 200:
-          $(".filter-option-inner-inner")[1].innerHTML =
-            resp.data.rol_descripcion;
           $("#nombre_editar").val(resp.data.nombre);
           $("#apellido_editar").val(resp.data.apellido);
           $("#email_editar").val(resp.data.email);
           $("#edidarUsuarioId").val(resp.data.id);
           let options = $("#rol_id_editar").find("option");
-          options[1].removeAttribute("selected");
-          for (i = 0; i < options.length; i++) {
+          for (let i = 0; i < options.length; i++) {
+            options[i].removeAttribute("selected", "");
+          }
+          for (let i = 0; i < options.length; i++) {
             if (parseInt(options[i].value) == parseInt(resp.data.rol_id)) {
               options[i].setAttribute("selected", "");
               break;
             }
           }
+          $('#rol_id_editar').trigger("chosen:updated");
           break;
       }
     },
@@ -272,16 +304,12 @@ const guardarUsuario = () => {
       );
     },
     success: function (resp) {
-      switch (resp.status_code) {
-        case 200:
-          if (resp.editado) {
-            cargarTablaDeUsuarios();
-            $("#modalEditarUsuario").modal("hide");
-          } else {
-            $("#errorEditarUsuarioModal").html(resp.msg);
-            $("#errorEditarUsuarioModal").css("display", "block");
-          }
-          break;
+      if (resp.status) {
+        cargarTablaDeUsuarios();
+        $("#modalEditarUsuario").modal("hide");
+      } else {
+        $("#errorEditarUsuarioModal").html(resp.msg);
+        $("#errorEditarUsuarioModal").css("display", "block");
       }
     },
     timeout: 5000,
@@ -293,4 +321,63 @@ const reiniciarModalEditarUsuario = () => {
   $("#errorEditarUsuarioModal").css("display", "none");
   $("#editarUsuarioForm")[0].reset();
   $("#modalEditarUsuario").modal("show");
+};
+
+const eliminarUsuario = (data) => {
+  usuarioAEliminar = JSON.parse(data.dataset.usuarioData);
+  $("#spanUsuario").html(
+    `${usuarioAEliminar.apellido}, ${usuarioAEliminar.nombre}`
+  );
+  $("#modalEliminarUsuario").modal("show");
+};
+
+const eliminarUsuarioModal = async () => {
+  let respuesta;
+
+  await $.ajax({
+    type: "POST",
+    url: BASE_URL + "usuarios/eliminar",
+    dataType: "JSON",
+    data: { usuario_id: usuarioAEliminar.id },
+    // beforeSend: function () {
+    // codigo
+    // },
+    error: function (resp) {
+      console.log(resp);
+    },
+    success: function (resp) {
+      respuesta = resp;
+    },
+    timeout: 5000,
+  });
+  if (respuesta.status) {
+    $("#modalEliminarUsuario").modal("hide");
+    cargarTablaDeUsuarios();
+    mensajeUsuarioEliminado();
+  } else {
+    $("#modalEliminarUsuario").modal("hide");
+    mensajeUsuarioEliminado(respuesta.msg);
+  }
+};
+
+const mensajeUsuarioEliminado = (msg = false) => {
+  swal({
+    title: msg ? "No se pudo eliminar" : "Usuario eliminado",
+    text: msg ? msg : "El usuario se eliminó correctamente",
+    type: msg ? "error" : "success",
+    buttonsStyling: true,
+    timer: 5000,
+    confirmButtonClass: "btn btn-success",
+  });
+};
+
+const mensajeUsuarios = (dataMsg) => {
+  swal({
+    title: dataMsg.title,
+    text: dataMsg.texto,
+    type: dataMsg.tipo,
+    buttonsStyling: true,
+    timer: 5000,
+    confirmButtonClass: "btn btn-success",
+  });
 };
