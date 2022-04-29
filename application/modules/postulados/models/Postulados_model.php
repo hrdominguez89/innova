@@ -153,7 +153,7 @@ class Postulados_model extends CI_Model
     }
 
     public function getValidadores($postulacion_id){
-        $query = $this->db->select('IFNULL(va.razon_social,"Administrador") as razon_social_validador')
+        $query = $this->db->select('IFNULL(val.razon_social,"Administrador") as razon_social_validador')
         ->from('validaciones as va')
         ->where('postulacion_id',$postulacion_id)
         ->join('usuarios as u','u.id = va.validador_id','left')
