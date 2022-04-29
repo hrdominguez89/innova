@@ -44,12 +44,14 @@ class Postulados_model extends CI_Model
             ->join('postulaciones as p', 'p.desafio_id = vd.desafio_id', 'left')
             ->join('estados_postulaciones as ep', 'ep.id = p.estado_postulacion', 'left')
             ->where('vd.id_empresa', $usuario_id)
-            ->where('vd.desafio_estado_id !=', DESAF_ELIMINADO)
-            ->where('vd.desafio_estado_id !=', DESAF_RECHAZADO)
-            ->where('vd.desafio_estado_id !=', DESAF_CANCELADO)
-            ->where('p.estado_postulacion !=', POST_ELIMINADO)
-            ->where('p.estado_postulacion !=', POST_CANCELADO)
-            ->where('p.estado_postulacion !=', POST_RECHAZADO)
+            ->group_start()
+
+            ->where('p.estado_postulacion', POST_PENDIENTE)
+            ->or_where('p.estado_postulacion', POST_VALIDADO)
+            ->or_where('p.estado_postulacion', POST_ACEPTADO)
+            
+            ->group_end()
+
             ->group_start()
             ->where('vd.estado_usuario_id', USR_ENABLED)
             ->or_where('vd.estado_usuario_id', USR_VERIFIED)
